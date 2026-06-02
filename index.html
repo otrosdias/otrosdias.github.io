@@ -696,7 +696,7 @@ body.inverted .panel-backdrop{ background: rgba(232,227,211,0.85); }
 <!-- HUD -->
 <div class="hud hud--bl">
   <b id="clock">--:--:--</b> tiempo<br>
-  <span class="pulse">◉</span> <span data-i18n="ui.system_online">SISTEMA EN LÍNEA</span> · v1.1
+  <span class="pulse">◉</span> <span data-i18n="ui.system_online">Cada día </span> · hoy
 </div>
 <div class="hud hud--br">
   <span data-i18n="ui.scene">ESCENA</span>: <b id="hudScene">01 / 05</b><br>
@@ -716,7 +716,7 @@ body.inverted .panel-backdrop{ background: rgba(232,227,211,0.85); }
 
   <!-- SCENE: INICIO -->
   <div class="scene scene-inicio active" data-scene="inicio">
-    <div class="scene-tag" data-i18n="inicio.tag">SISTEMA_INTERACTIVO_v1.1</div>
+    <div class="scene-tag" data-i18n="inicio.tag">Sistema</div>
     <h1 class="scene-title">
       <span data-i18n="inicio.title_top">otrosdias</span><br>
       <span class="accent" data-i18n="inicio.title_bot">otrosdias</span>
@@ -1015,7 +1015,7 @@ const I18N = {
     'ui.drop':'DROP','ui.estado':'ESTADO','ui.proximo':'PRÓXIMO',
     'ui.sold':'AGOTADO','ui.contact':'CONTACTAR','ui.buy':'COMPRAR',
 
-    'inicio.tag':'SISTEMA_INTERACTIVO_v1.1',
+    'inicio.tag':'Apertura de sitio web',
     'inicio.title_top':'otrosdias','inicio.title_bot':'otrosdias',
     'inicio.sub':' otrosdias es <b>Randy García Mejía.</b>. Todos los derechos reservados a su obra. 2020 - 2026. Serigrafía y ropa de artistas.',
 
@@ -1202,27 +1202,27 @@ const t = k => (I18N[STATE.lang] && I18N[STATE.lang][k]) || I18N.es[k] || k;
 ============================================================ */
 const bootLinesByLang = {
   es: [
-    'otrosdias OS · v1.1.0',
-    'Copyright 2026 — congregación abierta',
+    'otrosdias',
+    '2026 - 3752',
     '',
-    '> verificando señal..........[OK]',
-    '> cargando escenas...........[OK]',
-    '> cargando artistas..........[OK]',
-    '> abriendo transmisión.......[OK]',
-    '',
-    'bienvenido.',
+    '> Dos mil veinte',
+    '> 2000 Veintiuno',
+    '> dos mil 22',
+    '> MMXXIII',
+    'A04',
+    'V5',
     ''
   ],
   en: [
-    'otrosdias OS · v1.1.0',
-    'Copyright 2026 — open congregation',
+    'otrosdias',
+    '2026 - 3752',
     '',
-    '> verifying signal...........[OK]',
-    '> loading scenes.............[OK]',
-    '> loading artists............[OK]',
-    '> opening broadcast..........[OK]',
-    '',
-    'welcome.',
+    '> Dos mil veinte',
+    '> 2000 Veintiuno',
+    '> dos mil 22',
+    '> MMXXIII',
+    'A04',
+    'V5',
     ''
   ]
 };
