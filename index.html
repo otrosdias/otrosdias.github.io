@@ -1,992 +1,1144 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<meta name="description" content="otrosdias." />
-<meta name="theme-color" content="#0a0a0a" />
-<title>otrosdias/randy</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<meta name="description" content="otrosdias — comunidad creadora de artistas profesionales."/>
+<title>otrosdias</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=VT323&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 
 <style>
-/* ============================================
-   TOKENS
-============================================ */
+/* ── TOKENS — LIGHT DEFAULT ───────────────── */
 :root{
-  --bg: #0a0a0a;
-  --bg-2: #111111;
-  --fg: #e8e3d3;
-  --fg-dim: #8a8578;
-  --fg-muted: #4a4a44;
-  --amber: #f0b81b;
-  --magenta: #ff2d6f;
-  --line: #1f1f1f;
-  --grid: rgba(232, 227, 211, 0.04);
-  --scan: rgba(0,0,0,0.18);
-
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
-  --font-crt: 'VT323', monospace;
-  --font-serif: 'Instrument Serif', Georgia, serif;
+  --bg:      #f0ebdb;
+  --bg-2:    #e6e0cc;
+  --paper:   #f6f2e6;
+  --fg:      #0a0a0a;
+  --fg-dim:  #3a3a36;
+  --fg-muted:#7a7568;
+  --ink:     #0a0a0a;
+  --amber:   #b8902f;
+  --accent:  #c8362a;
+  --board:   #14201c;
+  --board-text:#e8e3d3;
+  --line:    rgba(10,10,10,0.12);
+  --f-logo:   'Archivo Black',sans-serif;
+  --f-display:'Playfair Display',Georgia,serif;
+  --f-body:   'Cormorant Garamond',Georgia,serif;
+  --f-mono:   'JetBrains Mono',monospace;
 }
 body.inverted{
-  --bg: #e8e3d3;
-  --bg-2: #d8d3c3;
-  --fg: #0a0a0a;
-  --fg-dim: #4a4a44;
-  --fg-muted: #8a8578;
-  --line: #c8c3b3;
-  --grid: rgba(10,10,10,0.05);
-  --scan: rgba(255,255,255,0.22);
+  --bg:      #0a0a0a;
+  --bg-2:    #141414;
+  --paper:   #1a1a1a;
+  --fg:      #f0ebdb;
+  --fg-dim:  #c8c2b0;
+  --fg-muted:#7a7568;
+  --ink:     #f0ebdb;
+  --amber:   #d4a849;
+  --line:    rgba(240,235,219,0.14);
+  --board:   #f0ebdb;
+  --board-text:#0a0a0a;
 }
 
-/* ============================================
-   RESET
-============================================ */
-*, *::before, *::after { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+/* ── RESET ──────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%;overflow:hidden}
 body{
-  background: var(--bg);
-  color: var(--fg);
-  font-family: var(--font-mono);
-  font-size: 14px;
-  line-height: 1.5;
-  cursor: crosshair;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.4s, color 0.4s;
-}
-a{ color: inherit; text-decoration: none; }
-button{
-  font-family: inherit;
-  background: transparent;
-  border: 1px solid var(--fg);
-  color: var(--fg);
-  padding: 6px 12px;
-  cursor: pointer;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  transition: all 0.15s;
-}
-button:hover, button:active { background: var(--fg); color: var(--bg); }
-::selection{ background: var(--magenta); color: var(--bg); }
-
-/* ============================================
-   CRT + NOISE OVERLAYS
-============================================ */
-.crt-overlay{
-  position: fixed; inset: 0; pointer-events: none; z-index: 9999;
-  background:
-    repeating-linear-gradient(0deg, transparent 0, transparent 2px, var(--scan) 3px, transparent 4px),
-    radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.5) 100%);
-  mix-blend-mode: multiply;
-  opacity: 0.55;
-}
-body.inverted .crt-overlay{ mix-blend-mode: screen; opacity: 0.3; }
-.noise{
-  position: fixed; inset: 0; pointer-events: none; z-index: 9998; opacity: 0.04;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/></svg>");
-}
-.grid-floor{
-  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-color:var(--bg);
   background-image:
-    linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 32px 32px;
+    radial-gradient(ellipse 180% 8%  at 20% 15%,rgba(10,10,10,.04) 0,transparent 70%),
+    radial-gradient(ellipse 140% 6%  at 75% 30%,rgba(10,10,10,.03) 0,transparent 70%),
+    radial-gradient(ellipse 160% 5%  at 45% 55%,rgba(10,10,10,.025) 0,transparent 70%),
+    radial-gradient(ellipse 130% 9%  at 70% 75%,rgba(10,10,10,.035) 0,transparent 70%),
+    radial-gradient(ellipse 180% 7%  at 25% 90%,rgba(10,10,10,.03) 0,transparent 70%);
+  color:var(--fg);
+  font-family:var(--f-body);
+  font-size:15px;
+  line-height:1.5;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+  transition:background-color .5s,color .5s;
 }
+body::after{
+  content:'';position:fixed;inset:0;z-index:9996;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.18) 100%);
+}
+body.inverted::after{
+  background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.7) 100%);
+}
+a{color:inherit;text-decoration:none}
+button{
+  font-family:var(--f-mono);background:transparent;
+  border:1px solid var(--fg);color:var(--fg);
+  padding:5px 11px;cursor:pointer;
+  font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;transition:all .15s;
+}
+button:hover,button:active{background:var(--fg);color:var(--bg)}
+::selection{background:var(--ink);color:var(--bg)}
 
-/* ============================================
-   BOOT
-============================================ */
+/* Grain — paper texture */
+.grain{
+  position:fixed;inset:0;z-index:9997;pointer-events:none;
+  opacity:.18;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23g)'/></svg>");
+  background-size:170px 170px;
+}
+body.inverted .grain{opacity:.12;mix-blend-mode:overlay}
+
+/* ── BOOT ───────────────────────────────────── */
 .boot{
-  position: fixed; inset: 0; background: #000; color: var(--amber);
-  z-index: 10000; font-family: var(--font-mono); font-size: 13px;
-  padding: 40px; overflow: hidden;
-  transition: opacity 0.6s, visibility 0.6s;
+  position:fixed;inset:0;background:#0a0a0a;color:#d4a849;
+  z-index:10000;font-family:var(--f-mono);font-size:13px;
+  padding:44px;overflow:hidden;
+  transition:opacity .7s,visibility .7s;
 }
-.boot.hidden{ opacity: 0; visibility: hidden; pointer-events: none; }
-.boot pre{ margin: 0; white-space: pre-wrap; line-height: 1.5; text-shadow: 0 0 6px rgba(240,184,27,0.45); }
-.blink{ animation: blink 1s steps(2) infinite; }
-@keyframes blink { 50% { opacity: 0; } }
+.boot.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.boot pre{margin:0;white-space:pre-wrap;line-height:1.55;text-shadow:0 0 8px rgba(212,168,73,.5)}
+@keyframes blink{50%{opacity:0}}
+@keyframes pulse{50%{opacity:.35}}
+.blink{animation:blink 1s steps(2) infinite}
 
-/* ============================================
-   FIXED UI — wordmark, nav, hud, tools
-============================================ */
+/* ── WORDMARK ──────────── */
 .wordmark{
-  position: fixed; top: 16px; left: 22px; z-index: 150;
-  font-family: var(--font-crt); font-size: 26px; line-height: 1;
-  color: var(--fg); cursor: pointer;
-}
-.wordmark::after{
-  content: '';
-  display: inline-block;
-  width: 7px; height: 13px; background: var(--magenta);
-  margin-left: 4px; transform: translateY(2px);
-  animation: blink 1.1s steps(2) infinite;
+  position:fixed;top:18px;left:24px;z-index:160;
+  font-family:var(--f-logo);font-size:18px;line-height:1;
+  color:var(--ink);cursor:pointer;letter-spacing:-.02em;
 }
 
+/* ── BLACKBOARD NAV ──────────────────────── */
 .scene-tabs{
-  position: fixed; top: 18px; left: 50%; transform: translateX(-50%);
-  z-index: 150; display: flex; gap: 4px;
-  background: var(--bg); padding: 4px;
-  border: 1px solid var(--line);
+  position:fixed;top:16px;left:50%;transform:translateX(-50%);
+  z-index:155;
+  display:flex;gap:0;
+  background:var(--board);
+  border:1px solid var(--board);
+  box-shadow:0 4px 20px rgba(0,0,0,.18), inset 0 0 30px rgba(255,255,255,.04);
+  padding:3px;border-radius:1px;
 }
 .scene-tabs button{
-  border: none; font-size: 10px; padding: 5px 10px;
-  color: var(--fg-dim);
-  letter-spacing: 0.1em;
+  border:none;border-radius:0;
+  font-family:var(--f-display);
+  font-size:13px;font-style:italic;font-weight:400;
+  padding:6px 16px;color:var(--board-text);
+  letter-spacing:.02em;background:transparent;
+  text-transform:none;opacity:.65;
+  transition:opacity .2s,background .2s;
 }
 .scene-tabs button.active{
-  background: var(--fg); color: var(--bg);
+  background:rgba(232,227,211,.15);opacity:1;font-weight:700;
 }
-.scene-tabs button:hover:not(.active){ color: var(--fg); background: transparent; }
+.scene-tabs button:hover:not(.active){opacity:1;background:rgba(232,227,211,.07)}
 
-.tools{
-  position: fixed; top: 14px; right: 22px; z-index: 150;
-  display: flex; gap: 6px;
-}
+.tools{position:fixed;top:14px;right:24px;z-index:160;display:flex;gap:6px}
 
+/* HUD */
 .hud{
-  position: fixed; z-index: 140;
-  font-size: 10px; letter-spacing: 0.06em;
-  color: var(--fg-dim); pointer-events: none;
+  position:fixed;z-index:140;
+  font-family:var(--f-mono);font-size:9px;letter-spacing:.06em;
+  color:var(--fg-muted);pointer-events:none;
 }
-.hud--bl{ bottom: 70px; left: 22px; }
-.hud--br{ bottom: 70px; right: 22px; text-align: right; }
-.hud b{ color: var(--fg); font-weight: 500; }
-.hud .pulse{ color: var(--magenta); animation: pulse 1.6s ease-in-out infinite; }
-@keyframes pulse{ 50% { opacity: 0.4; } }
+.hud--bl{bottom:64px;left:24px}
+.hud--br{bottom:64px;right:24px;text-align:right}
+.hud b{color:var(--fg-dim);font-weight:400}
 
-/* Hint bar at bottom */
 .hint-bar{
-  position: fixed;
-  bottom: 22px; left: 50%; transform: translateX(-50%);
-  z-index: 145;
-  font-size: 11px; letter-spacing: 0.08em;
-  color: var(--fg-dim);
-  background: var(--bg);
-  border: 1px solid var(--line);
-  padding: 8px 16px;
-  text-transform: uppercase;
-  white-space: nowrap;
-  pointer-events: none;
+  position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+  z-index:145;font-family:var(--f-mono);font-size:10px;
+  letter-spacing:.06em;color:var(--fg-muted);
+  padding:6px 16px;border:1px solid var(--line);background:var(--bg);
+  white-space:nowrap;pointer-events:none;
 }
 .hint-bar .key{
-  display: inline-block;
-  border: 1px solid var(--fg);
-  padding: 1px 6px;
-  margin: 0 3px;
-  color: var(--fg);
-  font-size: 10px;
+  display:inline-block;border:1px solid var(--fg-muted);
+  padding:0 5px;margin:0 3px;color:var(--fg-dim);font-size:9px;
 }
 
-/* ============================================
-   WORLD + SCENES
-============================================ */
-#world{
-  position: fixed;
-  inset: 60px 0 90px 0;
-  z-index: 10;
-}
+/* ── WORLD ──────────────────────────────────── */
+#world{position:fixed;inset:56px 0 80px 0;z-index:10}
+
 .scene{
-  position: absolute; inset: 0;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.5s ease;
-  pointer-events: none;
+  position:absolute;inset:0;
+  opacity:0;visibility:hidden;
+  transition:opacity .55s ease,filter .55s ease;
+  pointer-events:none;overflow:hidden;
 }
-.scene.active{
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-.scene-transitioning .scene.active{ opacity: 0; }
+.scene.active{opacity:1;visibility:visible;pointer-events:auto}
+.scene-transitioning .scene.active{opacity:0;filter:blur(6px)}
 
-.scene-title{
-  position: absolute;
-  top: 8%; left: 50%; transform: translateX(-50%);
-  font-family: var(--font-crt);
-  font-size: clamp(56px, 11vw, 160px);
-  letter-spacing: 0.01em;
-  line-height: 0.9;
-  white-space: nowrap;
-  color: var(--fg);
-  pointer-events: none;
-  z-index: 1;
-}
-.scene-title .accent{ color: var(--amber); }
-
-.scene-tag{
-  position: absolute;
-  top: 4%; left: 50%; transform: translateX(-50%);
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  color: var(--fg-dim);
-  text-transform: uppercase;
-}
-.scene-tag::before{ content: '// '; color: var(--magenta); }
-
-/* Ground line */
 .scene::after{
-  content: '';
-  position: absolute;
-  left: 4%; right: 4%; bottom: 8%;
-  border-bottom: 1px dashed var(--line);
-  pointer-events: none;
+  content:'';position:absolute;
+  left:6%;right:6%;bottom:8%;
+  border-bottom:1px solid var(--line);
+  pointer-events:none;z-index:1;
 }
 
-/* Exits (doorways) */
 .exit{
-  position: absolute;
-  top: 50%; transform: translateY(-50%);
-  width: 90px; height: 180px;
-  border: 1px solid var(--line);
-  display: flex; align-items: center; justify-content: center;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  color: var(--fg-dim);
-  text-transform: uppercase;
-  transition: all 0.2s;
-  cursor: pointer;
-  background:
-    linear-gradient(180deg, transparent 0%, rgba(240,184,27,0.04) 100%);
-  pointer-events: auto;
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:54px;min-height:130px;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:8px;
+  font-family:var(--f-mono);font-size:9px;
+  letter-spacing:.12em;color:var(--fg-muted);
+  text-transform:uppercase;transition:all .25s;cursor:pointer;
+  pointer-events:auto;padding:12px 0;
 }
-.exit:hover, .exit.near{
-  border-color: var(--amber);
-  color: var(--amber);
-  box-shadow: 0 0 30px -10px var(--amber);
-}
+.exit:hover,.exit.near{color:var(--ink)}
 .exit.near::before{
-  content: '◉';
-  color: var(--magenta);
-  font-size: 12px;
-  animation: pulse 1s ease-in-out infinite;
+  content:'◉';color:var(--accent);font-size:10px;
+  animation:pulse 1s ease-in-out infinite;
 }
-.exit-left{ left: 0; border-left: none; }
-.exit-right{ right: 0; border-right: none; }
-.exit .arrow{ font-size: 24px; }
+.exit-left{left:0;border-right:1px solid var(--line)}
+.exit-right{right:0;border-left:1px solid var(--line)}
+.exit .arr{font-size:22px;color:inherit}
+.exit .lbl{writing-mode:vertical-rl;transform:rotate(180deg);font-size:9px}
 
-/* ============================================
-   CHARACTER (lives in #world, position absolute)
-============================================ */
+/* ── SCENE: INICIO ── */
+.logo-stack{
+  position:absolute;
+  top:50%;left:50%;transform:translate(-50%,-55%);
+  width:min(820px,90vw);
+  pointer-events:none;z-index:2;
+  text-align:center;font-family:var(--f-logo);
+  color:var(--ink);letter-spacing:-.04em;
+  font-size:clamp(72px,15vw,210px);
+  line-height:.78;overflow:hidden;
+}
+.logo-stack span{display:block;position:relative}
+.logo-stack span:nth-child(1){clip-path:polygon(0 60%,100% 60%,100% 100%,0 100%)}
+.logo-stack span:nth-child(2){clip-path:polygon(0 35%,100% 35%,100% 100%,0 100%);margin-top:-.5em}
+.logo-stack span:nth-child(3){margin-top:-.3em}
+.inicio-sub{
+  position:absolute;bottom:16%;left:50%;transform:translateX(-50%);
+  font-family:var(--f-body);font-style:italic;
+  font-size:clamp(13px,1.5vw,18px);
+  color:var(--fg-dim);text-align:center;
+  max-width:480px;width:90%;line-height:1.6;
+  pointer-events:none;
+}
+.inicio-tag{
+  position:absolute;top:14%;left:50%;transform:translateX(-50%);
+  font-family:var(--f-mono);font-size:10px;
+  letter-spacing:.3em;color:var(--fg-muted);
+  text-transform:uppercase;pointer-events:none;
+}
+.door-frame{
+  position:absolute;right:6%;bottom:8%;
+  width:64px;height:140px;
+  border:2px solid var(--ink);border-bottom:none;
+  pointer-events:none;z-index:2;
+  background:linear-gradient(180deg,rgba(10,10,10,.06),rgba(10,10,10,.02));
+}
+.door-frame::before{
+  content:'';position:absolute;
+  top:48%;left:9px;width:7px;height:7px;border-radius:50%;
+  background:var(--ink);transform:translateY(-50%);
+}
+.door-frame::after{
+  content:'';position:absolute;inset:8px 6px;
+  border:1px solid var(--line);
+}
+
+/* ── SCENE: DESCRIPCIÓN — tree ── */
+.scene-tree-wrap{
+  position:absolute;
+  left:50%;bottom:7%;transform:translateX(-50%);
+  width:min(640px,93%);
+  aspect-ratio:600/440;
+  pointer-events:none;z-index:1;
+}
+.scene-tree-img{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:contain;
+  z-index:2;
+  /* B&W treatment to match aesthetic */
+  filter:contrast(1.1);
+}
+body.inverted .scene-tree-img{
+  filter:invert(1) contrast(1.1);
+}
+.scene-tree-svg{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  z-index:1;color:var(--ink);
+}
+
+.scene-windows{
+  position:absolute;top:4%;
+  left:50%;transform:translateX(-50%);
+  display:flex;gap:clamp(40px,7vw,90px);
+  pointer-events:none;z-index:3;
+}
+.window-pane{
+  width:clamp(60px,7.5vw,95px);
+  height:clamp(72px,9.5vw,115px);
+  border:2.5px solid var(--ink);background:var(--paper);
+  position:relative;
+  box-shadow:0 0 0 4px rgba(10,10,10,.06);
+}
+.window-pane::before{
+  content:'';position:absolute;inset:0;
+  border-left:1.5px solid var(--ink);left:50%;width:0;
+}
+.window-pane::after{
+  content:'';position:absolute;inset:0;
+  border-top:1.5px solid var(--ink);top:42%;height:0;
+}
+
+.manifesto-text{
+  position:absolute;
+  top:26%;left:50%;transform:translateX(-50%);
+  max-width:min(640px,84%);
+  font-family:var(--f-body);
+  font-size:clamp(15px,2vw,23px);
+  line-height:1.5;text-align:center;color:var(--fg);
+  z-index:4;pointer-events:none;
+}
+.manifesto-text p{margin:0 0 .8em}
+.manifesto-text em{color:var(--accent);font-style:italic;font-weight:500}
+.desc-stamp{
+  position:absolute;font-family:var(--f-mono);
+  font-size:9px;letter-spacing:.2em;
+  color:var(--fg-muted);border:1px solid var(--fg-muted);
+  padding:3px 7px;text-transform:uppercase;background:var(--paper);
+  z-index:3;
+}
+.desc-stamp-1{top:14%;left:8%;transform:rotate(-4deg)}
+.desc-stamp-2{top:14%;right:8%;transform:rotate(3deg);color:var(--accent);border-color:var(--accent)}
+
+/* ── SCENE: ARTISTAS ── */
+.scene-artistas{background:var(--bg)}
+.artists-header{
+  position:absolute;top:2.5%;left:50%;transform:translateX(-50%);
+  font-family:var(--f-body);font-style:italic;
+  font-size:clamp(11px,1.3vw,14px);
+  color:var(--fg-muted);text-align:center;
+  pointer-events:none;max-width:80%;letter-spacing:.02em;
+}
+.artists-tagline{
+  position:absolute;bottom:11%;left:50%;transform:translateX(-50%);
+  font-family:var(--f-logo);
+  font-size:clamp(13px,1.6vw,18px);
+  color:var(--ink);letter-spacing:-.01em;
+  pointer-events:none;white-space:nowrap;
+}
+.artists-cross{
+  position:absolute;
+  top:7.5%;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;
+  align-items:center;gap:clamp(8px,1.5vh,18px);
+  width:min(900px,96%);z-index:2;
+}
+.artists-row{
+  display:flex;gap:clamp(8px,1.2vw,16px);justify-content:center;
+}
+.artist-card{
+  display:flex;flex-direction:column;align-items:center;
+  cursor:pointer;transition:transform .25s;
+}
+.artist-card:hover{transform:translateY(-3px)}
+.artist-photo{
+  width:clamp(58px,6vw,82px);
+  height:clamp(58px,6vw,82px);
+  border:1.5px solid var(--ink);
+  background:var(--bg-2);
+  position:relative;overflow:hidden;
+  transition:filter .2s,box-shadow .2s;
+}
+.artist-card:hover .artist-photo{
+  filter:contrast(1.15);
+  box-shadow:0 4px 14px rgba(10,10,10,.18);
+}
+/* Real photo overlay */
+.artist-photo .real-img{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  z-index:2;
+  filter:grayscale(100%) contrast(1.2) brightness(.95);
+}
+/* SVG fallback (behind image) */
+.artist-photo .fallback-svg{
+  position:absolute;inset:0;
+  width:100%;height:100%;z-index:1;
+}
+/* Halftone overlay (on top of everything) */
+.artist-photo::after{
+  content:'';position:absolute;inset:0;z-index:3;
+  background-image:radial-gradient(circle,rgba(10,10,10,.4) 1px,transparent 1.5px);
+  background-size:5px 5px;
+  mix-blend-mode:multiply;opacity:.5;
+  pointer-events:none;
+}
+body.inverted .artist-photo::after{
+  background-image:radial-gradient(circle,rgba(240,235,219,.3) 1px,transparent 1.5px);
+  mix-blend-mode:screen;opacity:.4;
+}
+.artist-card .aname{
+  font-family:var(--f-body);font-style:italic;
+  font-size:clamp(10px,1vw,12px);
+  color:var(--fg-dim);text-align:center;
+  margin-top:5px;line-height:1.1;
+  max-width:clamp(58px,6vw,82px);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  letter-spacing:.01em;
+}
+.artist-card:hover .aname{color:var(--ink)}
+.artist-card.featured .artist-photo{
+  width:clamp(74px,7.5vw,100px);
+  height:clamp(74px,7.5vw,100px);
+}
+.artist-card.featured .aname{
+  font-weight:600;font-style:normal;
+  font-size:clamp(11px,1.1vw,13px);
+}
+
+/* ── SCENE: TIENDA — A24 ── */
+.scene-tienda{
+  background:var(--paper);
+  overflow-y:auto;overflow-x:hidden;
+  position:absolute;inset:0;
+}
+.scene-tienda::after{display:none}
+.tienda-header{
+  text-align:center;
+  padding:clamp(20px,5vh,40px) 20px clamp(12px,3vh,22px);
+  position:relative;z-index:5;pointer-events:none;
+}
+.tienda-header h2{
+  font-family:var(--f-display);font-weight:900;
+  font-size:clamp(32px,5.5vw,62px);
+  margin:0;letter-spacing:-.01em;color:var(--ink);
+}
+.tienda-header p{
+  font-family:var(--f-body);font-style:italic;
+  color:var(--fg-dim);font-size:clamp(13px,1.4vw,16px);
+  margin:6px 0 0;
+}
+.tienda-filters{
+  display:flex;justify-content:center;gap:18px;
+  padding:0 20px 24px;
+  font-family:var(--f-mono);font-size:10px;
+  letter-spacing:.12em;text-transform:uppercase;flex-wrap:wrap;
+}
+.tienda-filters button{
+  border:none;background:none;padding:0;
+  font-size:inherit;letter-spacing:inherit;
+  color:var(--fg-muted);cursor:pointer;font-family:inherit;
+  transition:color .2s;position:relative;text-transform:uppercase;
+}
+.tienda-filters button.active{color:var(--ink)}
+.tienda-filters button.active::after{
+  content:'';position:absolute;left:0;right:0;bottom:-6px;
+  border-bottom:1px solid var(--ink);
+}
+.tienda-filters button:hover{color:var(--ink);background:none}
+
+.shop-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(min(220px,90vw),1fr));
+  gap:clamp(16px,2.5vw,32px);
+  padding:0 clamp(20px,5vw,70px) clamp(40px,8vh,80px);
+  max-width:1320px;margin:0 auto;
+  position:relative;z-index:5;
+}
+.product-card{
+  background:transparent;cursor:pointer;
+  transition:transform .25s;position:relative;
+}
+.product-card:hover{transform:translateY(-3px)}
+.product-card.sold-out{opacity:.55}
+.product-img{
+  aspect-ratio:3/4;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg-2);overflow:hidden;position:relative;
+  margin-bottom:14px;transition:box-shadow .3s;
+}
+.product-card:hover .product-img{
+  box-shadow:0 12px 30px -8px rgba(10,10,10,.25);
+}
+/* Real product photo */
+.product-img .real-img{
+  position:absolute;inset:0;
+  width:100%;height:100%;object-fit:cover;
+  z-index:2;
+}
+/* SVG fallback */
+.product-img .fallback-svg{
+  position:relative;z-index:1;
+  width:70%;height:auto;
+  filter:drop-shadow(0 8px 20px rgba(0,0,0,.18));
+}
+.product-badge{
+  position:absolute;top:12px;left:12px;
+  font-family:var(--f-mono);font-size:9px;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink);background:var(--paper);
+  padding:4px 9px;z-index:3;
+}
+.product-badge.agotado{color:var(--accent);background:var(--paper)}
+.product-info h3{
+  font-family:var(--f-display);font-weight:400;
+  font-size:clamp(18px,2vw,22px);
+  margin:0;line-height:1.1;color:var(--ink);
+}
+.product-by{
+  font-family:var(--f-mono);font-size:9px;
+  letter-spacing:.12em;color:var(--fg-muted);
+  text-transform:uppercase;margin:4px 0 6px;
+}
+.product-price{
+  font-family:var(--f-body);font-size:15px;
+  color:var(--fg-dim);font-style:italic;
+}
+
+/* ── SCENE: NOVEDADES ── */
+.scene-novedades{background:var(--bg)}
+.novedades-title{
+  position:absolute;top:7%;left:50%;transform:translateX(-50%);
+  font-family:var(--f-logo);
+  font-size:clamp(36px,8vw,108px);
+  color:var(--ink);pointer-events:none;z-index:1;
+  letter-spacing:-.03em;white-space:nowrap;
+}
+.novedades-grid{
+  position:absolute;
+  top:23%;left:50%;transform:translateX(-50%);
+  width:min(880px,90%);
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:clamp(10px,1.5vw,16px);
+  max-height:62%;overflow-y:auto;
+  z-index:3;padding-right:6px;
+}
+.novedades-grid::-webkit-scrollbar{width:4px}
+.novedades-grid::-webkit-scrollbar-thumb{background:var(--fg-muted)}
+.nov-entry{
+  border:1px solid var(--line);padding:14px 16px;
+  font-family:var(--f-body);cursor:pointer;
+  transition:border-color .2s,background .2s;
+  background:var(--paper);
+}
+.nov-entry:hover{border-color:var(--ink);background:var(--bg-2)}
+.nov-date{
+  font-family:var(--f-mono);font-size:9px;
+  color:var(--fg-muted);letter-spacing:.15em;margin-bottom:6px;
+}
+.nov-msg{font-size:15px;color:var(--fg-dim);line-height:1.4}
+.nov-msg em{color:var(--ink);font-style:italic;font-weight:500}
+
+/* ── CHARACTER — ASCII (back to v1.0) ── */
 .character{
-  position: absolute;
-  z-index: 50;
-  white-space: pre;
-  font-family: var(--font-mono);
-  font-size: 14px;
-  line-height: 1.15;
-  color: var(--amber);
-  text-shadow: 0 0 8px rgba(240,184,27,0.5);
-  transition: left 0.12s linear, bottom 0.12s linear, transform 0.12s;
-  pointer-events: none;
-  text-align: center;
+  position:absolute;z-index:50;
+  font-family:var(--f-mono);
+  font-size:14px;line-height:1.15;
+  white-space:pre;text-align:center;
+  color:var(--ink);
+  pointer-events:none;
+  text-shadow:0 1px 2px rgba(10,10,10,.15);
+  transition:left .12s linear,top .12s linear,filter .15s;
 }
-.character.facing-left { transform: translateX(-50%) scaleX(-1); }
-.character.facing-right{ transform: translateX(-50%) scaleX(1); }
+body.inverted .character{
+  text-shadow:0 0 6px rgba(240,235,219,.3);
+}
+.character.moving{filter:blur(.6px)}
 
-/* ============================================
-   HOTSPOTS
-============================================ */
+/* ── HOTSPOT ── */
 .hotspot{
-  position: absolute;
-  z-index: 20;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-  pointer-events: auto;
+  position:absolute;z-index:20;
+  transform:translate(-50%,-50%);
+  cursor:pointer;pointer-events:auto;
 }
-.hotspot .frame{
-  border: 1px solid var(--fg-muted);
-  background: var(--bg-2);
-  transition: all 0.25s;
-  overflow: hidden;
-  position: relative;
-}
-.hotspot:hover .frame,
-.hotspot.active .frame{
-  border-color: var(--amber);
-  box-shadow: 0 0 30px -5px var(--amber);
-  background:
-    radial-gradient(circle at 30% 30%, rgba(240,184,27,0.08), transparent 60%),
-    var(--bg-2);
-}
-.hotspot .label{
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 50%; transform: translateX(-50%);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  color: var(--fg-dim);
-  text-transform: uppercase;
-  white-space: nowrap;
-  opacity: 0;
-  transition: opacity 0.2s;
-  pointer-events: none;
-}
-.hotspot.active .label,
-.hotspot:hover .label{ opacity: 1; color: var(--fg); }
-
 .hotspot.active::before{
-  content: '[ENTER]';
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%; transform: translateX(-50%);
-  font-size: 10px;
-  color: var(--magenta);
-  letter-spacing: 0.15em;
-  animation: pulse 1s ease-in-out infinite;
-  white-space: nowrap;
+  content:'[ENTER]';
+  position:absolute;bottom:calc(100% + 8px);left:50%;
+  transform:translateX(-50%);
+  font-family:var(--f-mono);font-size:9px;
+  color:var(--accent);letter-spacing:.15em;
+  animation:pulse 1s ease-in-out infinite;white-space:nowrap;
 }
 
-/* ============================================
-   SCENE: INICIO
-============================================ */
-.scene-inicio .hub-sub{
-  position: absolute;
-  bottom: 18%; left: 50%; transform: translateX(-50%);
-  text-align: center;
-  max-width: 540px;
-  font-size: 13px;
-  color: var(--fg-dim);
-  line-height: 1.7;
-}
-.scene-inicio .hub-sub b{ color: var(--fg); }
-.scene-inicio .hub-meta{
-  position: absolute;
-  top: 50%; transform: translateY(-50%);
-  font-size: 10px;
-  color: var(--fg-muted);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  line-height: 2;
-}
-.scene-inicio .hub-meta.left { left: 5%; }
-.scene-inicio .hub-meta.right{ right: 5%; text-align: right; }
-.scene-inicio .hub-meta b{ color: var(--fg); }
-
-/* ============================================
-   SCENE: MANIFIESTO
-============================================ */
-.scene-manifiesto .manifesto-text{
-  position: absolute;
-  top: 28%; left: 50%; transform: translateX(-50%);
-  max-width: 720px; width: 80%;
-  font-family: var(--font-serif);
-  font-size: clamp(18px, 2.2vw, 26px);
-  line-height: 1.4;
-  text-align: center;
-  color: var(--fg);
-}
-.scene-manifiesto .manifesto-text p{ margin: 0 0 16px; }
-.scene-manifiesto .manifesto-text em{ color: var(--amber); font-style: italic; }
-.scene-manifiesto .stamp{
-  position: absolute;
-  font-size: 9px;
-  letter-spacing: 0.2em;
-  color: var(--fg-muted);
-  border: 1px solid var(--fg-muted);
-  padding: 4px 8px;
-  text-transform: uppercase;
-}
-.scene-manifiesto .stamp-1{ top: 18%; left: 12%; transform: rotate(-4deg); }
-.scene-manifiesto .stamp-2{ top: 18%; right: 12%; transform: rotate(3deg); color: var(--magenta); border-color: var(--magenta); }
-
-/* ============================================
-   SCENE: ARTISTAS — frames on walls
-============================================ */
-.artist-frame .frame{
-  width: 92px; height: 110px;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 8px;
-}
-.artist-frame.featured .frame{
-  width: 130px; height: 150px;
-}
-.artist-frame .name{
-  font-family: var(--font-crt);
-  font-size: 18px;
-  color: var(--fg);
-  line-height: 1;
-  text-align: center;
-  letter-spacing: 0.02em;
-}
-.artist-frame.featured .name{
-  font-size: 26px;
-  color: var(--amber);
-}
-.artist-frame .id-badge{
-  position: absolute;
-  top: 4px; left: 6px;
-  font-size: 8px;
-  color: var(--fg-muted);
-  letter-spacing: 0.1em;
-}
-.artist-frame.featured::after{
-  content: '◉';
-  position: absolute;
-  top: -10px; right: -10px;
-  color: var(--magenta);
-  font-size: 14px;
-  animation: pulse 1.4s ease-in-out infinite;
-}
-
-/* ============================================
-   SCENE: TIENDA — hanging garments
-============================================ */
-.product-hotspot .frame{
-  width: 110px; height: 160px;
-  padding: 6px;
-  background:
-    radial-gradient(circle, var(--fg-muted) 0.8px, transparent 1.5px) center / 6px 6px,
-    var(--bg-2);
-}
-.product-hotspot .frame svg{ width: 100%; height: 100%; }
-.product-hotspot .price-tag{
-  position: absolute;
-  top: -6px; right: -6px;
-  font-size: 9px;
-  background: var(--bg);
-  border: 1px solid var(--fg);
-  color: var(--fg);
-  padding: 3px 6px;
-  letter-spacing: 0.05em;
-}
-.product-hotspot.sold .price-tag{
-  color: var(--magenta);
-  border-color: var(--magenta);
-}
-
-/* ============================================
-   SCENE: TRANSMISIONES — monitors
-============================================ */
-.monitor .frame{
-  width: 140px; height: 100px;
-  padding: 8px 10px;
-  background: var(--bg-2);
-  display: flex; flex-direction: column;
-  justify-content: space-between;
-  text-align: left;
-}
-.monitor .time{
-  font-size: 9px;
-  color: var(--fg-muted);
-  letter-spacing: 0.1em;
-}
-.monitor .msg{
-  font-size: 11px;
-  color: var(--fg-dim);
-  line-height: 1.3;
-  font-family: var(--font-mono);
-}
-.monitor .msg em{ color: var(--amber); font-style: normal; }
-.monitor::after{
-  content: '';
-  position: absolute;
-  top: 4px; right: 6px;
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: var(--magenta);
-  animation: pulse 1.2s ease-in-out infinite;
-}
-
-/* ============================================
-   INFO PANEL (modal)
-============================================ */
+/* ── INFO PANEL — Arkham style ── */
 .panel-backdrop{
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.7);
-  z-index: 500;
-  opacity: 0; visibility: hidden;
-  transition: opacity 0.3s, visibility 0.3s;
-  display: flex; align-items: center; justify-content: center;
-  padding: 20px;
+  position:fixed;inset:0;background:rgba(0,0,0,.7);
+  z-index:500;opacity:0;visibility:hidden;
+  transition:opacity .3s,visibility .3s;
+  display:flex;align-items:center;justify-content:center;padding:20px;
 }
-body.inverted .panel-backdrop{ background: rgba(232,227,211,0.85); }
-.panel-backdrop.open{ opacity: 1; visibility: visible; }
+body.inverted .panel-backdrop{background:rgba(0,0,0,.85)}
+.panel-backdrop.open{opacity:1;visibility:visible}
 .panel{
-  background: var(--bg);
-  border: 1px solid var(--fg);
-  max-width: 520px;
-  width: 100%;
-  padding: 28px 30px 26px;
-  position: relative;
-  transform: translateY(20px) scale(0.98);
-  transition: transform 0.3s;
-  font-family: var(--font-mono);
+  background:var(--paper);border:1px solid var(--ink);
+  max-width:580px;width:100%;position:relative;
+  transform:translateY(20px) scale(.97);
+  transition:transform .35s cubic-bezier(.3,.7,.3,1);
+  max-height:90vh;display:flex;flex-direction:column;
+  box-shadow:0 24px 60px -10px rgba(0,0,0,.5);
 }
-.panel-backdrop.open .panel{ transform: translateY(0) scale(1); }
-.panel-tag{
-  font-size: 10px; letter-spacing: 0.2em;
-  color: var(--fg-dim); text-transform: uppercase;
-  margin-bottom: 6px;
+.panel-backdrop.open .panel{transform:translateY(0) scale(1)}
+
+.panel-header{
+  background:var(--ink);color:var(--paper);
+  padding:14px 20px 10px;position:relative;
+  font-family:var(--f-mono);border-bottom:1px solid var(--ink);
 }
-.panel-tag::before{ content: '// '; color: var(--magenta); }
-.panel-title{
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 38px;
-  line-height: 1;
-  margin: 0 0 4px;
-  color: var(--fg);
+.panel-id{
+  font-size:9px;letter-spacing:.3em;
+  color:var(--amber);text-transform:uppercase;margin-bottom:4px;
 }
-.panel-sub{
-  font-size: 11px; letter-spacing: 0.12em;
-  color: var(--amber); text-transform: uppercase;
-  margin-bottom: 18px;
+.panel-name{
+  font-family:var(--f-logo);font-size:clamp(22px,3vw,30px);
+  line-height:1;margin:0;letter-spacing:-.02em;color:var(--paper);
 }
-.panel-body{
-  font-size: 13px;
-  line-height: 1.65;
-  color: var(--fg);
-  margin-bottom: 22px;
-}
-.panel-foot{
-  display: flex; gap: 10px;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 1px solid var(--line);
-  padding-top: 16px;
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  color: var(--fg-dim);
-  text-transform: uppercase;
+.panel-role{
+  font-family:var(--f-body);font-style:italic;
+  font-size:13px;color:var(--amber);
+  margin-top:3px;letter-spacing:.04em;
 }
 .panel-close{
-  position: absolute;
-  top: 12px; right: 14px;
-  background: transparent;
-  border: none;
-  color: var(--fg-dim);
-  font-size: 18px;
-  cursor: pointer;
-  padding: 4px 8px;
-  letter-spacing: 0;
+  position:absolute;top:10px;right:12px;
+  background:transparent;border:1px solid var(--amber);
+  color:var(--amber);font-size:13px;padding:2px 7px;
+  cursor:pointer;font-family:var(--f-mono);border-radius:0;
 }
-.panel-close:hover{ color: var(--magenta); background: transparent; }
-.panel-cta{
-  background: var(--amber);
-  color: var(--bg);
-  border-color: var(--amber);
-  padding: 8px 14px;
-  font-size: 11px;
-}
-.panel-cta:hover{ background: var(--fg); border-color: var(--fg); }
+.panel-close:hover{background:var(--amber);color:var(--ink);border-color:var(--amber)}
 
-/* ============================================
-   MOBILE D-PAD
-============================================ */
+.panel-tabs{
+  display:flex;background:var(--ink);
+  padding:0 20px;gap:0;border-bottom:none;
+}
+.panel-tab{
+  background:transparent;border:none;border-radius:0;
+  padding:8px 14px 9px;
+  font-family:var(--f-mono);font-size:10px;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--fg-muted);cursor:pointer;position:relative;
+  border-right:1px solid rgba(232,227,211,.15);
+  transition:color .2s,background .2s;
+}
+.panel-tab:hover:not(.active){color:var(--paper);background:rgba(232,227,211,.04)}
+.panel-tab.active{color:var(--amber);background:var(--paper)}
+.panel-tab.active::after{
+  content:'';position:absolute;left:0;right:0;bottom:-1px;
+  border-bottom:2px solid var(--amber);
+}
+
+.panel-body{
+  background:var(--paper);
+  padding:22px 26px 22px;
+  overflow-y:auto;flex:1;color:var(--fg);
+  font-family:var(--f-body);
+}
+.panel-body::-webkit-scrollbar{width:5px}
+.panel-body::-webkit-scrollbar-thumb{background:var(--fg-muted)}
+.panel-content{display:none}
+.panel-content.active{display:block;animation:fadein .3s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+.p-text{font-size:15px;line-height:1.7;color:var(--fg-dim);margin:0 0 12px}
+.p-text:last-child{margin-bottom:0}
+.p-text em{color:var(--accent);font-style:italic;font-weight:500}
+
+.facts-list{margin:0;padding:0;list-style:none}
+.facts-list li{
+  display:flex;justify-content:space-between;
+  padding:8px 0;border-bottom:1px dashed var(--line);
+  font-family:var(--f-mono);font-size:12px;
+}
+.facts-list li:last-child{border-bottom:none}
+.facts-list .lbl{color:var(--fg-muted);letter-spacing:.1em;text-transform:uppercase;font-size:10px}
+.facts-list .val{color:var(--ink);font-family:var(--f-body);font-style:italic;font-size:14px}
+
+.quote{
+  font-family:var(--f-body);font-style:italic;
+  font-size:18px;line-height:1.5;color:var(--ink);
+  border-left:2px solid var(--accent);
+  padding-left:14px;margin:0 0 12px;
+}
+.quote-by{
+  font-family:var(--f-mono);font-size:9px;letter-spacing:.2em;
+  color:var(--fg-muted);text-transform:uppercase;margin-top:4px;
+}
+
+.panel-foot{
+  border-top:1px solid var(--line);padding:12px 20px;
+  display:flex;justify-content:space-between;align-items:center;
+  background:var(--bg-2);font-family:var(--f-mono);font-size:9px;
+  color:var(--fg-muted);letter-spacing:.1em;text-transform:uppercase;
+}
+.panel-cta{
+  background:var(--ink);color:var(--paper);border:1px solid var(--ink);
+  padding:7px 14px;font-size:10px;font-family:var(--f-mono);
+  letter-spacing:.1em;cursor:pointer;text-transform:uppercase;
+}
+.panel-cta:hover{background:var(--amber);border-color:var(--amber);color:var(--ink)}
+
+/* ── MOBILE D-PAD ── */
 .dpad{
-  position: fixed;
-  bottom: 22px; right: 22px;
-  z-index: 200;
-  display: none;
-  grid-template-columns: repeat(3, 44px);
-  grid-template-rows: repeat(3, 44px);
-  gap: 4px;
+  position:fixed;bottom:18px;right:18px;
+  z-index:200;display:none;
+  grid-template-columns:repeat(3,42px);
+  grid-template-rows:repeat(3,42px);gap:4px;
 }
 .dpad button{
-  padding: 0;
-  font-size: 18px;
-  border-radius: 0;
-  background: var(--bg);
-  border: 1px solid var(--line);
-  color: var(--fg);
+  padding:0;font-size:16px;border-radius:0;
+  background:var(--ink);border:1px solid var(--ink);color:var(--paper);
 }
-.dpad button:active{ background: var(--amber); color: var(--bg); border-color: var(--amber); }
-.dpad-up    { grid-column: 2; grid-row: 1; }
-.dpad-left  { grid-column: 1; grid-row: 2; }
-.dpad-right { grid-column: 3; grid-row: 2; }
-.dpad-down  { grid-column: 2; grid-row: 3; }
-.dpad-enter {
-  grid-column: 2; grid-row: 2;
-  font-size: 11px !important;
-  letter-spacing: 0;
-  color: var(--magenta);
-  border-color: var(--magenta);
-}
+.dpad button:active{background:var(--amber);color:var(--ink);border-color:var(--amber)}
+.dpad-up   {grid-column:2;grid-row:1}
+.dpad-left {grid-column:1;grid-row:2}
+.dpad-right{grid-column:3;grid-row:2}
+.dpad-down {grid-column:2;grid-row:3}
+.dpad-enter{grid-column:2;grid-row:2;font-size:10px !important;letter-spacing:0;background:var(--accent);border-color:var(--accent)}
 
-/* ============================================
-   TRANSMISSION POPUP
-============================================ */
-.trans-pop{
-  position: fixed;
-  bottom: 80px; left: 50%;
-  transform: translateX(-50%) translateY(120%);
-  z-index: 300;
-  max-width: 320px;
-  background: var(--bg);
-  border: 1px solid var(--magenta);
-  padding: 12px 16px;
-  font-size: 12px;
-  color: var(--fg);
-  transition: transform 0.45s cubic-bezier(.6,.2,.2,1);
-  box-shadow: 0 0 30px rgba(255,45,111,0.15);
+/* ── RESPONSIVE ── */
+@media (max-width:900px){
+  body{cursor:default}
+  .dpad{display:grid}
+  .hint-bar{display:none}
+  .hud{display:none}
+  .scene-tabs{top:54px;font-size:11px}
+  .scene-tabs button{padding:5px 10px;font-size:11px}
+  .wordmark{font-size:16px;top:16px;left:16px}
+  .tools{top:12px;right:14px}
+  .tools button{padding:4px 9px;font-size:9px}
+  .manifesto-text{font-size:clamp(14px,3vw,18px);top:25%}
+  .desc-stamp{display:none}
+  .artists-cross{top:11%}
+  .novedades-grid{grid-template-columns:1fr;top:22%;max-height:60%}
+  .exit{width:42px;min-height:100px}
+  .exit .lbl{font-size:8px}
+  .character{font-size:11px}
 }
-.trans-pop.show{ transform: translateX(-50%) translateY(0); }
-.trans-pop .head{
-  color: var(--magenta);
-  font-size: 9px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  margin-bottom: 4px;
+@media (max-width:640px){
+  .scene-tabs{
+    top:50px;width:calc(100vw - 20px);
+    overflow-x:auto;overflow-y:hidden;
+    justify-content:flex-start;-webkit-overflow-scrolling:touch;
+  }
+  .scene-tabs::-webkit-scrollbar{display:none}
+  .scene-tabs button{flex-shrink:0;padding:5px 9px;font-size:10px}
+  .wordmark{font-size:14px}
+  .artists-cross{gap:6px}
+  .artists-row{gap:6px}
+  .artist-photo{width:46px !important;height:46px !important}
+  .artist-card.featured .artist-photo{width:58px !important;height:58px !important}
+  .aname{font-size:8px !important;max-width:50px !important}
+  .artist-card.featured .aname{font-size:9px !important}
+  .panel-tab{padding:7px 10px;font-size:9px;letter-spacing:.12em}
+  .panel-tabs{padding:0 6px;overflow-x:auto}
+  .panel-name{font-size:22px}
+  .shop-grid{grid-template-columns:1fr 1fr;gap:14px;padding:0 14px 40px}
+  .product-info h3{font-size:17px}
+  .novedades-title{font-size:48px}
+  .logo-stack{font-size:clamp(60px,18vw,110px)}
+  .scene-tree-wrap{width:96%}
+  .scene-windows{gap:28px}
+  .door-frame{width:48px;height:108px}
+  .character{font-size:10px}
 }
-.trans-pop .head::before{ content: '◉ '; animation: pulse 0.8s ease-in-out infinite; }
-
-/* ============================================
-   RESPONSIVE
-============================================ */
-@media (max-width: 900px){
-  .scene-tabs{ font-size: 9px; }
-  .scene-tabs button{ padding: 4px 6px; font-size: 9px; }
-  .scene-title{ font-size: clamp(40px, 13vw, 90px); }
-  .hud{ font-size: 9px; }
-  .scene-manifiesto .manifesto-text{ font-size: 16px; top: 24%; }
-  .dpad{ display: grid; }
-  .hint-bar{ display: none; }
-  .wordmark{ font-size: 22px; }
-  body{ cursor: default; }
-}
-@media (max-width: 600px){
-  .scene-tabs{ top: 50px; left: 50%; }
-  .scene-tabs button{ padding: 3px 5px; }
-  .scene-manifiesto .stamp{ display: none; }
-  .hud--br{ bottom: 200px; right: 14px; }
-  .hud--bl{ bottom: 22px; left: 14px; }
+@media (max-width:380px){
+  .shop-grid{grid-template-columns:1fr}
+  .scene-tabs button{padding:5px 7px;font-size:9px}
+  .artist-photo{width:40px !important;height:40px !important}
+  .artist-card.featured .artist-photo{width:50px !important;height:50px !important}
 }
 </style>
 </head>
 <body>
 
-<!-- BOOT -->
-<div class="boot" id="boot">
-<pre id="bootText"></pre><span class="blink" id="bootCursor">█</span>
-</div>
+<!-- SVG filters -->
+<svg style="position:absolute;width:0;height:0;overflow:hidden" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="painted" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency=".028" numOctaves="3" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
 
-<!-- OVERLAYS -->
-<div class="grid-floor"></div>
-<div class="crt-overlay"></div>
-<div class="noise"></div>
+<!-- BOOT -->
+<div class="boot" id="boot"><pre id="bootText"></pre><span class="blink">█</span></div>
+
+<!-- GRAIN -->
+<div class="grain"></div>
 
 <!-- WORDMARK -->
 <div class="wordmark" onclick="goTo('inicio')">otrosdias</div>
 
-<!-- SCENE TABS (fast travel) -->
+<!-- NAV -->
 <div class="scene-tabs" id="sceneTabs">
-  <button data-jump="inicio" data-i18n="nav.inicio" class="active">INICIO</button>
-  <button data-jump="manifiesto" data-i18n="nav.manifiesto">MANIFIESTO</button>
-  <button data-jump="artistas" data-i18n="nav.artistas">ARTISTAS</button>
-  <button data-jump="tienda" data-i18n="nav.tienda">TIENDA</button>
-  <button data-jump="transmisiones" data-i18n="nav.transmisiones">TRANSMISIONES</button>
+  <button data-jump="inicio" class="active">Inicio</button>
+  <button data-jump="descripcion">Descripción</button>
+  <button data-jump="artistas">Artistas</button>
+  <button data-jump="tienda">Tienda</button>
+  <button data-jump="novedades">Novedades</button>
 </div>
 
 <!-- TOOLS -->
 <div class="tools">
-  <button id="langBtn" title="Language">EN</button>
-  <button id="themeBtn" title="Theme" data-i18n="ui.theme">LIGHT</button>
-  <button onclick="window.open('https://instagram.com/otrosdias','_blank')">IG</button>
+  <button id="themeBtn">INVERTIR</button>
 </div>
 
 <!-- HUD -->
-<div class="hud hud--bl">
-  <b id="clock">--:--:--</b> tiempo<br>
-  <span class="pulse">◉</span> <span data-i18n="ui.system_online">Cada día </span> · hoy
-</div>
-<div class="hud hud--br">
-  <span data-i18n="ui.scene">Sala</span>: <b id="hudScene">01 / 05</b><br>
-  <span data-i18n="ui.position">POSICIÓN</span>: <b id="hudPos">00,00</b><br>
-  <span data-i18n="ui.signal">SEÑAL</span>: <b style="color:var(--amber)" data-i18n="ui.stable">ESTABLE</b>
-</div>
+<div class="hud hud--bl"><b id="clock">--:--:--</b> · MX</div>
+<div class="hud hud--br">sala: <b id="hudScene">1/5</b></div>
 
-<!-- HINT BAR -->
+<!-- HINT -->
 <div class="hint-bar">
-  <span class="key">↑↓←→</span> <span data-i18n="ui.move">MOVIMIENTO</span> ·
-  <span class="key">ENTER</span> <span data-i18n="ui.interact">INTERACTUAR</span> ·
-  <span class="key">TAB</span> <span data-i18n="ui.fast_travel">VIAJE RÁPIDO</span>
+  <span class="key">← →</span> mover
+  <span class="key">↑ ↓</span> explorar
+  <span class="key">ENTER</span> interactuar
 </div>
 
 <!-- WORLD -->
 <div id="world">
 
-  <!-- SCENE: INICIO -->
-  <div class="scene scene-inicio active" data-scene="inicio">
-    <div class="scene-tag" data-i18n="inicio.tag">Sistema</div>
-    <h1 class="scene-title">
-      <span data-i18n="inicio.title_top">otrosdias</span><br>
-      <span class="accent" data-i18n="inicio.title_bot">otrosdias</span>
-    </h1>
-    <div class="hub-meta left">
-    </div>
-    <div class="hub-meta right">
-    </div>
-    <div class="hub-sub">
-      <span data-i18n="inicio.sub">“(...) todos hemos tenido una consciencia muy clara de que no,
-no, no somos la culminación de nada, sino el principio de algo”.</span>
-    </div>
-    <div class="exit exit-right" data-go="manifiesto" data-side="right">
-      <span data-i18n="ui.go_right">→</span>
-      <span data-i18n="nav.manifiesto">MANIFIESTO</span>
-      <span class="arrow">→</span>
-    </div>
+<!-- ── INICIO ── -->
+<div class="scene scene-inicio active" data-scene="inicio">
+  <div class="inicio-tag">comunidad creadora · 2024</div>
+  <div class="logo-stack">
+    <span>otrosdias</span><span>otrosdias</span><span>otrosdias</span>
   </div>
-
-  <!-- SCENE: MANIFIESTO -->
-  <div class="scene scene-manifiesto" data-scene="manifiesto">
-    <div class="scene-tag" data-i18n="manifiesto.tag">.</div>
-    <h2 class="scene-title" data-i18n="nav.manifiesto">.</h2>
-    <div class="stamp stamp-1" data-i18n="manifiesto.stamp1">.</div>
-    <div class="stamp stamp-2" data-i18n="manifiesto.stamp2">.</div>
-    <div class="manifesto-text">
-      <p data-i18n="manifiesto.p1">Todas las líneas que trazamos se están desvaneciendo lentamente,</p>
-      <p data-i18n="manifiesto.p2"> esos castillos derrumbados en un mundo inmutable, ahora todo está saliendo a la superficie.</p>
-    </div>
-    <div class="exit exit-left" data-go="inicio" data-side="left">
-      <span class="arrow">←</span>
-      <span data-i18n="nav.inicio">INICIO</span>
-    </div>
-    <div class="exit exit-right" data-go="artistas" data-side="right">
-      <span data-i18n="nav.artistas">Artistas</span>
-      <span class="arrow">→</span>
-    </div>
+  <p class="inicio-sub">Fotógrafos, visuales, animadores, músicos, escritores y actores. Cada autor recibe regalías por su obra.</p>
+  <div class="door-frame"></div>
+  <div class="exit exit-right" data-go="descripcion">
+    <span class="arr">→</span><span class="lbl">Descripción</span>
   </div>
-
-  <!-- SCENE: ARTISTAS -->
-  <div class="scene scene-artistas" data-scene="artistas">
-    <div class="scene-tag" data-i18n="artistas.tag">miembros del colectivo</div>
-    <h2 class="scene-title" data-i18n="artistas.title">Congregación</h2>
-
-    <!-- Featured -->
-    <div class="hotspot artist-frame featured" style="left:50%; top:55%;" data-id="essppora">
-      <div class="frame">
-        <span class="id-badge">A1</span>
-        <span class="name">essppora</span>
-      </div>
-      <span class="label" data-i18n="artist.bat_grafik.role">Fotografía urbana y tatuadora.</span>
-    </div>
-
-    <!-- Top row of frames -->
-    <div class="hotspot artist-frame" style="left:10%; top:42%;" data-id="secret_eyes">
-      <div class="frame"><span class="id-badge">A2</span><span class="name">SECRET<br>.EYES</span></div>
-      <span class="label" data-i18n="artist.secret_eyes.role">Ilustradora.</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:20%; top:42%;" data-id="nula">
-      <div class="frame"><span class="id-badge">A3</span><span class="name">mmicelio</span></div>
-      <span class="label" data-i18n="artist.nula.role">Fotografía natural</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:30%; top:42%;" data-id="henro">
-      <div class="frame"><span class="id-badge">A4</span><span class="name">Derwent</span></div>
-      <span class="label" data-i18n="artist.henro.role">Músico</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:40%; top:42%;" data-id="del_realismo">
-      <div class="frame"><span class="id-badge">A5</span><span class="name">del<br>Aldo Lopez Malo</span></div>
-      <span class="label" data-i18n="artist.del_realismo.role">Escritor</span>
-    </div>
-     <div class="hotspot artist-frame" style="left:50%; top:42%;" data-id="secret_eyes">
-      <div class="frame"><span class="id-badge">A6</span><span class="name">papiwabisabi<br>.</span></div>
-      <span class="label" data-i18n="artist.secret_eyes.role">Artista e ilustrador.</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:60%; top:42%;" data-id="nula">
-      <div class="frame"><span class="id-badge">A7</span><span class="name">Piedro</span></div>
-      <span class="label" data-i18n="artist.nula.role">Actor y director de Teatro</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:70%; top:42%;" data-id="henro">
-      <div class="frame"><span class="id-badge">A8</span><span class="name">Espontáneo</span></div>
-      <span class="label" data-i18n="artist.henro.role">Mundos Perdidos</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:80%; top:42%;" data-id="del_realismo">
-      <div class="frame"><span class="id-badge">A9</span><span class="name">Jce<br>s.s</span></div>
-      <span class="label" data-i18n="artist.del_realismo.role">Mundos Perdidos</span>
-    </div>    
-   <div class="hotspot artist-frame" style="left:90%; top:42%;" data-id="del_realismo">
-      <div class="frame"><span class="id-badge">A10</span><span class="name">Ay<br>ra</span></div>
-      <span class="label" data-i18n="artist.del_realismo.role">Mundos Perdidos</span>
-    </div>
-     
-
-    <!-- Bottom row -->
-    <div class="hotspot artist-frame" style="left:20%; top:75%;" data-id="oxida">
-      <div class="frame"><span class="id-badge">A11</span><span class="name">MATA</span></div>
-      <span class="label" data-i18n="artist.oxida.role">Mundos Perdidos</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:30%; top:75%;" data-id="Pink!man">
-      <div class="frame"><span class="id-badge">A12</span><span class="name">Pink!<br>man</span></div>
-      <span class="label" data-i18n="artist.luna_negra.role">DJ RAVE</span>
-    </div>
-
-    <div class="exit exit-left" data-go="manifiesto" data-side="left">
-      <span class="arrow">←</span><span data-i18n="nav.manifiesto">MANIFIESTO</span>
-    </div>
-    <div class="exit exit-right" data-go="tienda" data-side="right">
-      <span data-i18n="nav.tienda">TIENDA</span><span class="arrow">→</span>
-    </div>
-         <div class="hotspot artist-frame" style="left:40%; top:75%;" data-id="Vertedero Don Emilio">
-      <div class="frame"><span class="id-badge">A13</span><span class="name">Vertedero Don Emilio</span></div>
-      <span class="label" data-i18n="artist.oxida.role">ILUSTRADOR Y ARTISTA DE ANIMACIÓN</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:50%; top:75%;" data-id="otrosdias">
-      <div class="frame"><span class="id-badge">A14</span><span class="name">otrosd<br>ias</span></div>
-      <span class="label" data-i18n="artist.luna_negra.role">artista</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:60%; top:75%;" data-id="flwrs">
-      <div class="frame"><span class="id-badge">A15</span><span class="name">flwrs</span></div>
-      <span class="label" data-i18n="artist.oxida.role">Productor</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:70%; top:75%;" data-id="José Alberto Morales">
-      <div class="frame"><span class="id-badge">A16</span><span class="name">José<br>Alberto Morales</span></div>
-      <span class="label" data-i18n="artist.luna_negra.role">ACTUACIÓN</span>
-    </div>
-
-    <div class="exit exit-left" data-go="manifiesto" data-side="left">
-      <span class="arrow">←</span><span data-i18n="nav.manifiesto">MANIFIESTO</span>
-    </div>
-    <div class="exit exit-right" data-go="tienda" data-side="right">
-      <span data-i18n="nav.tienda">TIENDA</span><span class="arrow">→</span>
-    </div>
-  </div>
-
-  <!-- SCENE: TIENDA -->
-  <div class="scene scene-tienda" data-scene="tienda">
-    <div class="scene-tag" data-i18n="tienda.tag">galería y ropa</div>
-    <h2 class="scene-title" data-i18n="nav.tienda">Tienda</h2>
-
-    <!-- Product 1: Serafín tank -->
-    <div class="hotspot product-hotspot" style="left:22%; top:55%;" data-id="serafin">
-      <div class="frame">
-        <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
-          <path d="M50 40 Q50 30 60 28 L80 20 L90 35 Q100 42 110 35 L120 20 L140 28 Q150 30 150 40 L155 90 L140 100 L140 220 L60 220 L60 100 L45 90 Z" fill="#f5f1e6" stroke="#0a0a0a" stroke-width="1.5"/>
-          <circle cx="100" cy="130" r="14" stroke="#0a0a0a" stroke-width="1" fill="none"/>
-          <path d="M90 145 Q100 165 110 145" stroke="#0a0a0a" stroke-width="1" fill="none"/>
-        </svg>
-      </div>
-      <span class="price-tag">$150</span>
-      <span class="label" data-i18n="product.serafin.short">SERAFÍN · TANK</span>
-    </div>
-
-    <!-- Product 2: Hoodie -->
-    <div class="hotspot product-hotspot" style="left:42%; top:55%;" data-id="transmision">
-      <div class="frame">
-        <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
-          <path d="M40 50 L70 30 L100 40 L130 30 L160 50 L150 80 L150 220 L50 220 L50 80 Z" fill="#1a1a1a" stroke="#e8e3d3" stroke-width="1.5"/>
-          <path d="M70 30 L80 60 L100 50 L120 60 L130 30" stroke="#e8e3d3" stroke-width="1.5" fill="none"/>
-          <text x="100" y="145" text-anchor="middle" fill="#f0b81b" font-family="VT323" font-size="28">◉</text>
-        </svg>
-      </div>
-      <span class="price-tag">$320</span>
-      <span class="label" data-i18n="product.transmision.short">TRANSMISIÓN · HOODIE</span>
-    </div>
-
-    <!-- Product 3: Lente -->
-    <div class="hotspot product-hotspot sold" style="left:60%; top:55%;" data-id="lente">
-      <div class="frame">
-        <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
-          <path d="M50 50 L75 30 L100 45 L125 30 L150 50 L145 90 L145 220 L55 220 L55 90 Z" fill="#f5f1e6" stroke="#0a0a0a" stroke-width="1.5"/>
-          <circle cx="100" cy="100" r="26" stroke="#ff2d6f" stroke-width="2" fill="none"/>
-          <circle cx="100" cy="100" r="12" stroke="#0a0a0a" stroke-width="1" fill="none"/>
-        </svg>
-      </div>
-      <span class="price-tag" data-i18n="ui.sold">NUEVO</span>
-      <span class="label" data-i18n="product.lente.short">LENTE · TEE</span>
-    </div>
-
-    <!-- Product 4: Next drop -->
-    <div class="hotspot product-hotspot" style="left:78%; top:55%;" data-id="sintitulo">
-      <div class="frame">
-        <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
-          <rect x="40" y="40" width="120" height="180" stroke="#e8e3d3" stroke-width="1.5" fill="#0a0a0a" stroke-dasharray="4 4"/>
-          <text x="100" y="135" text-anchor="middle" fill="#f0b81b" font-family="VT323" font-size="48">?</text>
-        </svg>
-      </div>
-      <span class="price-tag">???</span>
-      <span class="label" data-i18n="product.sintitulo.short">PRÓXIMA PIEZA</span>
-    </div>
-
-    <div class="exit exit-left" data-go="artistas" data-side="left">
-      <span class="arrow">←</span><span data-i18n="nav.artistas">ARTISTAS</span>
-    </div>
-    <div class="exit exit-right" data-go="transmisiones" data-side="right">
-      <span data-i18n="nav.transmisiones">TRANSMISIONES</span><span class="arrow">→</span>
-    </div>
-  </div>
-
-  <!-- SCENE: TRANSMISIONES -->
-  <div class="scene scene-transmisiones" data-scene="transmisiones">
-    <div class="scene-tag" data-i18n="transmisiones.tag">BITÁCORA_PÚBLICA</div>
-    <h2 class="scene-title" data-i18n="nav.transmisiones">TRANSMISIONES</h2>
-
-    <div class="hotspot monitor" style="left:22%; top:48%;" data-id="trans_01">
-      <div class="frame">
-        <span class="time">01·06·2026</span>
-        <span class="msg" data-i18n="trans.01"><em>Serafín</em> tank top liberado. Tiraje de 30.</span>
-      </div>
-    </div>
-    <div class="hotspot monitor" style="left:40%; top:48%;" data-id="trans_02">
-      <div class="frame">
-        <span class="time">28·05·2026</span>
-        <span class="msg" data-i18n="trans.02">Nueva artista: <em>luna_negra</em>. Actuación / performance.</span>
-      </div>
-    </div>
-    <div class="hotspot monitor" style="left:58%; top:48%;" data-id="trans_03">
-      <div class="frame">
-        <span class="time">14·05·2026</span>
-        <span class="msg" data-i18n="trans.03">Pop-up nocturno en <em>la libertad</em>. Solo invitación.</span>
-      </div>
-    </div>
-    <div class="hotspot monitor" style="left:76%; top:48%;" data-id="trans_04">
-      <div class="frame">
-        <span class="time">02·05·2026</span>
-        <span class="msg" data-i18n="trans.04">Colaboración con <em>bat_grafik</em>. Hoodie bordado.</span>
-      </div>
-    </div>
-    <div class="hotspot monitor" style="left:31%; top:78%;" data-id="trans_05">
-      <div class="frame">
-        <span class="time">18·04·2026</span>
-        <span class="msg" data-i18n="trans.05">Galería rotativa actualizada. Piezas de <em>nula</em>.</span>
-      </div>
-    </div>
-    <div class="hotspot monitor" style="left:67%; top:78%;" data-id="trans_06">
-      <div class="frame">
-        <span class="time">13·04·2026</span>
-        <span class="msg" data-i18n="trans.06">Primera <em>transmisión</em> pública. Estamos en línea.</span>
-      </div>
-    </div>
-
-    <div class="exit exit-left" data-go="tienda" data-side="left">
-      <span class="arrow">←</span><span data-i18n="nav.tienda">TIENDA</span>
-    </div>
-  </div>
-
-  <!-- CHARACTER (single element, moves across scenes) -->
-  <div class="character facing-right" id="char">   O
- (lol)
-   W
-  / |</div>
 </div>
 
-<!-- INFO PANEL -->
+<!-- ── DESCRIPCIÓN ── -->
+<div class="scene scene-descripcion" data-scene="descripcion">
+
+  <div class="scene-windows">
+    <div class="window-pane"></div>
+    <div class="window-pane"></div>
+  </div>
+
+  <!-- Tree: real image if uploaded, SVG fallback otherwise -->
+  <div class="scene-tree-wrap">
+    <img src="images/tree.png" class="scene-tree-img" alt="árbol" onerror="this.style.display='none'">
+
+    <!-- SVG fallback — textured/painterly tree -->
+    <svg class="scene-tree-svg" viewBox="0 0 600 440" xmlns="http://www.w3.org/2000/svg" fill="none" preserveAspectRatio="xMidYMax meet">
+      <g filter="url(#painted)" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+
+        <!-- Roots / ground splatter -->
+        <path d="M260 438 Q235 432 210 430" stroke-width="4" opacity=".75"/>
+        <path d="M340 438 Q365 432 388 430" stroke-width="4" opacity=".75"/>
+        <path d="M275 440 Q260 435 248 434" stroke-width="2.5" opacity=".6"/>
+        <path d="M325 440 Q340 435 352 434" stroke-width="2.5" opacity=".6"/>
+
+        <!-- MAIN TRUNK — layered for painted feel -->
+        <path d="M298 440 Q302 380 296 320 Q289 250 300 180 Q304 130 298 90" stroke-width="32" opacity=".9"/>
+        <path d="M300 440 Q304 380 298 320 Q291 250 302 180 Q306 130 300 90" stroke-width="22" opacity=".55"/>
+        <path d="M298 90 Q295 70 300 50" stroke-width="14"/>
+        <path d="M300 50 Q302 32 295 18" stroke-width="8"/>
+
+        <!-- LEFT BRANCH SYSTEM (asymmetric, textured) -->
+        <path d="M296 280 Q250 268 200 248 Q160 232 120 218" stroke-width="14" opacity=".88"/>
+        <path d="M200 248 Q180 228 160 200" stroke-width="9"/>
+        <path d="M160 200 Q145 175 132 145" stroke-width="6"/>
+        <path d="M132 145 Q120 115 112 88" stroke-width="4"/>
+        <path d="M112 88 Q105 65 100 42" stroke-width="2.5"/>
+        <path d="M100 42 Q96 28 95 16" stroke-width="1.8"/>
+        <path d="M112 88 Q122 65 128 45" stroke-width="2.5"/>
+        <path d="M128 45 Q132 28 132 14" stroke-width="1.8"/>
+
+        <path d="M120 218 Q90 200 65 175" stroke-width="8"/>
+        <path d="M65 175 Q42 145 28 110" stroke-width="5"/>
+        <path d="M28 110 Q18 80 12 50" stroke-width="3"/>
+        <path d="M12 50 Q8 28 8 12" stroke-width="2"/>
+        <path d="M28 110 Q40 82 48 58" stroke-width="3"/>
+        <path d="M48 58 Q52 38 52 18" stroke-width="2"/>
+        <path d="M65 175 Q60 140 58 110" stroke-width="3.5"/>
+        <path d="M58 110 Q56 82 58 58" stroke-width="2.2"/>
+
+        <path d="M200 248 Q175 215 155 175" stroke-width="6"/>
+        <path d="M155 175 Q140 140 132 105" stroke-width="4"/>
+        <path d="M132 105 Q126 78 124 55" stroke-width="2.5"/>
+        <path d="M124 55 Q122 32 122 14" stroke-width="1.8"/>
+        <path d="M155 175 Q170 142 180 110" stroke-width="3"/>
+        <path d="M180 110 Q186 82 188 58" stroke-width="2"/>
+
+        <!-- MID-HIGH LEFT BRANCHES -->
+        <path d="M300 180 Q260 168 220 150" stroke-width="9"/>
+        <path d="M220 150 Q195 125 175 95" stroke-width="6"/>
+        <path d="M175 95 Q160 70 152 45" stroke-width="3.5"/>
+        <path d="M152 45 Q146 25 148 8" stroke-width="2"/>
+        <path d="M175 95 Q188 68 196 42" stroke-width="2.5"/>
+        <path d="M196 42 Q198 22 196 6" stroke-width="1.8"/>
+        <path d="M220 150 Q208 118 200 88" stroke-width="4"/>
+        <path d="M200 88 Q195 60 195 38" stroke-width="2.5"/>
+
+        <!-- RIGHT BRANCH SYSTEM (mirrored, slightly different) -->
+        <path d="M300 280 Q346 268 396 248 Q436 232 476 218" stroke-width="14" opacity=".88"/>
+        <path d="M396 248 Q416 228 436 200" stroke-width="9"/>
+        <path d="M436 200 Q451 175 464 145" stroke-width="6"/>
+        <path d="M464 145 Q476 115 484 88" stroke-width="4"/>
+        <path d="M484 88 Q491 65 496 42" stroke-width="2.5"/>
+        <path d="M496 42 Q500 28 501 16" stroke-width="1.8"/>
+        <path d="M484 88 Q474 65 468 45" stroke-width="2.5"/>
+        <path d="M468 45 Q464 28 464 14" stroke-width="1.8"/>
+
+        <path d="M476 218 Q506 200 531 175" stroke-width="8"/>
+        <path d="M531 175 Q554 145 568 110" stroke-width="5"/>
+        <path d="M568 110 Q578 80 584 50" stroke-width="3"/>
+        <path d="M584 50 Q588 28 588 12" stroke-width="2"/>
+        <path d="M568 110 Q556 82 548 58" stroke-width="3"/>
+        <path d="M548 58 Q544 38 544 18" stroke-width="2"/>
+        <path d="M531 175 Q536 140 538 110" stroke-width="3.5"/>
+        <path d="M538 110 Q540 82 538 58" stroke-width="2.2"/>
+
+        <path d="M396 248 Q421 215 441 175" stroke-width="6"/>
+        <path d="M441 175 Q456 140 464 105" stroke-width="4"/>
+        <path d="M464 105 Q470 78 472 55" stroke-width="2.5"/>
+        <path d="M472 55 Q474 32 474 14" stroke-width="1.8"/>
+        <path d="M441 175 Q426 142 416 110" stroke-width="3"/>
+        <path d="M416 110 Q410 82 408 58" stroke-width="2"/>
+
+        <path d="M296 180 Q336 168 376 150" stroke-width="9"/>
+        <path d="M376 150 Q401 125 421 95" stroke-width="6"/>
+        <path d="M421 95 Q436 70 444 45" stroke-width="3.5"/>
+        <path d="M444 45 Q450 25 448 8" stroke-width="2"/>
+        <path d="M421 95 Q408 68 400 42" stroke-width="2.5"/>
+        <path d="M400 42 Q398 22 400 6" stroke-width="1.8"/>
+        <path d="M376 150 Q388 118 396 88" stroke-width="4"/>
+        <path d="M396 88 Q401 60 401 38" stroke-width="2.5"/>
+
+        <!-- CENTER CROWN -->
+        <path d="M298 90 Q278 65 268 38" stroke-width="4"/>
+        <path d="M268 38 Q260 18 256 4" stroke-width="2.5"/>
+        <path d="M298 90 Q318 65 328 38" stroke-width="4"/>
+        <path d="M328 38 Q336 18 340 4" stroke-width="2.5"/>
+        <path d="M295 18 Q282 6 278 -2" stroke-width="2"/>
+        <path d="M298 18 Q312 6 316 -2" stroke-width="2"/>
+
+        <!-- DELICATE TWIGS at branch tips -->
+        <path d="M95 16 Q88 6 86 -2" stroke-width="1.2"/>
+        <path d="M132 14 Q138 4 138 -2" stroke-width="1.2"/>
+        <path d="M148 8 Q146 -2 145 -6" stroke-width="1.2"/>
+        <path d="M196 6 Q200 -4 200 -8" stroke-width="1.2"/>
+        <path d="M501 16 Q508 6 510 -2" stroke-width="1.2"/>
+        <path d="M464 14 Q458 4 458 -2" stroke-width="1.2"/>
+        <path d="M448 8 Q450 -2 451 -6" stroke-width="1.2"/>
+        <path d="M400 6 Q396 -4 396 -8" stroke-width="1.2"/>
+        <path d="M195 38 Q190 22 188 12" stroke-width="1.4"/>
+        <path d="M401 38 Q406 22 408 12" stroke-width="1.4"/>
+        <path d="M58 58 Q52 42 50 32" stroke-width="1.4"/>
+        <path d="M538 58 Q544 42 546 32" stroke-width="1.4"/>
+      </g>
+
+      <!-- Some ink "splotches" for texture, no filter to keep crisp -->
+      <g fill="currentColor" opacity=".55">
+        <ellipse cx="160" cy="420" rx="4" ry="1.5"/>
+        <ellipse cx="425" cy="425" rx="3" ry="1"/>
+        <ellipse cx="220" cy="416" rx="2" ry="1"/>
+        <ellipse cx="395" cy="418" rx="3.5" ry="1.2"/>
+        <ellipse cx="120" cy="425" rx="2.5" ry="1"/>
+        <ellipse cx="465" cy="422" rx="2" ry="1"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="desc-stamp desc-stamp-1">firmado</div>
+  <div class="desc-stamp desc-stamp-2">verificado</div>
+
+  <div class="manifesto-text">
+    <p>otrosdias es una <em>congregación</em> de artistas que rechaza el formato único.</p>
+    <p>Cada prenda es una obra firmada. Cada obra es una transmisión.</p>
+    <p>Cada autor recibe regalías por lo que crea — porque el arte sin propiedad no es libertad, es despojo.</p>
+    <p><em>Si llegaste hasta aquí, ya formas parte.</em></p>
+  </div>
+
+  <div class="exit exit-left" data-go="inicio"><span class="arr">←</span><span class="lbl">Inicio</span></div>
+  <div class="exit exit-right" data-go="artistas"><span class="arr">→</span><span class="lbl">Artistas</span></div>
+</div>
+
+<!-- ── ARTISTAS ── -->
+<div class="scene scene-artistas" data-scene="artistas">
+  <div class="artists-header">Todas las líneas que trazamos se están desvaneciendo lentamente, esos castillos derrumbados en un mundo inmutable.</div>
+
+  <div class="artists-cross">
+    <div class="artists-row">
+      <div class="artist-card featured" data-id="otrosdias"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="26" rx="14" ry="16" fill="rgba(240,235,219,0.5)"/><path d="M24 80 Q24 48 40 48 Q56 48 56 80Z" fill="rgba(240,235,219,0.5)"/></svg><img src="images/artists/otrosdias.jpg" alt="otrosdias" class="real-img" onerror="this.style.display='none'"></div><div class="aname">otrosdias</div></div>
+    </div>
+    <div class="artists-row">
+      <div class="artist-card" data-id="kai_arcy"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="28" rx="13" ry="15" fill="rgba(240,235,219,0.45)"/><path d="M22 80 Q24 50 40 50 Q56 50 58 80Z" fill="rgba(240,235,219,0.45)"/></svg><img src="images/artists/kai_arcy.jpg" alt="Kai Arcy" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Kai Arcy</div></div>
+      <div class="artist-card" data-id="essppora"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="26" rx="13" ry="15" fill="rgba(240,235,219,0.45)"/><path d="M22 80 Q24 48 40 48 Q56 48 58 80Z" fill="rgba(240,235,219,0.45)"/></svg><img src="images/artists/essppora.jpg" alt="Essympora" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Essympora</div></div>
+      <div class="artist-card" data-id="mmicelio"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="27" rx="12" ry="14" fill="rgba(240,235,219,0.45)"/><path d="M23 80 Q25 50 40 50 Q55 50 57 80Z" fill="rgba(240,235,219,0.45)"/></svg><img src="images/artists/mmicelio.jpg" alt="Nymicelio" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Nymicelio</div></div>
+    </div>
+    <div class="artists-row">
+      <div class="artist-card" data-id="derwent"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="28" rx="13" ry="14" fill="rgba(240,235,219,0.42)"/><path d="M22 80 Q24 50 40 50 Q56 50 58 80Z" fill="rgba(240,235,219,0.42)"/></svg><img src="images/artists/derwent.jpg" alt="Deewent" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Deewent</div></div>
+      <div class="artist-card" data-id="ezk"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="27" rx="12" ry="14" fill="rgba(240,235,219,0.42)"/><path d="M23 80 Q25 49 40 49 Q55 49 57 80Z" fill="rgba(240,235,219,0.42)"/></svg><img src="images/artists/ezk.jpg" alt="ΞЖ" class="real-img" onerror="this.style.display='none'"></div><div class="aname">ΞЖ</div></div>
+      <div class="artist-card" data-id="papiwabisabi"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="26" rx="13" ry="15" fill="rgba(240,235,219,0.42)"/><path d="M22 80 Q24 48 40 48 Q56 48 58 80Z" fill="rgba(240,235,219,0.42)"/></svg><img src="images/artists/papiwabisabi.jpg" alt="PAPIWABISABI" class="real-img" onerror="this.style.display='none'"></div><div class="aname">PAPIWABISABI</div></div>
+      <div class="artist-card" data-id="ozkar"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="28" rx="12" ry="14" fill="rgba(240,235,219,0.42)"/><path d="M23 80 Q25 50 40 50 Q55 50 57 80Z" fill="rgba(240,235,219,0.42)"/></svg><img src="images/artists/ozkar.jpg" alt="ozkar" class="real-img" onerror="this.style.display='none'"></div><div class="aname">ozkar</div></div>
+      <div class="artist-card" data-id="piedro"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="27" rx="13" ry="15" fill="rgba(240,235,219,0.42)"/><path d="M22 80 Q24 49 40 49 Q56 49 58 80Z" fill="rgba(240,235,219,0.42)"/></svg><img src="images/artists/piedro.jpg" alt="piedro" class="real-img" onerror="this.style.display='none'"></div><div class="aname">piedro</div></div>
+    </div>
+    <div class="artists-row">
+      <div class="artist-card" data-id="espontaneo"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="28" rx="12" ry="14" fill="rgba(240,235,219,0.4)"/><path d="M23 80 Q25 50 40 50 Q55 50 57 80Z" fill="rgba(240,235,219,0.4)"/></svg><img src="images/artists/espontaneo.jpg" alt="Espontáneo" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Espontáneo</div></div>
+      <div class="artist-card" data-id="jcess"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="27" rx="13" ry="14" fill="rgba(240,235,219,0.4)"/><path d="M22 80 Q24 49 40 49 Q56 49 58 80Z" fill="rgba(240,235,219,0.4)"/></svg><img src="images/artists/jcess.jpg" alt="Jces.s" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Jces.s</div></div>
+      <div class="artist-card" data-id="aldo"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="28" rx="13" ry="15" fill="rgba(240,235,219,0.4)"/><path d="M22 80 Q24 50 40 50 Q56 50 58 80Z" fill="rgba(240,235,219,0.4)"/></svg><img src="images/artists/aldo.jpg" alt="Aldo López" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Aldo López</div></div>
+      <div class="artist-card" data-id="pinkiman"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="27" rx="12" ry="14" fill="rgba(240,235,219,0.4)"/><path d="M23 80 Q25 49 40 49 Q55 49 57 80Z" fill="rgba(240,235,219,0.4)"/></svg><img src="images/artists/pinkiman.jpg" alt="Pink!man" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Pink!man</div></div>
+      <div class="artist-card" data-id="vertedero"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="28" rx="12" ry="14" fill="rgba(240,235,219,0.4)"/><path d="M22 80 Q24 50 40 50 Q56 50 58 80Z" fill="rgba(240,235,219,0.4)"/></svg><img src="images/artists/vertedero.jpg" alt="Vertedero" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Vertedero D.E.</div></div>
+    </div>
+    <div class="artists-row">
+      <div class="artist-card" data-id="ayra"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="27" rx="13" ry="15" fill="rgba(240,235,219,0.38)"/><path d="M22 80 Q24 49 40 49 Q56 49 58 80Z" fill="rgba(240,235,219,0.38)"/></svg><img src="images/artists/ayra.jpg" alt="Ayra" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Ayra</div></div>
+      <div class="artist-card" data-id="mata"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="28" rx="12" ry="14" fill="rgba(240,235,219,0.38)"/><path d="M23 80 Q25 50 40 50 Q55 50 57 80Z" fill="rgba(240,235,219,0.38)"/></svg><img src="images/artists/mata.jpg" alt="Mata" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Mata</div></div>
+      <div class="artist-card" data-id="flwrs"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="27" rx="13" ry="14" fill="rgba(240,235,219,0.38)"/><path d="M22 80 Q24 49 40 49 Q56 49 58 80Z" fill="rgba(240,235,219,0.38)"/></svg><img src="images/artists/flwrs.jpg" alt="Flwrs" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Flwrs</div></div>
+    </div>
+    <div class="artists-row">
+      <div class="artist-card" data-id="jose_alberto"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="27" rx="13" ry="15" fill="rgba(240,235,219,0.36)"/><path d="M22 80 Q24 49 40 49 Q56 49 58 80Z" fill="rgba(240,235,219,0.36)"/></svg><img src="images/artists/jose_alberto.jpg" alt="José A. Morales" class="real-img" onerror="this.style.display='none'"></div><div class="aname">José A. Morales</div></div>
+    </div>
+  </div>
+
+  <div class="artists-tagline">comunidad creadora otrosdias</div>
+
+  <div class="exit exit-left" data-go="descripcion"><span class="arr">←</span><span class="lbl">Descripción</span></div>
+  <div class="exit exit-right" data-go="tienda"><span class="arr">→</span><span class="lbl">Tienda</span></div>
+</div>
+
+<!-- ── TIENDA ── -->
+<div class="scene scene-tienda" data-scene="tienda">
+  <div class="tienda-header">
+    <h2>Tienda</h2>
+    <p>Mercancía de autor · Tiraje limitado</p>
+  </div>
+
+  <div class="tienda-filters">
+    <button class="active">ALL <sup>4</sup></button>
+    <button>TANK TOPS <sup>1</sup></button>
+    <button>HOODIES <sup>1</sup></button>
+    <button>TEES <sup>1</sup></button>
+    <button>DROP_002 <sup>1</sup></button>
+  </div>
+
+  <div class="shop-grid">
+
+    <div class="product-card" data-pid="serafin">
+      <div class="product-img">
+        <span class="product-badge">Drop 001</span>
+        <svg class="fallback-svg" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <path d="M50 40 Q50 30 60 28 L80 20 L90 35 Q100 42 110 35 L120 20 L140 28 Q150 30 150 40 L155 90 L140 100 L140 220 L60 220 L60 100 L45 90 Z" fill="#f0ede6" stroke="#111" stroke-width="1.5"/>
+          <circle cx="100" cy="130" r="14" stroke="#111" stroke-width="1" fill="none"/>
+          <path d="M90 145 Q100 165 110 145" stroke="#111" stroke-width="1" fill="none"/>
+        </svg>
+        <img src="images/products/serafin.jpg" alt="Serafín" class="real-img" onerror="this.style.display='none'">
+      </div>
+      <div class="product-info">
+        <h3>Serafín</h3>
+        <div class="product-by">por secret.eyes888</div>
+        <div class="product-price">$150 MXN</div>
+      </div>
+    </div>
+
+    <div class="product-card" data-pid="transmision">
+      <div class="product-img">
+        <span class="product-badge">Drop 001</span>
+        <svg class="fallback-svg" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <path d="M40 50 L70 30 L100 40 L130 30 L160 50 L150 80 L150 220 L50 220 L50 80 Z" fill="#111" stroke="#e8e3d3" stroke-width="1.5"/>
+          <path d="M70 30 L80 60 L100 50 L120 60 L130 30" stroke="#e8e3d3" stroke-width="1.5" fill="none"/>
+          <circle cx="100" cy="140" r="18" stroke="#c8a84b" stroke-width="1.5" fill="none"/>
+        </svg>
+        <img src="images/products/transmision.jpg" alt="Transmisión" class="real-img" onerror="this.style.display='none'">
+      </div>
+      <div class="product-info">
+        <h3>Transmisión</h3>
+        <div class="product-by">por bat_grafik</div>
+        <div class="product-price">$320 MXN</div>
+      </div>
+    </div>
+
+    <div class="product-card sold-out" data-pid="lente">
+      <div class="product-img">
+        <span class="product-badge agotado">Agotado</span>
+        <svg class="fallback-svg" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <path d="M50 50 L75 30 L100 45 L125 30 L150 50 L145 90 L145 220 L55 220 L55 90 Z" fill="#f0ede6" stroke="#111" stroke-width="1.5"/>
+          <circle cx="100" cy="100" r="28" stroke="#111" stroke-width="2" fill="none"/>
+          <circle cx="100" cy="100" r="12" stroke="#111" stroke-width="1" fill="none"/>
+        </svg>
+        <img src="images/products/lente.jpg" alt="Lente" class="real-img" onerror="this.style.display='none'">
+      </div>
+      <div class="product-info">
+        <h3>Lente</h3>
+        <div class="product-by">por nula</div>
+        <div class="product-price">$220 MXN</div>
+      </div>
+    </div>
+
+    <div class="product-card" data-pid="sintitulo">
+      <div class="product-img">
+        <span class="product-badge">Drop 002</span>
+        <svg class="fallback-svg" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect x="38" y="38" width="124" height="180" stroke="#888" stroke-width="1.5" fill="#e6e0cc" stroke-dasharray="5 4"/>
+          <text x="100" y="138" text-anchor="middle" fill="#888" font-size="56" font-family="serif">?</text>
+        </svg>
+        <img src="images/products/sintitulo.jpg" alt="Sin título" class="real-img" onerror="this.style.display='none'">
+      </div>
+      <div class="product-info">
+        <h3><em>Sin título</em></h3>
+        <div class="product-by">por henro · próximamente</div>
+        <div class="product-price">??? MXN</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="exit exit-left" data-go="artistas" style="top:30%;transform:none"><span class="arr">←</span><span class="lbl">Artistas</span></div>
+  <div class="exit exit-right" data-go="novedades" style="top:30%;transform:none"><span class="arr">→</span><span class="lbl">Novedades</span></div>
+</div>
+
+<!-- ── NOVEDADES ── -->
+<div class="scene scene-novedades" data-scene="novedades">
+  <h2 class="novedades-title">novedades</h2>
+
+  <div class="novedades-grid">
+    <div class="nov-entry" data-nov="nov01"><div class="nov-date">01 · 06 · 2026</div><div class="nov-msg"><em>Serafín</em> tank top liberado. Tiraje de 30.</div></div>
+    <div class="nov-entry" data-nov="nov02"><div class="nov-date">28 · 05 · 2026</div><div class="nov-msg">Nuevo miembro: <em>luna_negra</em>. Performance.</div></div>
+    <div class="nov-entry" data-nov="nov03"><div class="nov-date">14 · 05 · 2026</div><div class="nov-msg">Pop-up nocturno en <em>la libertad</em>.</div></div>
+    <div class="nov-entry" data-nov="nov04"><div class="nov-date">02 · 05 · 2026</div><div class="nov-msg">Colaboración con <em>bat_grafik</em>. Hoodie bordado.</div></div>
+    <div class="nov-entry" data-nov="nov05"><div class="nov-date">18 · 04 · 2026</div><div class="nov-msg">Galería rotativa. Piezas de <em>nula</em>.</div></div>
+    <div class="nov-entry" data-nov="nov06"><div class="nov-date">13 · 04 · 2026</div><div class="nov-msg">Primera transmisión pública. <em>Estamos en línea.</em></div></div>
+  </div>
+
+  <div class="exit exit-left" data-go="tienda"><span class="arr">←</span><span class="lbl">Tienda</span></div>
+</div>
+
+<!-- ASCII character -->
+<div class="character" id="char"></div>
+
+</div><!-- /world -->
+
+<!-- INFO PANEL with TABS -->
 <div class="panel-backdrop" id="panelBackdrop">
   <div class="panel">
-    <button class="panel-close" onclick="closePanel()">✕</button>
-    <div class="panel-tag" id="panelTag">PERFIL</div>
-    <h3 class="panel-title" id="panelTitle">Title</h3>
-    <div class="panel-sub" id="panelSub">SUB</div>
-    <div class="panel-body" id="panelBody">Body text</div>
+    <div class="panel-header">
+      <button class="panel-close" onclick="closePanel()">ESC</button>
+      <div class="panel-id" id="panelId">— A_00</div>
+      <h3 class="panel-name" id="panelName">Nombre</h3>
+      <div class="panel-role" id="panelRole">Rol</div>
+    </div>
+    <div class="panel-tabs">
+      <button class="panel-tab active" data-tab="historia">Historia</button>
+      <button class="panel-tab" data-tab="hechos">Hechos</button>
+      <button class="panel-tab" data-tab="obra">Obra</button>
+      <button class="panel-tab" data-tab="cita">Cita</button>
+    </div>
+    <div class="panel-body">
+      <div class="panel-content active" data-content="historia"><div id="content-historia"></div></div>
+      <div class="panel-content" data-content="hechos"><ul class="facts-list" id="content-hechos"></ul></div>
+      <div class="panel-content" data-content="obra"><div id="content-obra"></div></div>
+      <div class="panel-content" data-content="cita"><div id="content-cita"></div></div>
+    </div>
     <div class="panel-foot">
-      <span id="panelMeta">META</span>
-      <button class="panel-cta" id="panelCta" data-i18n="ui.contact">CONTACTAR</button>
+      <span id="panelMeta">archivo · comunidad otrosdias</span>
+      <button class="panel-cta" id="panelCta">Instagram</button>
     </div>
   </div>
-</div>
-
-<!-- TRANSMISSION POPUP -->
-<div class="trans-pop" id="transPop">
-  <div class="head" data-i18n="ui.transmission">Novedades</div>
-  <div id="transMsg">.</div>
 </div>
 
 <!-- MOBILE D-PAD -->
@@ -999,627 +1151,352 @@ no, no somos la culminación de nada, sino el principio de algo”.</span>
 </div>
 
 <script>
-/* ============================================================
-   I18N
-============================================================ */
-const I18N = {
-  es: {
-    'nav.inicio':'INICIO','nav.manifiesto':'MANIFIESTO','nav.artistas':'ARTISTAS',
-    'nav.tienda':'TIENDA','nav.transmisiones':'TRANSMISIONES',
-
-    'ui.theme':'LIGHT','ui.move':'MOVIMIENTO','ui.interact':'INTERACTUAR',
-    'ui.fast_travel':'VIAJE RÁPIDO','ui.go_left':'IZQUIERDA','ui.go_right':'DERECHA',
-    'ui.scene':'Sala','ui.position':'POSICIÓN','ui.signal':'SEÑAL','ui.stable':'ESTABLE',
-    'ui.system_online':'Cada día','ui.transmission':'Novedades',
-    'ui.established':'ESTABLECIDO','ui.location':'UBICACIÓN','ui.miembros':'MIEMBROS',
-    'ui.drop':'DROP','ui.estado':'ESTADO','ui.proximo':'PRÓXIMO',
-    'ui.sold':'NUEVO','ui.contact':'CONTACTAR','ui.buy':'COMPRAR',
-
-    'inicio.tag':'Apertura de sitio web',
-    'inicio.title_top':'otrosdias','inicio.title_bot':'otrosdias',
-    'inicio.sub':' otrosdias es <b>Randy García Mejía.</b>. Todos los derechos reservados a su obra. 2020 - 2026. Serigrafía y ropa de artistas.',
-
-    'manifiesto.tag':'FRAGMENTO',
-    'manifiesto.stamp1':'3752','manifiesto.stamp2':'v5',
-    'manifiesto.p1':'otrosdias es una plataforma de artistas y emprendedores con proyectos individuales,',
-    'manifiesto.p2':'nos damos a conocer a través de ropa o mercancía de nuestras obras o nuestro concepto, ',
-    'manifiesto.p3':'cada autor recibe regalías de su obra impresa en serigrafía. El colectivo está integrado por',
-    'manifiesto.p4':'<em>fotógrafos (essppora y mmicelio), artistas visuales (vertedero don emilio, Papiwabisabi, Secret Eyes),',
-    'manifiesto.p5':'escritores (Aldo Lopez Malo) Músicos (Pink!man, Flwrs, José Alberto Morales, Derwent, Mundos Perdidos) y actores de teatro (Pedro Medina y Spot de artes de La Libertad).</em>',
-     
-    'artistas.tag':'Congregación','artistas.title':'Miembros del colectivo',
-    'artist.essppora':'Fotografía · Tatuajes',
-    'artist.essppora':'Nombre o alias: essppora Biografía: Nací y crecí en el estado Puebla, actualmente tengo 25 años y soy egresada de la licenciatura en Filosofía. Comencé a interesarme por la fotografía cuando tenía 17 años, pero considero que fue hasta los 22 años cuando me tomé con más seriedad este pasatiempo, y poco a poco fui desarrollando mi estilo propio hasta llegar a lo que actualmente soy y por cómo me conocen; ‘’essppora’’. Algunas de mis mayores inspiraciones son: Graciela Iturbide, Tina Modotti, Juan Rulfo, Lola y Manuel Álvarez Bravo. Gracias a la ayuda de amigxs y otras personas he tenido la oportunidad de vender mis fotografías, ya sea para portadas de álbumes o para coleccionar, también este año pude presentar algunas de mis fotografías en una exposición visual en el zócalo del centro de Puebla. Actualmente soy uno de los miembros del colectivo otrosdias, donde creamos, compartimos y vendemos un poco de nuestro arte. Nombre real: Lizbeth Michel Silva Vázquez Ocupación: Sin ocupación por el momento Base de operaciones: Puebla, pue. Ojos: Negros Cabello: Cobrizo claro Altura:1.59 Peso: 60 kg Año y mes en el que empezaron con su proyecto: Octubre 2022 Atributos: Soy muy observadora, por lo que puedo detectar detalles o ángulos que otros pueden pasar por alto. Constantemente exploro nuevos estilos y técnicas, y siempre tengo algo nuevo que mostrar.',
-    'artist.secret_eyes.role':'ILUSTRACIÓN',
-    'artist.secret_eyes.bio':'Autora del Serafín tank top. Ilustración a línea con motivos sagrados y profanos.',
-    'artist.mmicelio':'Fotografía y revelado',
-    'artist.mmicelio':'Fotógrafa de luz dura y silencios. Documenta los espacios entre las cosas. Próximamente: zine impreso.',
-    'artist.Derwent':'Músico',
-    'artist.Derwent':'Compositor y cantautor. Compositor del álbum Vivencias de una eterna vida simétrica.',
-    'artist.Aldo Lopez Malo':'Escritor, ilustrador y programador de videojuegos',
-    'artist.Aldo Lopez Malo':'Aldo López Malo Soy estudiante de Arte Digital, apasionado por los conceptos de lo oscuro, surreal y grotesco. Suelo expresarlo a través de ilustraciones tanto tradicionales como digitales, a través de la escritura, o el desarrollo de videojuegos. Nombre real: Aldo López Malo Ocupación: Estudiante de Arte Digital Base de operaciones: Puebla Ojos: Café Cabello: Castaño, ondulado Altura: 1.76cm Peso: 60kg Año y mes en el que empecé: Diciembre 2019 Atributos: Creativo, Ambicioso, Crítico',
-    'artist.papiwabisabi':'Artista visual',
-    'artist.papiwabisabi':'Nombre o alias: papiwabisabi Biografía: me gusta trabajar con lo orgánico, lo húmedo y lo visceral. disfruto mucho anteponer conceptos, símbolos y mensajes. me cuesta mucho comunicar lo que siento, así que lo hago mejor a través de la creación Nombre real: karel Ocupación; artista visual Base de operaciones: Puebla Ojos: café Cabello: café rizado Altura: 1.75m Peso: 65kg Año y mes en el que empezaron con su proyecto: septiembre 2020',
-    'artist.piedro':'Actor y fundador de Spot de Artes de La Libertad',
-    'artist.piedro':'Performance y dramaturgia corta.Esto no es Dinamarca. Últimas funciones 29 de mayo 11 am. puebla 30 de mayo 5pm. hidalgo 3 de junio 5pm. puebla',
-    'artist.Espontáneo':'Productor y beatmaker',
-    'artist.Espontáneo':'Nombre o alias: Espontáneo. Biografía: Productor musical de puebla enfocado en diversos generos en esocial hiphop y cumbia, también organizo eventos para darle difusión y presentación a la escena local y emergente. Nombre real: Alan García Ocupación; Trabajo en logística en ecomerce Base de operaciones: Puebla capital. Ojos: cafe. Cabello: Negro Altura: 1.75 Peso: 67 kg Año y mes en el que empezaron con su proyecto: enero 2023. Atributos: Amable, tolerante, abierto a escuchar y dialogar, empático y servicial, musicalidad.',
-    'artist.Jces.s':'Músico',
-    'artist.Jces.s':'Nací un 21 de octubre de 1999 en la ciudad de los Ángeles, Puebla de Zaragoza dónde se baila y se goza, Crecí en el centro histérico ( Histórico ) de la ciudad, mi papá y mamá: Estilistas amantes de la música y el baile. Desde pequeño me adentre a escuchar de todo tipo de géneros musicales pero dormido en la silla porque aún no nos íbamos de la fiesta, mi vida dió un cambio cuando escuché las canciones detalladamente, tanto en la letra como en los ritmos, conforme paso el tiempo fui creciendo con la idea de algún día hacer música y justo en mi adolescencia fue cuando me decidí a hacer algo, después de pasar por una banda fallida de rock. Junto con mi amigo BSD comenzamos a tratar de hacer nuestra primeras canciones de RAP, freestyleando altas horas de la noche con beats que nos encontrábamos en internet mientras tomábamos una cerveza sentados en una plaza de la Margot ( Unidad habitacional la Margarita) Noches mágicas que marcaron mi vida. Encontré mi estilo en todo lo que me gustaba, retas de basquetbol con los amigos, salir a echarme un skate con otros, ir de fiesta con algunos más y en lo más importante mi estilo de vida y mi familia. Todo mejorará en mi etapa universitaria. Conocí a unos amigos que llevaban tiempo haciendo música, me instruteron en como poder pulir y mejorar mi estilo, hasta que lo encontré. Finalmente sabía que lo mío era el Lo-fi, era con lo que yo me identificaba, una mezcla de beats suaves que te hace relajarte después de un mal día o después de un buen día, aunque también me acoplo a cualquier beat es bueno variarle de vez en cuando. Cuando pensé que todo iba bien, todo se derrumbó dentro de mi dentro de mi, mi productor se fue al gabacho y California está muy lejos para ir a grabar, los amigos que conocí que hacían música dejaron de hacerlo porque ya tenían trabajos, intenté con más gente pero no veía interés en realmente querer hacer música. Justo cuando pensé dejar la música, llega ESPONTÁNEO, al cuál lo conocí por otro amigo con el que salía a patinar, hablamos de hacer música, realizar un ep y quien diría que me encontré con los MUNDOS PERDIDOS. Nombre real: Julio César. Ocupación; Subgerente en un restaurante de comida japonesa, vayan está bueno el ramen. Base de operaciones: (ciudad) Puebla capital Ojos: cafés Cabello: Negro ( medio quebrado ) Altura: 1.74 Peso: 73 aprox Año y mes en el que empezaron con su proyecto: Yo empeze oficialmente el 20 de noviembre del 2020 Atributos:  Creatividad, versátidad, comunicativo, responsable.',
-    'artist.Ayra':'Vocalista',
-    'artist.Ayra':'Nombre o alias: Ayra Biografía: 5 de Junio 1998, nacida en la ciudad de Puebla, con formación teatral por las escuelas de iniciación artística del INBAL, y estudios independientes cursos y diplomados, en gestión cultural y música. Nombre real: Ana Yoselin Rodriguez Arellano Ocupación; Cocinero Base de operaciones: (ciudad) Puebla, Pue Ojos: Café obscuro Cabello: cobrizo (teñido) Altura: 1.49 cm Peso: 54 kg Año y mes en el que empezaron con su proyecto: Marzo 2019 (empecé pero le di continuidad hasta 2023) Atributos: Cantante, compositora, curadora musical, gestora cultural, productora musical en proceso, cocinera de oficio, tengo dos proyectos personales que se enfocan en compartir mi perspectiva, herramientas con acciones para la descentralización de las artes en puebla y tambien visibilizar, crear nuevos públicos para géneros afro descendientes y alternativos (soul, r&b) , todo esto nace bajo mis propias necesidades como artista pero me ha llevado a conectar con gente que comparte visión y metas personales.',
-    'artist.Mata':'Músico',
-    'artist.Mata':'Mata Soy de San Luis Potosi, 24 años. Estudio gastronomía y hago letras para hip hop y lofi melancólico. Daniel Flores Mata Puebla Ojos negros Cabello castaño obscuro Mido 1.64 Peso como 66-68 Empece en Diciembre del 2024 Atributos. No tengo',
-    'artist.Pink!man':'Músico',
-    'artist.Pink!man':'De padres músicos, Pink!man comienza su carrera como dj en la escena de Acapulco y Puebla. A sus 23 años, ha cultivado un estilo hipnótico que explora los paisajes más oscuros y envolventes del techno, buscando fusionar el minimal con lo psicodélico: navegando por subgéneros como el psytechno, dark minimal y peaktime.  Su conexión con la música va más allá de las pistas: cada set de Pink!man es un portal hacia dimensiones paralelas, un caleidoscopio de ritmos pulsantes y texturas psicodélicas diseñadas para expandir la percepción. Actualmente ha incursionado en la producción musical, con un track en camino, por parte del Sello de ADN Mutan World. Dj y Productor musical Puebla ojos café oscuro cabello largo y ondulado Mayo de 2022',
-    'artist.Vertedero Don Emilio':'Ser cabrón',
-    'artist.Vertedero Don Emilio':'ALGÚN TEXTO QUE DIGA, QUE ESTE PRODUCTO ES UNA MAMADA, QUE NO SE DEBERÍA FUMAR, UNA MIERDA ASÍ. QUE NO SOY AFILIADO NI AL PAN, NI AL PRI, NI AL PRD. TAMPOCO ME VAN A TRAER DE SU PENDEJO, YO SOY LA MERA RIATA, PENDEJO, IDIOTA, ESTUPIDO EL QUE LO LEA. SI VAN A FUMAR INVITEN, SI NO TAMBIÉN, SI ME VAN A DEJAR AQUÍ COMO PENDEJO HACIENDO NADA MEJOR NI HUBIERAN DICHO NADA. TONTOS.',
-    'artist.otrosdias':'Artista',
-    'artist.otrosdias':'Escritor, ilustrador, animador, músico, productor y futuro',
-    'artist.Flwrs':'Artista y productor musical',
-    'artist.Flwrs':'Artista humano que sabe escuchar',
-    'artist.José Alberto Morales':'Cantautor',
-    'artist.José Alberto Morales':'-Cantautor, canalla y embustero-',
-
-     
-
-    'tienda.tag':'Galería y ropa',
-    'product.serafin.short':'SERAFÍN · TANK',
-    'product.serafin.name':'Serafín','product.serafin.author':'POR SECRET.EYES888',
-    'product.serafin.desc':'Tank top de algodón estampada con serigrafía a una tinta. Tiraje limitado de 30 piezas. Puntos de entrega especificados en @otrosdias.',
-    'product.transmision.short':'JARDÍN Y LÁGRIMAS · HOODIE',
-    'product.transmision.name':'Transmisión','product.transmision.author':'POR otrosdias',
-    'product.transmision.desc':'Hoodie negro con bordado al pecho. Edición conjunta con bat_grafik. 20 piezas firmadas, numeradas y trazables.',
-    'product.lente.short':'INFINIDAD . GORRA BORDADA',
-    'product.lente.name':'Lente','product.lente.author':'POR OTROSDIAS',
-    'product.lente.desc':'Gorra de Gamuza con alambre de púas, Infinidad: 500 pesos 2 alambres trenzados con púas de 4 puntas de corte diagonal',
-    'product.sintitulo.short':'PRÓXIMA PIEZA',
-    'product.sintitulo.name':'Sin título','product.sintitulo.author':'desconocido',
-    'product.sintitulo.desc':'En producción. Información liberada cuando el archivo se abra.',
-
-    'transmisiones.tag':'BITÁCORA_PÚBLICA',
-    'trans.01':'<em>Serafín</em> tank top liberado. Tiraje de 30.',
-    'trans.02':'Nueva artista: <em>luna_negra</em>. Actuación / performance.',
-    'trans.03':'Pop-up nocturno en <em>la libertad</em>. Solo invitación.',
-    'trans.04':'Colaboración con <em>bat_grafik</em>. Hoodie bordado.',
-    'trans.05':'Galería rotativa actualizada. Piezas de <em>nula</em>.',
-    'trans.06':'Primera <em>transmisión</em> pública. Estamos en línea.',
-    'trans.full.01':'Serafín tank liberado el 01 de junio. Tiraje único de 30 piezas, serigrafía a una tinta sobre algodón. La pieza nace de una sesión con secret.eyes888 documentada en archivo. Cada entrega lleva firma del autor.',
-    'trans.full.02':'luna_negra se integra a la congregación. Performance y dramaturgia corta. Próxima pieza programada para drop_002. Bio extendida disponible en escena ARTISTAS.',
-    'trans.full.03':'Pop-up nocturno realizado el 14 de mayo en la libertad. Solo invitación. Próximos pop-ups serán anunciados por DM a la lista cerrada.',
-    'trans.full.04':'Hoodie bordado con bat_grafik. Edición de 20 piezas firmadas. Bordado al pecho, tela pesada, terminado mate.',
-    'trans.full.05':'Cuatro nuevas piezas de nula entraron a la galería rotativa el 18 de abril. Permanecerán hasta el 30 de junio. Después serán archivadas.',
-    'trans.full.06':'Primera transmisión emitida el 13 de abril. Sistema en línea desde entonces sin interrupciones. Estamos contigo.',
-
-    'random.01':'Hola.',
-    'random.02':'Nueva álbum en producción.',
-    'random.03':'Revisa @otrosdias.',
-    'random.04':'Cada caos - remasterizado 2026.',
-    'random.05':'Nuevos integrantes en el colectivo.',
-    'random.06':'Tiraje de playeras limitado a 30 piezas.',
-    'random.07':'Hola mundo.',
-    'random.08':'Gorra infinidad en $400 si mandas captura de este mensaje.',
-
-    'enter_to_view':'Acércate y presiona ENTER',
-  },
-
-  en: {
-    'nav.inicio':'HOME','nav.manifiesto':'MANIFESTO','nav.artistas':'ARTISTS',
-    'nav.tienda':'SHOP','nav.transmisiones':'BROADCASTS',
-
-    'ui.theme':'LIGHT','ui.move':'MOVE','ui.interact':'INTERACT',
-    'ui.fast_travel':'FAST TRAVEL','ui.go_left':'LEFT','ui.go_right':'RIGHT',
-    'ui.scene':'SCENE','ui.position':'POSITION','ui.signal':'SIGNAL','ui.stable':'STABLE',
-    'ui.system_online':'SYSTEM ONLINE','ui.transmission':'INCOMING BROADCAST',
-    'ui.established':'ESTABLISHED','ui.location':'LOCATION','ui.miembros':'MEMBERS',
-    'ui.drop':'DROP','ui.estado':'STATE','ui.proximo':'NEXT',
-    'ui.sold':'SOLD OUT','ui.contact':'CONTACT','ui.buy':'BUY',
-
-    'inicio.tag':'INTERACTIVE_SYSTEM_v1.1',
-    'inicio.title_top':'OTROSDIAS','inicio.title_bot':'OTROSDIAS',
-    'inicio.sub':'otrosdias es <b>Randy García Mejía</b>. Todos los derechos reservados a su obra.2020 - 2026. Serigrafía y ropa de artistas.',
-
-    'manifiesto.tag':'FRAGMENT_001',
-    'manifiesto.stamp1':'SIGNED','manifiesto.stamp2':'VERIFIED',
-    'manifiesto.p1':'otrosdias is a <em>congregation</em> of artists that rejects the single format.',
-    'manifiesto.p2':'Each garment is a signed work. Each work is a <em>broadcast</em>.',
-    'manifiesto.p3':'Each author receives royalties for what they create — because art without ownership is not freedom, it is dispossession.',
-    'manifiesto.p4':'<em>If you got this far, you are already part of it.</em>',
-
-    'artistas.tag':'AUTHOR_PANEL','artistas.title':'OTHER_ARTISTS',
-    'artist.bat_grafik.role':'VISUAL · TATTOO',
-    'artist.bat_grafik.bio':'Visual artist and tattooer. Heavy iconography built with saturated ink and thick strokes. Central piece of the rotating gallery.',
-    'artist.secret_eyes.role':'ILLUSTRATION',
-    'artist.secret_eyes.bio':'Author of the Serafín tank top. Line illustration with sacred and profane motifs. Works in series of 30.',
-    'artist.nula.role':'PHOTOGRAPHY',
-    'artist.nula.bio':'Photographer of hard light and silences. Documents the spaces between things. Coming soon: printed zine.',
-    'artist.henro.role':'MUSIC',
-    'artist.henro.bio':'Producer of hypnagogic electronics. Sonic drops linked to each clothing release. Plays at pop-ups.',
-    'artist.del_realismo.role':'WRITING',
-    'artist.del_realismo.bio':'Writes the texts that accompany the drops. Voice of the manifesto. Keeps the public log open.',
-    'artist.oxida.role':'ANIMATION',
-    'artist.oxida.bio':'Frame-by-frame animator. Builds short loops that rotate on monitors during pop-ups.',
-    'artist.luna_negra.role':'PERFORMANCE',
-    'artist.luna_negra.bio':'Performance and short dramaturgy. Latest addition. Next piece scheduled for the next drop.',
-
-    'tienda.tag':'DROP_001 · COLD_SEASON',
-    'product.serafin.short':'SERAFÍN · TANK',
-    'product.serafin.name':'Serafín','product.serafin.author':'BY SECRET.EYES888',
-    'product.serafin.desc':'Cotton tank top with one-color screen print. Limited run of 30 pieces. Pickup points specified at @otrosdias.',
-    'product.transmision.short':'BROADCAST · HOODIE',
-    'product.transmision.name':'Broadcast','product.transmision.author':'BY BAT_GRAFIK',
-    'product.transmision.desc':'Black hoodie with chest embroidery. Joint edition with bat_grafik. 20 signed pieces, numbered and traceable.',
-    'product.lente.short':'LENS · TEE',
-    'product.lente.name':'Lens','product.lente.author':'BY NULA',
-    'product.lente.desc':'T-shirt with photo print from the Lens series. Sold out from the last drop. Next rotation: uncertain.',
-    'product.sintitulo.short':'NEXT PIECE',
-    'product.sintitulo.name':'Untitled','product.sintitulo.author':'BY HENRO',
-    'product.sintitulo.desc':'In production. Info released when the archive opens. Subscribe to Instagram for signal.',
-
-    'transmisiones.tag':'PUBLIC_LOG',
-    'trans.01':'<em>Serafín</em> tank top released. Run of 30.',
-    'trans.02':'New artist: <em>luna_negra</em>. Performance.',
-    'trans.03':'Night pop-up at <em>la libertad</em>. Invitation only.',
-    'trans.04':'Collab with <em>bat_grafik</em>. Embroidered hoodie.',
-    'trans.05':'Rotating gallery updated. Pieces by <em>nula</em>.',
-    'trans.06':'First public <em>broadcast</em>. We are online.',
-    'trans.full.01':'Serafín tank released June 1st. Unique run of 30 pieces, one-color screen print on cotton. The piece is born from a session with secret.eyes888 documented in the archive. Each delivery carries the author signature.',
-    'trans.full.02':'luna_negra joins the congregation. Performance and short dramaturgy. Next piece scheduled for drop_002. Extended bio available at the ARTISTS scene.',
-    'trans.full.03':'Night pop-up held May 14th at la libertad. Invitation only. Upcoming pop-ups will be announced via DM to the closed list.',
-    'trans.full.04':'Embroidered hoodie with bat_grafik. Edition of 20 signed pieces. Chest embroidery, heavy fabric, matte finish.',
-    'trans.full.05':'Four new pieces by nula entered the rotating gallery on April 18th. They will remain until June 30th. After that they will be archived.',
-    'trans.full.06':'First broadcast issued April 13th. System online since then with no interruptions. We are with you.',
-
-    'random.01':'Signal recovered.',
-    'random.02':'New piece in production.',
-    'random.03':'Pop-up incoming. Check @otrosdias.',
-    'random.04':'The manifesto has been edited.',
-    'random.05':'Gallery rotated. New frames.',
-    'random.06':'Run limited to 30 pieces.',
-    'random.07':'You are being watched by art.',
-    'random.08':'Next drop: in preparation.',
-
-    'enter_to_view':'Get close and press ENTER',
-  }
-};
-
-const STATE = {
-  scene: 'inicio',
-  x: 50, y: 75,     // % within scene viewport
-  facing: 'right',
-  lang: (localStorage.getItem('od_lang') || 'es'),
-  theme: (localStorage.getItem('od_theme') || 'dark'),
-  activeHotspot: null,
-  activeExit: null,
-  transitioning: false,
-};
-
-const SCENES = ['inicio','manifiesto','artistas','tienda','transmisiones'];
-const t = k => (I18N[STATE.lang] && I18N[STATE.lang][k]) || I18N.es[k] || k;
-
-/* ============================================================
-   BOOT SEQUENCE
-============================================================ */
-const bootLinesByLang = {
-  es: [
-    'otrosdias',
-    '2026 - 3752',
-    '',
-    '> Dos mil veinte',
-    '> 2000 Veintiuno',
-    '> dos mil 22',
-    '> MMXXIII',
-    'A04',
-    'V5',
-    ''
-  ],
-  en: [
-    'otrosdias',
-    '2026 - 3752',
-    '',
-    '> Dos mil veinte',
-    '> 2000 Veintiuno',
-    '> dos mil 22',
-    '> MMXXIII',
-    'A04',
-    'V5',
-    ''
-  ]
-};
-const bootEl = document.getElementById('bootText');
-let bootIdx = 0, bootChar = 0;
-function typeBoot(){
-  const lines = bootLinesByLang[STATE.lang];
-  if(bootIdx >= lines.length){
-    setTimeout(() => document.getElementById('boot').classList.add('hidden'), 350);
-    return;
-  }
-  const line = lines[bootIdx];
-  if(bootChar <= line.length){
-    bootEl.textContent = lines.slice(0, bootIdx).join('\n') + (bootIdx>0?'\n':'') + line.slice(0, bootChar);
-    bootChar++;
-    setTimeout(typeBoot, line.length === 0 ? 70 : Math.random() * 14 + 5);
-  } else { bootIdx++; bootChar = 0; setTimeout(typeBoot, 80); }
-}
-if(sessionStorage.getItem('od_booted')){
-  document.getElementById('boot').classList.add('hidden');
-} else {
-  setTimeout(typeBoot, 200);
-  sessionStorage.setItem('od_booted','1');
-}
-
-/* ============================================================
-   I18N APPLY
-============================================================ */
-function applyLang(){
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const k = el.dataset.i18n;
-    el.innerHTML = t(k);
-  });
-  document.getElementById('langBtn').textContent = STATE.lang === 'es' ? 'EN' : 'ES';
-  document.documentElement.lang = STATE.lang;
-  localStorage.setItem('od_lang', STATE.lang);
-}
-applyLang();
-
-document.getElementById('langBtn').addEventListener('click', () => {
-  STATE.lang = STATE.lang === 'es' ? 'en' : 'es';
-  applyLang();
-});
-
-/* ============================================================
-   THEME
-============================================================ */
-const themeBtn = document.getElementById('themeBtn');
-function applyTheme(){
-  document.body.classList.toggle('inverted', STATE.theme === 'light');
-  themeBtn.textContent = STATE.theme === 'light' ? 'DARK' : 'LIGHT';
-  localStorage.setItem('od_theme', STATE.theme);
-}
-applyTheme();
-themeBtn.addEventListener('click', () => {
-  STATE.theme = STATE.theme === 'light' ? 'dark' : 'light';
-  applyTheme();
-});
-
-/* ============================================================
-   HUD
-============================================================ */
-const hudScene = document.getElementById('hudScene');
-const hudPos = document.getElementById('hudPos');
-const clock = document.getElementById('clock');
-function updateHud(){
-  const idx = SCENES.indexOf(STATE.scene) + 1;
-  hudScene.textContent = String(idx).padStart(2,'0') + ' / ' + String(SCENES.length).padStart(2,'0');
-  hudPos.textContent = String(Math.round(STATE.x)).padStart(2,'0') + ',' + String(Math.round(STATE.y)).padStart(2,'0');
-}
-function pad(n){ return String(n).padStart(2,'0'); }
-function tick(){
-  const d = new Date();
-  clock.textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-}
-tick(); setInterval(tick, 1000);
-
-/* ============================================================
-   CHARACTER
-============================================================ */
-const character = document.getElementById('char');
-let walkToggle = false;
-function renderCharacter(){
-  // Position character within active scene
-  const scene = document.querySelector(`.scene[data-scene="${STATE.scene}"]`);
-  if(!scene) return;
-  const rect = scene.getBoundingClientRect();
-  const px = rect.left + (STATE.x / 100) * rect.width;
-  const py = rect.top + (STATE.y / 100) * rect.height;
-  character.style.left = px + 'px';
-  character.style.top  = py + 'px';
-  character.style.transform = STATE.facing === 'left'
-    ? 'translate(-50%, -50%) scaleX(-1)'
-    : 'translate(-50%, -50%) scaleX(1)';
-  // Walk animation: alternate legs
-  walkToggle = !walkToggle;
-  character.textContent = walkToggle
+/* ── ASCII CHARACTER ─────────────────────── */
+function getPose(t){
+  return t
     ? '   O\n (lol)\n   W\n  / |'
     : '   O\n (lol)\n   W\n  | \\';
 }
-function moveCharacter(dx, dy){
-  if(STATE.transitioning) return;
 
-  if(dx > 0) STATE.facing = 'right';
-  else if(dx < 0) STATE.facing = 'left';
+/* ── STATE ───────────────────────────────── */
+const STATE={
+  scene:'inicio',x:30,y:74,facing:'right',
+  theme:(localStorage.getItem('od_theme')||'light'),
+  activeExit:null,transitioning:false
+};
+const SCENES=['inicio','descripcion','artistas','tienda','novedades'];
 
-  let nx = STATE.x + dx;
-  let ny = STATE.y + dy;
+/* ── BOOT ────────────────────────────────── */
+const BOOT=['otrosdias','accediendo al sistema...',''];
+const bootEl=document.getElementById('bootText');
+let bi=0,bc=0;
+function typeBoot(){
+  if(bi>=BOOT.length){setTimeout(()=>document.getElementById('boot').classList.add('hidden'),350);return;}
+  const l=BOOT[bi];
+  if(bc<=l.length){
+    bootEl.textContent=BOOT.slice(0,bi).join('\n')+(bi>0?'\n':'')+l.slice(0,bc);
+    bc++;setTimeout(typeBoot,l.length===0?70:Math.random()*16+5);
+  }else{bi++;bc=0;setTimeout(typeBoot,120);}
+}
+if(sessionStorage.getItem('od_booted')){
+  document.getElementById('boot').classList.add('hidden');
+}else{setTimeout(typeBoot,250);sessionStorage.setItem('od_booted','1');}
 
-  // Boundary detection → trigger exits
-  if(nx > 95){
-    tryExit('right');
-    nx = 95;
-  } else if(nx < 5){
-    tryExit('left');
-    nx = 5;
-  }
-  ny = Math.max(35, Math.min(85, ny));
+/* ── THEME ───────────────────────────────── */
+const themeBtn=document.getElementById('themeBtn');
+function applyTheme(){
+  document.body.classList.toggle('inverted',STATE.theme==='dark');
+  themeBtn.textContent='INVERTIR';
+  localStorage.setItem('od_theme',STATE.theme);
+}
+applyTheme();
+themeBtn.addEventListener('click',()=>{STATE.theme=STATE.theme==='dark'?'light':'dark';applyTheme();});
 
-  STATE.x = nx;
-  STATE.y = ny;
+/* ── CLOCK ───────────────────────────────── */
+const clock=document.getElementById('clock');
+function pad(n){return String(n).padStart(2,'0')}
+function tick(){const d=new Date();clock.textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;}
+tick();setInterval(tick,1000);
 
-  renderCharacter();
-  checkNearby();
-  updateHud();
+/* ── CHARACTER RENDER ────────────────────── */
+const charEl=document.getElementById('char');
+let wt=false,moveTimeout=null;
+function renderChar(){
+  const sc=document.querySelector(`.scene[data-scene="${STATE.scene}"]`);
+  if(!sc)return;
+  const r=sc.getBoundingClientRect();
+  charEl.style.left=(r.left+STATE.x/100*r.width)+'px';
+  charEl.style.top=(r.top+STATE.y/100*r.height)+'px';
+  charEl.style.transform=STATE.facing==='left'
+    ?'translate(-50%,-50%) scaleX(-1)':'translate(-50%,-50%) scaleX(1)';
+  wt=!wt;
+  charEl.textContent=getPose(wt);
+}
+function flagMoving(){
+  charEl.classList.add('moving');
+  if(moveTimeout)clearTimeout(moveTimeout);
+  moveTimeout=setTimeout(()=>charEl.classList.remove('moving'),160);
 }
 
-/* ============================================================
-   SCENE TRANSITIONS
-============================================================ */
-function changeScene(target, fromSide){
-  if(STATE.transitioning || target === STATE.scene) return;
-  STATE.transitioning = true;
-  document.body.classList.add('scene-transitioning');
-
-  setTimeout(() => {
-    document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
-    const next = document.querySelector(`.scene[data-scene="${target}"]`);
-    next.classList.add('active');
-    STATE.scene = target;
-    // Position character at entry edge
-    if(fromSide === 'left') STATE.x = 10;
-    else if(fromSide === 'right') STATE.x = 90;
-    else STATE.x = 50;
-    STATE.y = 70;
-    document.body.classList.remove('scene-transitioning');
-    setTimeout(() => {
-      STATE.transitioning = false;
-      renderCharacter();
-      checkNearby();
-      updateHud();
-      updateTabs();
-    }, 400);
-  }, 350);
+/* ── MOVEMENT ────────────────────────────── */
+const SX=3,SY=2.5;
+function moveChar(dx,dy){
+  if(STATE.transitioning)return;
+  if(dx>0)STATE.facing='right';else if(dx<0)STATE.facing='left';
+  let nx=STATE.x+dx;
+  if(nx>95)tryExit('right');
+  else if(nx<5)tryExit('left');
+  else STATE.x=nx;
+  STATE.y=Math.max(32,Math.min(88,STATE.y+dy));
+  flagMoving();renderChar();checkNearby();
 }
 function tryExit(side){
-  const idx = SCENES.indexOf(STATE.scene);
-  if(side === 'right' && idx < SCENES.length - 1){
-    changeScene(SCENES[idx+1], 'left');
-  } else if(side === 'left' && idx > 0){
-    changeScene(SCENES[idx-1], 'right');
-  }
+  const i=SCENES.indexOf(STATE.scene);
+  if(side==='right'&&i<SCENES.length-1)changeScene(SCENES[i+1],'left');
+  else if(side==='left'&&i>0)changeScene(SCENES[i-1],'right');
 }
-function goTo(scene){ changeScene(scene, 'fade'); }
-window.goTo = goTo;
-
-/* Tab navigation */
+function changeScene(target,from){
+  if(STATE.transitioning||target===STATE.scene)return;
+  STATE.transitioning=true;
+  document.body.classList.add('scene-transitioning');
+  setTimeout(()=>{
+    document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+    const next=document.querySelector(`.scene[data-scene="${target}"]`);
+    if(next)next.classList.add('active');
+    STATE.scene=target;
+    if(from==='left')STATE.x=10;else if(from==='right')STATE.x=90;else STATE.x=50;
+    STATE.y=74;
+    document.body.classList.remove('scene-transitioning');
+    setTimeout(()=>{STATE.transitioning=false;renderChar();checkNearby();updateTabs();},420);
+  },380);
+}
+function goTo(s){changeScene(s,'fade');}
+window.goTo=goTo;
 function updateTabs(){
-  document.querySelectorAll('.scene-tabs button').forEach(b => {
-    b.classList.toggle('active', b.dataset.jump === STATE.scene);
-  });
+  document.querySelectorAll('.scene-tabs button')
+    .forEach(b=>b.classList.toggle('active',b.dataset.jump===STATE.scene));
+  document.getElementById('hudScene').textContent=
+    (SCENES.indexOf(STATE.scene)+1)+'/'+SCENES.length;
 }
-document.querySelectorAll('.scene-tabs button').forEach(b => {
-  b.addEventListener('click', () => goTo(b.dataset.jump));
-});
-
-/* Exit click navigation */
-document.querySelectorAll('.exit').forEach(ex => {
-  ex.addEventListener('click', () => {
-    goTo(ex.dataset.go);
-  });
-});
-
-/* ============================================================
-   PROXIMITY: hotspots + exits
-============================================================ */
-function dist(ax, ay, bx, by){ return Math.hypot(ax-bx, ay-by); }
+document.querySelectorAll('.scene-tabs button').forEach(b=>b.addEventListener('click',()=>goTo(b.dataset.jump)));
+document.querySelectorAll('.exit').forEach(e=>e.addEventListener('click',()=>goTo(e.dataset.go)));
 
 function checkNearby(){
-  const scene = document.querySelector(`.scene[data-scene="${STATE.scene}"]`);
-  if(!scene) return;
-
-  // Hotspots
-  const hs = scene.querySelectorAll('.hotspot');
-  let nearestH = null, dminH = 12;
-  hs.forEach(h => {
-    h.classList.remove('active');
-    const hx = parseFloat(h.style.left);
-    const hy = parseFloat(h.style.top);
-    const d = dist(STATE.x, STATE.y, hx, hy);
-    if(d < dminH){ dminH = d; nearestH = h; }
-  });
-  if(nearestH){
-    nearestH.classList.add('active');
-    STATE.activeHotspot = nearestH;
-  } else {
-    STATE.activeHotspot = null;
-  }
-
-  // Exits
-  const exits = scene.querySelectorAll('.exit');
-  STATE.activeExit = null;
-  exits.forEach(ex => {
+  const sc=document.querySelector(`.scene[data-scene="${STATE.scene}"]`);
+  if(!sc)return;
+  STATE.activeExit=null;
+  sc.querySelectorAll('.exit').forEach(ex=>{
     ex.classList.remove('near');
-    const isLeft = ex.classList.contains('exit-left');
-    const isRight = ex.classList.contains('exit-right');
-    if((isLeft && STATE.x < 12) || (isRight && STATE.x > 88)){
-      ex.classList.add('near');
-      STATE.activeExit = ex;
+    if((ex.classList.contains('exit-left')&&STATE.x<12)||(ex.classList.contains('exit-right')&&STATE.x>88)){
+      ex.classList.add('near');STATE.activeExit=ex;
     }
   });
 }
 
-/* ============================================================
-   INTERACT
-============================================================ */
-function interact(){
-  if(STATE.activeHotspot){
-    const id = STATE.activeHotspot.dataset.id;
-    openPanel(id);
-  } else if(STATE.activeExit){
-    goTo(STATE.activeExit.dataset.go);
-  }
-}
-
-/* ============================================================
-   INFO PANEL
-============================================================ */
-const PANEL_DATA = {
-  // Artists
-  essppora: { kind:'artist', name:'essppora', role:'fotografía', bio:'artist.bat_grafik.bio', tag:'A1' },
-  secret_eyes: { kind:'artist', name:'SECRET.EYES888', role:'Ilustradora', bio:'artist.secret_eyes.bio', tag:'A2' },
-  mmicelio:       { kind:'artist', name:'mmicelio', role:'fotografía', bio:'artist.nula.bio', tag:'A3' },
-  derwent:      { kind:'artist', name:'derwent', role:'músico', bio:'artist.henro.bio', tag:'A4' },
-  Aldo_Lopez_Malo:{kind:'artist', name:'Aldo Lopez Malo', role:'artist.del_realismo.role', bio:'artist.del_realismo.bio', tag:'A5' },
-  papiwabisabi:      { kind:'artist', name:'papiwabisabi', role:'artist.oxida.role', bio:'artist.oxida.bio', tag:'A6' },
-  piedro: { kind:'artist', name:'piedro', role:'artist.luna_negra.role', bio:'artist.luna_negra.bio', tag:'A7' },
-  Espontáneo: { kind:'artist', name:'Espontáneo', role:'fotografía', bio:'artist.bat_grafik.bio', tag:'A8' },
-  Jcess: { kind:'artist', name:'Jces.s', role:'Ilustradora', bio:'artist.secret_eyes.bio', tag:'A9' },
-  Ayra:       { kind:'artist', name:'Ayra', role:'fotografía', bio:'artist.nula.bio', tag:'A10' },
-  Mata:      { kind:'artist', name:'Mata', role:'músico', bio:'artist.henro.bio', tag:'A11' },
-  Pink1man:{kind:'artist', name:'Pink!man', role:'artist.del_realismo.role', bio:'artist.del_realismo.bio', tag:'A12' },
-  Vertedero_Don_Emilio:      { kind:'artist', name:'Vertedero Don Emilio', role:'artist.oxida.role', bio:'artist.oxida.bio', tag:'A13' },
-  otrosdias: { kind:'artist', name:'otrosdias', role:'artist.luna_negra.role', bio:'artist.luna_negra.bio', tag:'A14' },
-  Flwrs:      { kind:'artist', name:'Flwrs', role:'artist.oxida.role', bio:'artist.oxida.bio', tag:'A15' },
-  José_Alberto_Morales: { kind:'artist', name:'José Alberto Morales', role:'artist.luna_negra.role', bio:'artist.luna_negra.bio', tag:'A16' },
-  // Products
-  serafin:    { kind:'product', name:'product.serafin.name', author:'product.serafin.author', desc:'product.serafin.desc', price:'$150 MXN', tag:'DROP_001 · P_01' },
-  transmision:{ kind:'product', name:'product.transmision.name', author:'product.transmision.author', desc:'product.transmision.desc', price:'$320 MXN', tag:'DROP_001 · P_02' },
-  lente:      { kind:'product', name:'product.lente.name', author:'product.lente.author', desc:'product.lente.desc', price:'ui.sold', tag:'ARCHIVO · P_03', sold:true },
-  sintitulo:  { kind:'product', name:'product.sintitulo.name', author:'product.sintitulo.author', desc:'product.sintitulo.desc', price:'???', tag:'DROP_002 · P_04' },
-  // Transmissions
-  trans_01: { kind:'trans', name:'01·06·2026', desc:'trans.full.01', tag:'BITÁCORA_06' },
-  trans_02: { kind:'trans', name:'28·05·2026', desc:'trans.full.02', tag:'BITÁCORA_05' },
-  trans_03: { kind:'trans', name:'14·05·2026', desc:'trans.full.03', tag:'BITÁCORA_04' },
-  trans_04: { kind:'trans', name:'02·05·2026', desc:'trans.full.04', tag:'BITÁCORA_03' },
-  trans_05: { kind:'trans', name:'18·04·2026', desc:'trans.full.05', tag:'BITÁCORA_02' },
-  trans_06: { kind:'trans', name:'13·04·2026', desc:'trans.full.06', tag:'BITÁCORA_01' },
+/* ── ARTISTS ─────────────────────────────── */
+const ARTISTS={
+  otrosdias:{name:'otrosdias',role:'comunidad creadora',id:'A_00',
+    historia:'Plataforma de artistas profesionales fundada en Puebla, México. Una congregación abierta de fotógrafos, visuales, animadores, músicos, escritores y actores que se expresan a través de la ropa y la galería rotativa. Cada autor recibe regalías por su obra.',
+    hechos:[['Origen','Puebla, MX'],['Fundación','2024'],['Miembros','17+'],['Drop activo','001'],['Próximo','Drop 002']],
+    obra:'Ropa de autor de tiraje limitado. Galería rotativa con piezas de los miembros. Pop-ups nocturnos por invitación. Cada prenda es una obra firmada.',
+    cita:'"Si llegaste hasta aquí, ya formas parte." — manifiesto otrosdias'},
+  kai_arcy:{name:'Kai Arcy',role:'fotografía',id:'A_01',
+    historia:'Fotografía de atmósfera y retrato. Captura los momentos donde la luz aún no decide qué quiere ser.',
+    hechos:[['Disciplina','Fotografía'],['Formato','Análogo · Digital'],['Activa desde','2024']],
+    obra:'Serie fotográfica continua. Trabaja con luz natural y silencios largos.',
+    cita:'"Lo que no se mira con tiempo, no se ve."'},
+  essppora:{name:'Essympora',role:'fotografía',id:'A_02',
+    historia:'Fotógrafa y artista visual. Trabaja la imagen como archivo y como gesto.',
+    hechos:[['Disciplina','Fotografía / Visual'],['Estilo','Documental · Intervenido'],['Activa desde','2024']],
+    obra:'Serie fotográfica con manipulación a mano. Dobles exposiciones y collage físico.',
+    cita:'"La foto no termina cuando se toma."'},
+  mmicelio:{name:'Nymicelio',role:'fotografía',id:'A_03',
+    historia:'Documentación visual de espacios en tránsito. Miembro fundador.',
+    hechos:[['Disciplina','Fotografía documental'],['Tema','Espacios · Arquitectura'],['Activa desde','2024']],
+    obra:'Archivo fotográfico de espacios en transición.',
+    cita:'"Los lugares también se mueren cuando nadie los nombra."'},
+  derwent:{name:'Deewent',role:'música',id:'A_04',
+    historia:'Productor de electrónica ambiental. Crea los paisajes sonoros que acompañan cada drop de ropa.',
+    hechos:[['Disciplina','Música electrónica'],['Género','Ambient · IDM'],['Activa desde','2024']],
+    obra:'Composiciones largas para los pop-ups nocturnos.',
+    cita:'"El silencio también tiene textura."'},
+  ezk:{name:'ΞЖ',role:'arte visual',id:'A_05',
+    historia:'Arte visual e ilustración experimental. Serigrafía y grabado.',
+    hechos:[['Disciplina','Serigrafía · Grabado'],['Activa desde','2024']],
+    obra:'Carteles y piezas impresas para los drops.',
+    cita:'"Tipografía es paisaje."'},
+  papiwabisabi:{name:'PAPIWABISABI',role:'ilustración · tatuaje',id:'A_06',
+    historia:'Ilustración y tatuaje. Iconografía densa, trazo manual, imperfección como principio.',
+    hechos:[['Disciplina','Tatuaje · Ilustración'],['Estilo','Trazo grueso'],['Activa desde','2024']],
+    obra:'Tatuajes y obra en papel.',
+    cita:'"Lo roto también es la pieza."'},
+  ozkar:{name:'ozkar',role:'fotografía · diseño',id:'A_07',
+    historia:'Fotografía y dirección visual. Contribuye a la identidad gráfica del colectivo.',
+    hechos:[['Disciplina','Foto · Diseño'],['Rol','Dirección visual'],['Activa desde','2024']],
+    obra:'Imagen editorial para los drops.',
+    cita:'"Diseñar es decidir qué se omite."'},
+  piedro:{name:'piedro',role:'arte visual',id:'A_08',
+    historia:'Artista multidisciplinario. Obra en proceso continuo de edición.',
+    hechos:[['Disciplina','Multidisciplina'],['Activa desde','2024']],
+    obra:'Producción híbrida entre soportes.',
+    cita:'"La obra es un cuaderno que no se cierra."'},
+  espontaneo:{name:'Espontáneo',role:'fotografía',id:'A_09',
+    historia:'Fotografía documental. Registra los momentos entre los momentos.',
+    hechos:[['Disciplina','Fotografía documental'],['Activa desde','2024']],
+    obra:'Cobertura visual de pop-ups y reuniones.',
+    cita:'"Solo tomo lo que ya estaba ahí."'},
+  jcess:{name:'Jces.s',role:'ilustración',id:'A_10',
+    historia:'Ilustradora a línea. Motivos orgánicos y formas en tensión.',
+    hechos:[['Disciplina','Ilustración'],['Técnica','Línea fina'],['Activa desde','2024']],
+    obra:'Serie de ilustraciones a línea publicadas por entregas.',
+    cita:'"La línea ya sabe a dónde va."'},
+  aldo:{name:'Aldo López Malo',role:'diseño · dirección',id:'A_11',
+    historia:'Dirección creativa y diseño. Coordina los lanzamientos.',
+    hechos:[['Disciplina','Dirección · Diseño'],['Activa desde','2024']],
+    obra:'Identidad visual del colectivo.',
+    cita:'"La marca no es un logo, es un acuerdo."'},
+  pinkiman:{name:'Pink!man',role:'arte visual',id:'A_12',
+    historia:'Arte urbano y producción de objetos. Edición limitada en cada pieza.',
+    hechos:[['Disciplina','Arte urbano · Objeto'],['Activa desde','2024']],
+    obra:'Intervenciones urbanas y piezas seriadas.',
+    cita:'"El muro también es un papel grande."'},
+  vertedero:{name:'Vertedero Don Emilio',role:'instalación',id:'A_13',
+    historia:'Arte de instalación y objeto encontrado.',
+    hechos:[['Disciplina','Instalación'],['Material','Encontrado'],['Activa desde','2024']],
+    obra:'Instalaciones temporales en pop-ups.',
+    cita:'"Nada se tira, todo se traduce."'},
+  ayra:{name:'Ayra',role:'fotografía',id:'A_14',
+    historia:'Fotografía de retrato e intimidad. Serie editorial en curso.',
+    hechos:[['Disciplina','Fotografía de retrato'],['Activa desde','2025']],
+    obra:'Serie editorial de retratos en interiores.',
+    cita:'"Para mirar de cerca, primero hay que confiar."'},
+  mata:{name:'Mata',role:'música',id:'A_15',
+    historia:'Música e intervención sonora para los pop-ups nocturnos.',
+    hechos:[['Disciplina','Música · Sonido'],['Activa desde','2025']],
+    obra:'Sesiones en vivo y piezas grabadas.',
+    cita:'"Improvisar es escuchar mucho antes de tocar."'},
+  flwrs:{name:'Flwrs',role:'ilustración · textil',id:'A_16',
+    historia:'Ilustración y diseño textil. Estampados para los drops.',
+    hechos:[['Disciplina','Ilustración · Textil'],['Activa desde','2025']],
+    obra:'Estampados para tank tops y camisetas.',
+    cita:'"Un patrón es un jardín pequeño."'},
+  jose_alberto:{name:'José Alberto Morales',role:'arte visual',id:'A_17',
+    historia:'Arte visual y fotografía análoga. Film expirado y proceso casero.',
+    hechos:[['Disciplina','Foto análoga'],['Material','Film expirado'],['Activa desde','2026']],
+    obra:'Serie en proceso. Resultados parcialmente impredecibles.',
+    cita:'"El error también es la pieza."'}
 };
 
-const panel = document.getElementById('panelBackdrop');
-function openPanel(id){
-  const d = PANEL_DATA[id];
-  if(!d) return;
-  document.getElementById('panelTag').textContent = d.tag;
-
-  if(d.kind === 'artist'){
-    document.getElementById('panelTitle').textContent = d.name;
-    document.getElementById('panelSub').textContent = t(d.role);
-    document.getElementById('panelBody').textContent = t(d.bio);
-    document.getElementById('panelMeta').textContent = STATE.lang === 'es' ? 'AUTOR VERIFICADO' : 'VERIFIED AUTHOR';
-    document.getElementById('panelCta').textContent = t('ui.contact');
-    document.getElementById('panelCta').onclick = () => window.open('https://instagram.com/otrosdias','_blank');
-  } else if(d.kind === 'product'){
-    document.getElementById('panelTitle').textContent = t(d.name);
-    document.getElementById('panelSub').textContent = t(d.author);
-    document.getElementById('panelBody').textContent = t(d.desc);
-    document.getElementById('panelMeta').textContent = d.price === 'ui.sold' ? t('ui.sold') : d.price;
-    const cta = document.getElementById('panelCta');
-    cta.textContent = d.sold ? t('ui.sold') : t('ui.buy');
-    cta.disabled = !!d.sold;
-    cta.style.opacity = d.sold ? '0.4' : '1';
-    cta.onclick = () => {
-      if(d.sold) return;
-      const msg = encodeURIComponent('Hola otrosdias, quiero comprar: ' + t(d.name));
-      window.open('https://wa.me/?text=' + msg, '_blank');
-    };
-  } else if(d.kind === 'trans'){
-    document.getElementById('panelTitle').textContent = d.name;
-    document.getElementById('panelSub').textContent = STATE.lang === 'es' ? 'TRANSMISIÓN ARCHIVADA' : 'ARCHIVED BROADCAST';
-    document.getElementById('panelBody').textContent = t(d.desc);
-    document.getElementById('panelMeta').textContent = STATE.lang === 'es' ? 'BITÁCORA PÚBLICA' : 'PUBLIC LOG';
-    document.getElementById('panelCta').textContent = STATE.lang === 'es' ? 'CERRAR' : 'CLOSE';
-    document.getElementById('panelCta').onclick = closePanel;
-  }
-  panel.classList.add('open');
-}
-function closePanel(){ panel.classList.remove('open'); }
-window.closePanel = closePanel;
-panel.addEventListener('click', e => { if(e.target === panel) closePanel(); });
-
-/* ============================================================
-   INPUT — keyboard + d-pad
-============================================================ */
-const STEP_X = 3, STEP_Y = 2.5;
-let keyHold = {};
-
-function handleKey(action){
-  if(panel.classList.contains('open')){
-    if(action === 'enter' || action === 'escape') closePanel();
-    return;
-  }
-  switch(action){
-    case 'left':  moveCharacter(-STEP_X, 0); break;
-    case 'right': moveCharacter( STEP_X, 0); break;
-    case 'up':    moveCharacter(0, -STEP_Y); break;
-    case 'down':  moveCharacter(0,  STEP_Y); break;
-    case 'enter': interact(); break;
-    case 'tab':   {
-      const idx = SCENES.indexOf(STATE.scene);
-      goTo(SCENES[(idx+1) % SCENES.length]);
-      break;
-    }
-  }
+/* Panel */
+const panelBD=document.getElementById('panelBackdrop');
+function openArtistPanel(id){
+  const d=ARTISTS[id];if(!d)return;
+  document.getElementById('panelId').textContent='— '+d.id;
+  document.getElementById('panelName').textContent=d.name;
+  document.getElementById('panelRole').textContent=d.role;
+  document.getElementById('content-historia').innerHTML='<p class="p-text">'+d.historia+'</p>';
+  document.getElementById('content-hechos').innerHTML=
+    d.hechos.map(([l,v])=>`<li><span class="lbl">${l}</span><span class="val">${v}</span></li>`).join('');
+  document.getElementById('content-obra').innerHTML='<p class="p-text">'+d.obra+'</p>';
+  document.getElementById('content-cita').innerHTML=
+    `<blockquote class="quote">${d.cita}</blockquote><div class="quote-by">— ${d.name}</div>`;
+  document.getElementById('panelMeta').textContent='archivo · comunidad otrosdias';
+  const cta=document.getElementById('panelCta');
+  cta.textContent='Instagram';cta.disabled=false;cta.style.opacity='1';
+  cta.onclick=()=>window.open('https://instagram.com/otrosdias','_blank');
+  setActiveTab('historia');
+  panelBD.classList.add('open');
 }
 
-document.addEventListener('keydown', e => {
-  let action = null;
-  switch(e.key){
-    case 'ArrowLeft': case 'a': case 'A': action = 'left'; break;
-    case 'ArrowRight': case 'd': case 'D': action = 'right'; break;
-    case 'ArrowUp': case 'w': case 'W': action = 'up'; break;
-    case 'ArrowDown': case 's': case 'S': action = 'down'; break;
-    case 'Enter': case ' ': action = 'enter'; break;
-    case 'Escape': action = 'escape'; break;
-    case 'Tab': e.preventDefault(); action = 'tab'; break;
-  }
-  if(action){ e.preventDefault(); handleKey(action); }
-});
-
-/* D-pad with hold-to-repeat */
-document.querySelectorAll('.dpad button').forEach(b => {
-  let repeatId = null;
-  const fire = () => handleKey(b.dataset.move);
-  b.addEventListener('touchstart', e => {
-    e.preventDefault();
-    fire();
-    if(b.dataset.move !== 'enter'){
-      repeatId = setInterval(fire, 130);
-    }
-  }, { passive: false });
-  b.addEventListener('touchend', () => { if(repeatId){ clearInterval(repeatId); repeatId = null; } });
-  b.addEventListener('mousedown', () => {
-    fire();
-    if(b.dataset.move !== 'enter'){
-      repeatId = setInterval(fire, 130);
-    }
-  });
-  b.addEventListener('mouseup',    () => { if(repeatId){ clearInterval(repeatId); repeatId = null; } });
-  b.addEventListener('mouseleave', () => { if(repeatId){ clearInterval(repeatId); repeatId = null; } });
-});
-
-/* Click on hotspot to interact (desktop convenience) */
-document.querySelectorAll('.hotspot').forEach(h => {
-  h.addEventListener('click', () => openPanel(h.dataset.id));
-});
-
-/* ============================================================
-   RANDOM TRANSMISSIONS
-============================================================ */
-const transPop = document.getElementById('transPop');
-const transMsg = document.getElementById('transMsg');
-function showTrans(msg){
-  transMsg.innerHTML = msg || t('random.0' + (Math.floor(Math.random()*8)+1));
-  transPop.classList.add('show');
-  setTimeout(() => transPop.classList.remove('show'), 4500);
+const PRODUCTS={
+  serafin:{name:'Serafín',role:'tank top · por secret.eyes888',id:'P_01',
+    historia:'Tank top de algodón estampado con serigrafía a una tinta. Diseño de secret.eyes888. Pieza inaugural del Drop 001.',
+    hechos:[['Material','Algodón 100%'],['Técnica','Serigrafía 1 tinta'],['Tiraje','30 piezas'],['Precio','$150 MXN']],
+    obra:'Pieza con estampado del personaje "Serafín". Tela ligera, corte regular.',
+    cita:'"Cada prenda es una obra firmada."'},
+  transmision:{name:'Transmisión',role:'hoodie · por bat_grafik',id:'P_02',
+    historia:'Hoodie negro con bordado al pecho. Edición conjunta con bat_grafik.',
+    hechos:[['Material','Algodón pesado'],['Técnica','Bordado'],['Tiraje','20 piezas'],['Precio','$320 MXN']],
+    obra:'Hoodie con bordado al pecho. Tela pesada, terminado mate.',
+    cita:'"Cada obra es una transmisión."'},
+  lente:{name:'Lente',role:'tee · por nula',id:'P_03',sold:true,
+    historia:'Camiseta con foto-estampado de la serie Lente. Pieza agotada.',
+    hechos:[['Material','Algodón'],['Técnica','Foto-estampado'],['Tiraje','25 piezas'],['Estado','Agotado']],
+    obra:'Camiseta con foto-estampado de la serie "Lente" de nula.',
+    cita:'"Lo que se mira queda."'},
+  sintitulo:{name:'Sin título',role:'próximamente · por henro',id:'P_04',
+    historia:'Pieza en producción. Información liberada cuando el archivo se abra.',
+    hechos:[['Estado','En producción'],['Drop','002']],
+    obra:'Detalles aún no revelados.',
+    cita:'"Lo que viene, viene."'}
+};
+function openProductPanel(id){
+  const d=PRODUCTS[id];if(!d)return;
+  document.getElementById('panelId').textContent='— '+d.id;
+  document.getElementById('panelName').textContent=d.name;
+  document.getElementById('panelRole').textContent=d.role;
+  document.getElementById('content-historia').innerHTML='<p class="p-text">'+d.historia+'</p>';
+  document.getElementById('content-hechos').innerHTML=
+    d.hechos.map(([l,v])=>`<li><span class="lbl">${l}</span><span class="val">${v}</span></li>`).join('');
+  document.getElementById('content-obra').innerHTML='<p class="p-text">'+d.obra+'</p>';
+  document.getElementById('content-cita').innerHTML=
+    `<blockquote class="quote">${d.cita}</blockquote><div class="quote-by">— manifiesto</div>`;
+  document.getElementById('panelMeta').textContent='drop · tiraje limitado';
+  const cta=document.getElementById('panelCta');
+  if(d.sold){cta.textContent='Agotado';cta.disabled=true;cta.style.opacity='.4';}
+  else{cta.textContent='Pedir por WhatsApp';cta.disabled=false;cta.style.opacity='1';
+    cta.onclick=()=>window.open('https://wa.me/?text='+encodeURIComponent('Hola otrosdias, quiero: '+d.name),'_blank');}
+  setActiveTab('historia');
+  panelBD.classList.add('open');
 }
-setTimeout(function loop(){
-  showTrans();
-  setTimeout(loop, 30000 + Math.random()*40000);
-}, 18000);
 
-/* ============================================================
-   INIT
-============================================================ */
-window.addEventListener('resize', renderCharacter);
-setTimeout(() => { renderCharacter(); checkNearby(); updateHud(); }, 100);
+const NOV_DATA={
+  nov01:{id:'NOV_06',name:'01 · 06 · 2026',role:'serafín · drop 001',body:'Serafín tank top liberado. Tiraje único de 30 piezas, serigrafía a una tinta sobre algodón.'},
+  nov02:{id:'NOV_05',name:'28 · 05 · 2026',role:'nuevo miembro',body:'Luna_negra se integra a la congregación. Performance y dramaturgia corta.'},
+  nov03:{id:'NOV_04',name:'14 · 05 · 2026',role:'pop-up nocturno',body:'Pop-up nocturno en la libertad. Solo invitación.'},
+  nov04:{id:'NOV_03',name:'02 · 05 · 2026',role:'colaboración',body:'Hoodie bordado con bat_grafik. Edición de 20 piezas firmadas.'},
+  nov05:{id:'NOV_02',name:'18 · 04 · 2026',role:'galería rotativa',body:'Nuevas piezas de nula en la galería rotativa.'},
+  nov06:{id:'NOV_01',name:'13 · 04 · 2026',role:'primera transmisión',body:'Primera transmisión emitida. Sistema en línea.'}
+};
+function openNovPanel(id){
+  const d=NOV_DATA[id];if(!d)return;
+  document.getElementById('panelId').textContent='— '+d.id;
+  document.getElementById('panelName').textContent=d.name;
+  document.getElementById('panelRole').textContent=d.role;
+  document.getElementById('content-historia').innerHTML='<p class="p-text">'+d.body+'</p>';
+  document.getElementById('content-hechos').innerHTML=`<li><span class="lbl">Fecha</span><span class="val">${d.name}</span></li><li><span class="lbl">Tipo</span><span class="val">${d.role}</span></li><li><span class="lbl">Archivo</span><span class="val">Público</span></li>`;
+  document.getElementById('content-obra').innerHTML='<p class="p-text">Entrada de bitácora pública del colectivo otrosdias.</p>';
+  document.getElementById('content-cita').innerHTML='<blockquote class="quote">"Cada obra es una transmisión."</blockquote><div class="quote-by">— manifiesto</div>';
+  document.getElementById('panelMeta').textContent='bitácora · archivo abierto';
+  const cta=document.getElementById('panelCta');
+  cta.textContent='Cerrar';cta.onclick=closePanel;cta.disabled=false;cta.style.opacity='1';
+  setActiveTab('historia');
+  panelBD.classList.add('open');
+}
+
+function setActiveTab(name){
+  document.querySelectorAll('.panel-tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===name));
+  document.querySelectorAll('.panel-content').forEach(c=>c.classList.toggle('active',c.dataset.content===name));
+}
+document.querySelectorAll('.panel-tab').forEach(t=>t.addEventListener('click',()=>setActiveTab(t.dataset.tab)));
+
+document.querySelectorAll('.artist-card').forEach(c=>c.addEventListener('click',()=>openArtistPanel(c.dataset.id)));
+document.querySelectorAll('.product-card').forEach(c=>c.addEventListener('click',()=>openProductPanel(c.dataset.pid)));
+document.querySelectorAll('.nov-entry').forEach(c=>c.addEventListener('click',()=>openNovPanel(c.dataset.nov)));
+
+function closePanel(){panelBD.classList.remove('open');}
+window.closePanel=closePanel;
+panelBD.addEventListener('click',e=>{if(e.target===panelBD)closePanel();});
+
+/* ── INPUT ───────────────────────────────── */
+function interact(){if(STATE.activeExit)goTo(STATE.activeExit.dataset.go);}
+function handleKey(a){
+  if(panelBD.classList.contains('open')){if(a==='enter'||a==='escape')closePanel();return;}
+  if(a==='left')moveChar(-SX,0);
+  else if(a==='right')moveChar(SX,0);
+  else if(a==='up')moveChar(0,-SY);
+  else if(a==='down')moveChar(0,SY);
+  else if(a==='enter')interact();
+  else if(a==='tab'){const i=SCENES.indexOf(STATE.scene);goTo(SCENES[(i+1)%SCENES.length]);}
+}
+document.addEventListener('keydown',e=>{
+  const m={'ArrowLeft':'left','a':'left','A':'left','ArrowRight':'right','d':'right','D':'right',
+           'ArrowUp':'up','w':'up','W':'up','ArrowDown':'down','s':'down','S':'down',
+           'Enter':'enter',' ':'enter','Escape':'escape','Tab':'tab'};
+  const a=m[e.key];if(a){e.preventDefault();handleKey(a);}
+});
+document.querySelectorAll('.dpad button').forEach(b=>{
+  let rid=null;
+  const fire=()=>handleKey(b.dataset.move),stop=()=>{if(rid){clearInterval(rid);rid=null;}};
+  b.addEventListener('touchstart',e=>{e.preventDefault();fire();if(b.dataset.move!=='enter')rid=setInterval(fire,130);},{passive:false});
+  b.addEventListener('touchend',stop);
+  b.addEventListener('mousedown',()=>{fire();if(b.dataset.move!=='enter')rid=setInterval(fire,130);});
+  b.addEventListener('mouseup',stop);b.addEventListener('mouseleave',stop);
+});
+
+/* ── INIT ────────────────────────────────── */
+window.addEventListener('resize',renderChar);
+setTimeout(()=>{renderChar();checkNearby();updateTabs();},120);
 </script>
 </body>
 </html>
