@@ -400,67 +400,190 @@ body.inverted .crt-overlay{ mix-blend-mode: screen; opacity: 0.3; }
 /* ============================================
    SCENE: ARTISTAS — frames on walls
 ============================================ */
-.artist-frame .frame{
-  width: 92px; height: 110px;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 8px;
+/* ── SCENE: ARTISTAS ── */
+.scene-artistas{background:var(--bg)}
+.artists-header{
+  position:absolute;top:2.5%;left:50%;transform:translateX(-50%);
+  font-family:var(--f-body);font-style:italic;
+  font-size:clamp(11px,1.3vw,14px);
+  color:var(--fg-muted);text-align:center;
+  pointer-events:none;max-width:80%;letter-spacing:.02em;
 }
-.artist-frame.featured .frame{
-  width: 130px; height: 150px;
+.artists-tagline{
+  position:absolute;bottom:11%;left:50%;transform:translateX(-50%);
+  font-family:var(--f-logo);
+  font-size:clamp(13px,1.6vw,18px);
+  color:var(--ink);letter-spacing:-.01em;
+  pointer-events:none;white-space:nowrap;
 }
-.artist-frame .name{
-  font-family: var(--font-crt);
-  font-size: 18px;
-  color: var(--fg);
-  line-height: 1;
-  text-align: center;
-  letter-spacing: 0.02em;
+.artists-cross{
+  position:absolute;
+  top:7.5%;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;
+  align-items:center;gap:clamp(8px,1.5vh,18px);
+  width:min(900px,96%);z-index:2;
 }
-.artist-frame.featured .name{
-  font-size: 26px;
-  color: var(--amber);
+.artists-row{
+  display:flex;gap:clamp(8px,1.2vw,16px);justify-content:center;
 }
-.artist-frame .id-badge{
-  position: absolute;
-  top: 4px; left: 6px;
-  font-size: 8px;
-  color: var(--fg-muted);
-  letter-spacing: 0.1em;
+.artist-card{
+  display:flex;flex-direction:column;align-items:center;
+  cursor:pointer;transition:transform .25s;
 }
-.artist-frame.featured::after{
-  content: '◉';
-  position: absolute;
-  top: -10px; right: -10px;
-  color: var(--magenta);
-  font-size: 14px;
-  animation: pulse 1.4s ease-in-out infinite;
+.artist-card:hover{transform:translateY(-3px)}
+.artist-photo{
+  width:clamp(58px,6vw,82px);
+  height:clamp(58px,6vw,82px);
+  border:1.5px solid var(--ink);
+  background:var(--bg-2);
+  position:relative;overflow:hidden;
+  transition:filter .2s,box-shadow .2s;
+}
+.artist-card:hover .artist-photo{
+  filter:contrast(1.15);
+  box-shadow:0 4px 14px rgba(10,10,10,.18);
+}
+/* Real photo overlay */
+.artist-photo .real-img{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  z-index:2;
+  filter:grayscale(100%) contrast(1.2) brightness(.95);
+}
+/* SVG fallback (behind image) */
+.artist-photo .fallback-svg{
+  position:absolute;inset:0;
+  width:100%;height:100%;z-index:1;
+}
+/* Halftone overlay (on top of everything) */
+.artist-photo::after{
+  content:'';position:absolute;inset:0;z-index:3;
+  background-image:radial-gradient(circle,rgba(10,10,10,.4) 1px,transparent 1.5px);
+  background-size:5px 5px;
+  mix-blend-mode:multiply;opacity:.5;
+  pointer-events:none;
+}
+body.inverted .artist-photo::after{
+  background-image:radial-gradient(circle,rgba(240,235,219,.3) 1px,transparent 1.5px);
+  mix-blend-mode:screen;opacity:.4;
+}
+.artist-card .aname{
+  font-family:var(--f-body);font-style:italic;
+  font-size:clamp(10px,1vw,12px);
+  color:var(--fg-dim);text-align:center;
+  margin-top:5px;line-height:1.1;
+  max-width:clamp(58px,6vw,82px);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  letter-spacing:.01em;
+}
+.artist-card:hover .aname{color:var(--ink)}
+.artist-card.featured .artist-photo{
+  width:clamp(74px,7.5vw,100px);
+  height:clamp(74px,7.5vw,100px);
+}
+.artist-card.featured .aname{
+  font-weight:600;font-style:normal;
+  font-size:clamp(11px,1.1vw,13px);
 }
 
-/* ============================================
-   SCENE: TIENDA — hanging garments
-============================================ */
-.product-hotspot .frame{
-  width: 110px; height: 160px;
-  padding: 6px;
-  background:
-    radial-gradient(circle, var(--fg-muted) 0.8px, transparent 1.5px) center / 6px 6px,
-    var(--bg-2);
+/* ── SCENE: TIENDA — A24 ── */
+.scene-tienda{
+  background:var(--paper);
+  overflow-y:auto;overflow-x:hidden;
+  position:absolute;inset:0;
 }
-.product-hotspot .frame svg{ width: 100%; height: 100%; }
-.product-hotspot .price-tag{
-  position: absolute;
-  top: -6px; right: -6px;
-  font-size: 9px;
-  background: var(--bg);
-  border: 1px solid var(--fg);
-  color: var(--fg);
-  padding: 3px 6px;
-  letter-spacing: 0.05em;
+.scene-tienda::after{display:none}
+.tienda-header{
+  text-align:center;
+  padding:clamp(20px,5vh,40px) 20px clamp(12px,3vh,22px);
+  position:relative;z-index:5;pointer-events:none;
 }
-.product-hotspot.sold .price-tag{
-  color: var(--magenta);
-  border-color: var(--magenta);
+.tienda-header h2{
+  font-family:var(--f-display);font-weight:900;
+  font-size:clamp(32px,5.5vw,62px);
+  margin:0;letter-spacing:-.01em;color:var(--ink);
+}
+.tienda-header p{
+  font-family:var(--f-body);font-style:italic;
+  color:var(--fg-dim);font-size:clamp(13px,1.4vw,16px);
+  margin:6px 0 0;
+}
+.tienda-filters{
+  display:flex;justify-content:center;gap:18px;
+  padding:0 20px 24px;
+  font-family:var(--f-mono);font-size:10px;
+  letter-spacing:.12em;text-transform:uppercase;flex-wrap:wrap;
+}
+.tienda-filters button{
+  border:none;background:none;padding:0;
+  font-size:inherit;letter-spacing:inherit;
+  color:var(--fg-muted);cursor:pointer;font-family:inherit;
+  transition:color .2s;position:relative;text-transform:uppercase;
+}
+.tienda-filters button.active{color:var(--ink)}
+.tienda-filters button.active::after{
+  content:'';position:absolute;left:0;right:0;bottom:-6px;
+  border-bottom:1px solid var(--ink);
+}
+.tienda-filters button:hover{color:var(--ink);background:none}
+
+.shop-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(min(220px,90vw),1fr));
+  gap:clamp(16px,2.5vw,32px);
+  padding:0 clamp(20px,5vw,70px) clamp(40px,8vh,80px);
+  max-width:1320px;margin:0 auto;
+  position:relative;z-index:5;
+}
+.product-card{
+  background:transparent;cursor:pointer;
+  transition:transform .25s;position:relative;
+}
+.product-card:hover{transform:translateY(-3px)}
+.product-card.sold-out{opacity:.55}
+.product-img{
+  aspect-ratio:3/4;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg-2);overflow:hidden;position:relative;
+  margin-bottom:14px;transition:box-shadow .3s;
+}
+.product-card:hover .product-img{
+  box-shadow:0 12px 30px -8px rgba(10,10,10,.25);
+}
+/* Real product photo */
+.product-img .real-img{
+  position:absolute;inset:0;
+  width:100%;height:100%;object-fit:cover;
+  z-index:2;
+}
+/* SVG fallback */
+.product-img .fallback-svg{
+  position:relative;z-index:1;
+  width:70%;height:auto;
+  filter:drop-shadow(0 8px 20px rgba(0,0,0,.18));
+}
+.product-badge{
+  position:absolute;top:12px;left:12px;
+  font-family:var(--f-mono);font-size:9px;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink);background:var(--paper);
+  padding:4px 9px;z-index:3;
+}
+.product-badge.agotado{color:var(--accent);background:var(--paper)}
+.product-info h3{
+  font-family:var(--f-display);font-weight:400;
+  font-size:clamp(18px,2vw,22px);
+  margin:0;line-height:1.1;color:var(--ink);
+}
+.product-by{
+  font-family:var(--f-mono);font-size:9px;
+  letter-spacing:.12em;color:var(--fg-muted);
+  text-transform:uppercase;margin:4px 0 6px;
+}
+.product-price{
+  font-family:var(--f-body);font-size:15px;
+  color:var(--fg-dim);font-style:italic;
 }
 
 /* ============================================
@@ -756,163 +879,138 @@ no, no somos la culminación de nada, sino el principio de algo”.</span>
     </div>
   </div>
 
-  <!-- SCENE: ARTISTAS -->
-  <div class="scene scene-artistas" data-scene="artistas">
-    <div class="scene-tag" data-i18n="artistas.tag">miembros del colectivo</div>
-    <h2 class="scene-title" data-i18n="artistas.title">Congregación</h2>
+<!-- ── ARTISTAS ── -->
+<div class="scene scene-artistas" data-scene="artistas">
+  <div class="artists-header">Todas las líneas que trazamos se están desvaneciendo lentamente, esos castillos derrumbados en un mundo inmutable.</div>
 
-    <!-- Featured -->
-    <div class="hotspot artist-frame featured" style="left:50%; top:55%;" data-id="essppora">
-      <div class="frame">
-        <span class="id-badge">A1</span>
-        <span class="name">essppora</span>
-      </div>
-      <span class="label" data-i18n="artist.bat_grafik.role">Fotografía urbana y tatuadora.</span>
+  <div class="artists-cross">
+    <div class="artists-row">
+      <div class="artist-card featured" data-id="otrosdias"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="26" rx="14" ry="16" fill="rgba(240,235,219,0.5)"/><path d="M24 80 Q24 48 40 48 Q56 48 56 80Z" fill="rgba(240,235,219,0.5)"/></svg><img src="images/artists/otrosdias.jpg" alt="otrosdias" class="real-img" onerror="this.style.display='none'"></div><div class="aname">otrosdias</div></div>
     </div>
-
-    <!-- Top row of frames -->
-    <div class="hotspot artist-frame" style="left:10%; top:42%;" data-id="secret_eyes">
-      <div class="frame"><span class="id-badge">A2</span><span class="name">SECRET<br>.EYES</span></div>
-      <span class="label" data-i18n="artist.secret_eyes.role">Ilustradora.</span>
+    <div class="artists-row">
+      <div class="artist-card" data-id="kai_arcy"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="28" rx="13" ry="15" fill="rgba(240,235,219,0.45)"/><path d="M22 80 Q24 50 40 50 Q56 50 58 80Z" fill="rgba(240,235,219,0.45)"/></svg><img src="images/artists/kai_arcy.jpg" alt="Kai Arcy" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Kai Arcy</div></div>
+      <div class="artist-card" data-id="essppora"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="26" rx="13" ry="15" fill="rgba(240,235,219,0.45)"/><path d="M22 80 Q24 48 40 48 Q56 48 58 80Z" fill="rgba(240,235,219,0.45)"/></svg><img src="images/artists/essppora.jpg" alt="Essympora" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Essympora</div></div>
+      <div class="artist-card" data-id="mmicelio"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="27" rx="12" ry="14" fill="rgba(240,235,219,0.45)"/><path d="M23 80 Q25 50 40 50 Q55 50 57 80Z" fill="rgba(240,235,219,0.45)"/></svg><img src="images/artists/mmicelio.jpg" alt="Nymicelio" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Nymicelio</div></div>
     </div>
-    <div class="hotspot artist-frame" style="left:20%; top:42%;" data-id="nula">
-      <div class="frame"><span class="id-badge">A3</span><span class="name">mmicelio</span></div>
-      <span class="label" data-i18n="artist.nula.role">Fotografía natural</span>
+    <div class="artists-row">
+      <div class="artist-card" data-id="derwent"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="28" rx="13" ry="14" fill="rgba(240,235,219,0.42)"/><path d="M22 80 Q24 50 40 50 Q56 50 58 80Z" fill="rgba(240,235,219,0.42)"/></svg><img src="images/artists/derwent.jpg" alt="Deewent" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Deewent</div></div>
+      <div class="artist-card" data-id="ezk"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="27" rx="12" ry="14" fill="rgba(240,235,219,0.42)"/><path d="M23 80 Q25 49 40 49 Q55 49 57 80Z" fill="rgba(240,235,219,0.42)"/></svg><img src="images/artists/ezk.jpg" alt="ΞЖ" class="real-img" onerror="this.style.display='none'"></div><div class="aname">ΞЖ</div></div>
+      <div class="artist-card" data-id="papiwabisabi"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="26" rx="13" ry="15" fill="rgba(240,235,219,0.42)"/><path d="M22 80 Q24 48 40 48 Q56 48 58 80Z" fill="rgba(240,235,219,0.42)"/></svg><img src="images/artists/papiwabisabi.jpg" alt="PAPIWABISABI" class="real-img" onerror="this.style.display='none'"></div><div class="aname">PAPIWABISABI</div></div>
+      <div class="artist-card" data-id="ozkar"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="28" rx="12" ry="14" fill="rgba(240,235,219,0.42)"/><path d="M23 80 Q25 50 40 50 Q55 50 57 80Z" fill="rgba(240,235,219,0.42)"/></svg><img src="images/artists/ozkar.jpg" alt="ozkar" class="real-img" onerror="this.style.display='none'"></div><div class="aname">ozkar</div></div>
+      <div class="artist-card" data-id="piedro"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="27" rx="13" ry="15" fill="rgba(240,235,219,0.42)"/><path d="M22 80 Q24 49 40 49 Q56 49 58 80Z" fill="rgba(240,235,219,0.42)"/></svg><img src="images/artists/piedro.jpg" alt="piedro" class="real-img" onerror="this.style.display='none'"></div><div class="aname">piedro</div></div>
     </div>
-    <div class="hotspot artist-frame" style="left:30%; top:42%;" data-id="henro">
-      <div class="frame"><span class="id-badge">A4</span><span class="name">Derwent</span></div>
-      <span class="label" data-i18n="artist.henro.role">Músico</span>
+    <div class="artists-row">
+      <div class="artist-card" data-id="espontaneo"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="28" rx="12" ry="14" fill="rgba(240,235,219,0.4)"/><path d="M23 80 Q25 50 40 50 Q55 50 57 80Z" fill="rgba(240,235,219,0.4)"/></svg><img src="images/artists/espontaneo.jpg" alt="Espontáneo" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Espontáneo</div></div>
+      <div class="artist-card" data-id="jcess"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="27" rx="13" ry="14" fill="rgba(240,235,219,0.4)"/><path d="M22 80 Q24 49 40 49 Q56 49 58 80Z" fill="rgba(240,235,219,0.4)"/></svg><img src="images/artists/jcess.jpg" alt="Jces.s" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Jces.s</div></div>
+      <div class="artist-card" data-id="aldo"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="28" rx="13" ry="15" fill="rgba(240,235,219,0.4)"/><path d="M22 80 Q24 50 40 50 Q56 50 58 80Z" fill="rgba(240,235,219,0.4)"/></svg><img src="images/artists/aldo.jpg" alt="Aldo López" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Aldo López</div></div>
+      <div class="artist-card" data-id="pinkiman"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="27" rx="12" ry="14" fill="rgba(240,235,219,0.4)"/><path d="M23 80 Q25 49 40 49 Q55 49 57 80Z" fill="rgba(240,235,219,0.4)"/></svg><img src="images/artists/pinkiman.jpg" alt="Pink!man" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Pink!man</div></div>
+      <div class="artist-card" data-id="vertedero"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="28" rx="12" ry="14" fill="rgba(240,235,219,0.4)"/><path d="M22 80 Q24 50 40 50 Q56 50 58 80Z" fill="rgba(240,235,219,0.4)"/></svg><img src="images/artists/vertedero.jpg" alt="Vertedero" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Vertedero D.E.</div></div>
     </div>
-    <div class="hotspot artist-frame" style="left:40%; top:42%;" data-id="del_realismo">
-      <div class="frame"><span class="id-badge">A5</span><span class="name">del<br>Aldo Lopez Malo</span></div>
-      <span class="label" data-i18n="artist.del_realismo.role">Escritor</span>
+    <div class="artists-row">
+      <div class="artist-card" data-id="ayra"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="27" rx="13" ry="15" fill="rgba(240,235,219,0.38)"/><path d="M22 80 Q24 49 40 49 Q56 49 58 80Z" fill="rgba(240,235,219,0.38)"/></svg><img src="images/artists/ayra.jpg" alt="Ayra" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Ayra</div></div>
+      <div class="artist-card" data-id="mata"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="28" rx="12" ry="14" fill="rgba(240,235,219,0.38)"/><path d="M23 80 Q25 50 40 50 Q55 50 57 80Z" fill="rgba(240,235,219,0.38)"/></svg><img src="images/artists/mata.jpg" alt="Mata" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Mata</div></div>
+      <div class="artist-card" data-id="flwrs"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="27" rx="13" ry="14" fill="rgba(240,235,219,0.38)"/><path d="M22 80 Q24 49 40 49 Q56 49 58 80Z" fill="rgba(240,235,219,0.38)"/></svg><img src="images/artists/flwrs.jpg" alt="Flwrs" class="real-img" onerror="this.style.display='none'"></div><div class="aname">Flwrs</div></div>
     </div>
-     <div class="hotspot artist-frame" style="left:50%; top:42%;" data-id="secret_eyes">
-      <div class="frame"><span class="id-badge">A6</span><span class="name">papiwabisabi<br>.</span></div>
-      <span class="label" data-i18n="artist.secret_eyes.role">Artista e ilustrador.</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:60%; top:42%;" data-id="nula">
-      <div class="frame"><span class="id-badge">A7</span><span class="name">Piedro</span></div>
-      <span class="label" data-i18n="artist.nula.role">Actor y director de Teatro</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:70%; top:42%;" data-id="henro">
-      <div class="frame"><span class="id-badge">A8</span><span class="name">Espontáneo</span></div>
-      <span class="label" data-i18n="artist.henro.role">Mundos Perdidos</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:80%; top:42%;" data-id="del_realismo">
-      <div class="frame"><span class="id-badge">A9</span><span class="name">Jce<br>s.s</span></div>
-      <span class="label" data-i18n="artist.del_realismo.role">Mundos Perdidos</span>
-    </div>    
-   <div class="hotspot artist-frame" style="left:90%; top:42%;" data-id="del_realismo">
-      <div class="frame"><span class="id-badge">A10</span><span class="name">Ay<br>ra</span></div>
-      <span class="label" data-i18n="artist.del_realismo.role">Mundos Perdidos</span>
-    </div>
-     
-
-    <!-- Bottom row -->
-    <div class="hotspot artist-frame" style="left:20%; top:75%;" data-id="oxida">
-      <div class="frame"><span class="id-badge">A11</span><span class="name">MATA</span></div>
-      <span class="label" data-i18n="artist.oxida.role">Mundos Perdidos</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:30%; top:75%;" data-id="Pink!man">
-      <div class="frame"><span class="id-badge">A12</span><span class="name">Pink!<br>man</span></div>
-      <span class="label" data-i18n="artist.luna_negra.role">DJ RAVE</span>
-    </div>
-
-    <div class="exit exit-left" data-go="manifiesto" data-side="left">
-      <span class="arrow">←</span><span data-i18n="nav.manifiesto">MANIFIESTO</span>
-    </div>
-    <div class="exit exit-right" data-go="tienda" data-side="right">
-      <span data-i18n="nav.tienda">TIENDA</span><span class="arrow">→</span>
-    </div>
-         <div class="hotspot artist-frame" style="left:40%; top:75%;" data-id="Vertedero Don Emilio">
-      <div class="frame"><span class="id-badge">A13</span><span class="name">Vertedero Don Emilio</span></div>
-      <span class="label" data-i18n="artist.oxida.role">ILUSTRADOR Y ARTISTA DE ANIMACIÓN</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:50%; top:75%;" data-id="otrosdias">
-      <div class="frame"><span class="id-badge">A14</span><span class="name">otrosd<br>ias</span></div>
-      <span class="label" data-i18n="artist.luna_negra.role">artista</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:60%; top:75%;" data-id="flwrs">
-      <div class="frame"><span class="id-badge">A15</span><span class="name">flwrs</span></div>
-      <span class="label" data-i18n="artist.oxida.role">Productor</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:70%; top:75%;" data-id="José Alberto Morales">
-      <div class="frame"><span class="id-badge">A16</span><span class="name">José<br>Alberto Morales</span></div>
-      <span class="label" data-i18n="artist.luna_negra.role">ACTUACIÓN</span>
-    </div>
-
-    <div class="exit exit-left" data-go="manifiesto" data-side="left">
-      <span class="arrow">←</span><span data-i18n="nav.manifiesto">MANIFIESTO</span>
-    </div>
-    <div class="exit exit-right" data-go="tienda" data-side="right">
-      <span data-i18n="nav.tienda">TIENDA</span><span class="arrow">→</span>
+    <div class="artists-row">
+      <div class="artist-card" data-id="jose_alberto"><div class="artist-photo"><svg class="fallback-svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#1a1a1a"/><ellipse cx="40" cy="27" rx="13" ry="15" fill="rgba(240,235,219,0.36)"/><path d="M22 80 Q24 49 40 49 Q56 49 58 80Z" fill="rgba(240,235,219,0.36)"/></svg><img src="images/artists/jose_alberto.jpg" alt="José A. Morales" class="real-img" onerror="this.style.display='none'"></div><div class="aname">José A. Morales</div></div>
     </div>
   </div>
 
-  <!-- SCENE: TIENDA -->
-  <div class="scene scene-tienda" data-scene="tienda">
-    <div class="scene-tag" data-i18n="tienda.tag">galería y ropa</div>
-    <h2 class="scene-title" data-i18n="nav.tienda">Tienda</h2>
+  <div class="artists-tagline">comunidad creadora otrosdias</div>
 
-    <!-- Product 1: Serafín tank -->
-    <div class="hotspot product-hotspot" style="left:22%; top:55%;" data-id="serafin">
-      <div class="frame">
-        <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
-          <path d="M50 40 Q50 30 60 28 L80 20 L90 35 Q100 42 110 35 L120 20 L140 28 Q150 30 150 40 L155 90 L140 100 L140 220 L60 220 L60 100 L45 90 Z" fill="#f5f1e6" stroke="#0a0a0a" stroke-width="1.5"/>
-          <circle cx="100" cy="130" r="14" stroke="#0a0a0a" stroke-width="1" fill="none"/>
-          <path d="M90 145 Q100 165 110 145" stroke="#0a0a0a" stroke-width="1" fill="none"/>
+  <div class="exit exit-left" data-go="descripcion"><span class="arr">←</span><span class="lbl">Descripción</span></div>
+  <div class="exit exit-right" data-go="tienda"><span class="arr">→</span><span class="lbl">Tienda</span></div>
+</div>
+
+<!-- ── TIENDA ── -->
+<div class="scene scene-tienda" data-scene="tienda">
+  <div class="tienda-header">
+    <h2>Tienda</h2>
+    <p>Mercancía de autor · Tiraje limitado</p>
+  </div>
+
+  <div class="tienda-filters">
+    <button class="active">ALL <sup>4</sup></button>
+    <button>TANK TOPS <sup>1</sup></button>
+    <button>HOODIES <sup>1</sup></button>
+    <button>TEES <sup>1</sup></button>
+    <button>DROP_002 <sup>1</sup></button>
+  </div>
+
+  <div class="shop-grid">
+
+    <div class="product-card" data-pid="serafin">
+      <div class="product-img">
+        <span class="product-badge">Drop 001</span>
+        <svg class="fallback-svg" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <path d="M50 40 Q50 30 60 28 L80 20 L90 35 Q100 42 110 35 L120 20 L140 28 Q150 30 150 40 L155 90 L140 100 L140 220 L60 220 L60 100 L45 90 Z" fill="#f0ede6" stroke="#111" stroke-width="1.5"/>
+          <circle cx="100" cy="130" r="14" stroke="#111" stroke-width="1" fill="none"/>
+          <path d="M90 145 Q100 165 110 145" stroke="#111" stroke-width="1" fill="none"/>
         </svg>
+        <img src="images/products/serafin.jpg" alt="Serafín" class="real-img" onerror="this.style.display='none'">
       </div>
-      <span class="price-tag">$150</span>
-      <span class="label" data-i18n="product.serafin.short">SERAFÍN · TANK</span>
+      <div class="product-info">
+        <h3>Serafín</h3>
+        <div class="product-by">por secret.eyes888</div>
+        <div class="product-price">$150 MXN</div>
+      </div>
     </div>
 
-    <!-- Product 2: Hoodie -->
-    <div class="hotspot product-hotspot" style="left:42%; top:55%;" data-id="transmision">
-      <div class="frame">
-        <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
-          <path d="M40 50 L70 30 L100 40 L130 30 L160 50 L150 80 L150 220 L50 220 L50 80 Z" fill="#1a1a1a" stroke="#e8e3d3" stroke-width="1.5"/>
+    <div class="product-card" data-pid="transmision">
+      <div class="product-img">
+        <span class="product-badge">Drop 001</span>
+        <svg class="fallback-svg" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <path d="M40 50 L70 30 L100 40 L130 30 L160 50 L150 80 L150 220 L50 220 L50 80 Z" fill="#111" stroke="#e8e3d3" stroke-width="1.5"/>
           <path d="M70 30 L80 60 L100 50 L120 60 L130 30" stroke="#e8e3d3" stroke-width="1.5" fill="none"/>
-          <text x="100" y="145" text-anchor="middle" fill="#f0b81b" font-family="VT323" font-size="28">◉</text>
+          <circle cx="100" cy="140" r="18" stroke="#c8a84b" stroke-width="1.5" fill="none"/>
         </svg>
+        <img src="images/products/transmision.jpg" alt="Transmisión" class="real-img" onerror="this.style.display='none'">
       </div>
-      <span class="price-tag">$320</span>
-      <span class="label" data-i18n="product.transmision.short">TRANSMISIÓN · HOODIE</span>
+      <div class="product-info">
+        <h3>Transmisión</h3>
+        <div class="product-by">por bat_grafik</div>
+        <div class="product-price">$320 MXN</div>
+      </div>
     </div>
 
-    <!-- Product 3: Lente -->
-    <div class="hotspot product-hotspot sold" style="left:60%; top:55%;" data-id="lente">
-      <div class="frame">
-        <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
-          <path d="M50 50 L75 30 L100 45 L125 30 L150 50 L145 90 L145 220 L55 220 L55 90 Z" fill="#f5f1e6" stroke="#0a0a0a" stroke-width="1.5"/>
-          <circle cx="100" cy="100" r="26" stroke="#ff2d6f" stroke-width="2" fill="none"/>
-          <circle cx="100" cy="100" r="12" stroke="#0a0a0a" stroke-width="1" fill="none"/>
+    <div class="product-card sold-out" data-pid="lente">
+      <div class="product-img">
+        <span class="product-badge agotado">Agotado</span>
+        <svg class="fallback-svg" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <path d="M50 50 L75 30 L100 45 L125 30 L150 50 L145 90 L145 220 L55 220 L55 90 Z" fill="#f0ede6" stroke="#111" stroke-width="1.5"/>
+          <circle cx="100" cy="100" r="28" stroke="#111" stroke-width="2" fill="none"/>
+          <circle cx="100" cy="100" r="12" stroke="#111" stroke-width="1" fill="none"/>
         </svg>
+        <img src="images/products/lente.jpg" alt="Lente" class="real-img" onerror="this.style.display='none'">
       </div>
-      <span class="price-tag" data-i18n="ui.sold">NUEVO</span>
-      <span class="label" data-i18n="product.lente.short">LENTE · TEE</span>
+      <div class="product-info">
+        <h3>Lente</h3>
+        <div class="product-by">por nula</div>
+        <div class="product-price">$220 MXN</div>
+      </div>
     </div>
 
-    <!-- Product 4: Next drop -->
-    <div class="hotspot product-hotspot" style="left:78%; top:55%;" data-id="sintitulo">
-      <div class="frame">
-        <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
-          <rect x="40" y="40" width="120" height="180" stroke="#e8e3d3" stroke-width="1.5" fill="#0a0a0a" stroke-dasharray="4 4"/>
-          <text x="100" y="135" text-anchor="middle" fill="#f0b81b" font-family="VT323" font-size="48">?</text>
+    <div class="product-card" data-pid="sintitulo">
+      <div class="product-img">
+        <span class="product-badge">Drop 002</span>
+        <svg class="fallback-svg" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect x="38" y="38" width="124" height="180" stroke="#888" stroke-width="1.5" fill="#e6e0cc" stroke-dasharray="5 4"/>
+          <text x="100" y="138" text-anchor="middle" fill="#888" font-size="56" font-family="serif">?</text>
         </svg>
+        <img src="images/products/sintitulo.jpg" alt="Sin título" class="real-img" onerror="this.style.display='none'">
       </div>
-      <span class="price-tag">???</span>
-      <span class="label" data-i18n="product.sintitulo.short">PRÓXIMA PIEZA</span>
+      <div class="product-info">
+        <h3><em>Sin título</em></h3>
+        <div class="product-by">por henro · próximamente</div>
+        <div class="product-price">??? MXN</div>
+      </div>
     </div>
 
-    <div class="exit exit-left" data-go="artistas" data-side="left">
-      <span class="arrow">←</span><span data-i18n="nav.artistas">ARTISTAS</span>
-    </div>
-    <div class="exit exit-right" data-go="transmisiones" data-side="right">
-      <span data-i18n="nav.transmisiones">TRANSMISIONES</span><span class="arrow">→</span>
-    </div>
   </div>
+
+  <div class="exit exit-left" data-go="artistas" style="top:30%;transform:none"><span class="arr">←</span><span class="lbl">Artistas</span></div>
+  <div class="exit exit-right" data-go="novedades" style="top:30%;transform:none"><span class="arr">→</span><span class="lbl">Novedades</span></div>
+</div>
 
   <!-- SCENE: TRANSMISIONES -->
   <div class="scene scene-transmisiones" data-scene="transmisiones">
