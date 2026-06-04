@@ -1560,28 +1560,143 @@ function interact(){
    INFO PANEL
 ============================================================ */
 const PANEL_DATA = {
-  // Artists
-  essppora: { kind:'artist', name:'essppora', role:'fotografía', bio:'artist.bat_grafik.bio', tag:'A1' },
-  secret_eyes: { kind:'artist', name:'SECRET.EYES888', role:'Ilustradora', bio:'artist.secret_eyes.bio', tag:'A2' },
-  mmicelio:       { kind:'artist', name:'mmicelio', role:'fotografía', bio:'artist.nula.bio', tag:'A3' },
-  derwent:      { kind:'artist', name:'derwent', role:'músico', bio:'artist.henro.bio', tag:'A4' },
-  Aldo_Lopez_Malo:{kind:'artist', name:'Aldo Lopez Malo', role:'artist.del_realismo.role', bio:'artist.del_realismo.bio', tag:'A5' },
-  papiwabisabi:      { kind:'artist', name:'papiwabisabi', role:'artist.oxida.role', bio:'artist.oxida.bio', tag:'A6' },
-  piedro: { kind:'artist', name:'piedro', role:'artist.luna_negra.role', bio:'artist.luna_negra.bio', tag:'A7' },
-  Espontáneo: { kind:'artist', name:'Espontáneo', role:'fotografía', bio:'artist.bat_grafik.bio', tag:'A8' },
-  Jcess: { kind:'artist', name:'Jces.s', role:'Ilustradora', bio:'artist.secret_eyes.bio', tag:'A9' },
-  Ayra:       { kind:'artist', name:'Ayra', role:'fotografía', bio:'artist.nula.bio', tag:'A10' },
-  Mata:      { kind:'artist', name:'Mata', role:'músico', bio:'artist.henro.bio', tag:'A11' },
-  Pink1man:{kind:'artist', name:'Pink!man', role:'artist.del_realismo.role', bio:'artist.del_realismo.bio', tag:'A12' },
-  Vertedero_Don_Emilio:      { kind:'artist', name:'Vertedero Don Emilio', role:'artist.oxida.role', bio:'artist.oxida.bio', tag:'A13' },
-  otrosdias: { kind:'artist', name:'otrosdias', role:'artist.luna_negra.role', bio:'artist.luna_negra.bio', tag:'A14' },
-  Flwrs:      { kind:'artist', name:'Flwrs', role:'artist.oxida.role', bio:'artist.oxida.bio', tag:'A15' },
-  José_Alberto_Morales: { kind:'artist', name:'José Alberto Morales', role:'artist.luna_negra.role', bio:'artist.luna_negra.bio', tag:'A16' },
-  // Products
-  serafin:    { kind:'product', name:'product.serafin.name', author:'product.serafin.author', desc:'product.serafin.desc', price:'$150 MXN', tag:'DROP_001 · P_01' },
-  transmision:{ kind:'product', name:'product.transmision.name', author:'product.transmision.author', desc:'product.transmision.desc', price:'$320 MXN', tag:'DROP_001 · P_02' },
-  lente:      { kind:'product', name:'product.lente.name', author:'product.lente.author', desc:'product.lente.desc', price:'ui.sold', tag:'ARCHIVO · P_03', sold:true },
-  sintitulo:  { kind:'product', name:'product.sintitulo.name', author:'product.sintitulo.author', desc:'product.sintitulo.desc', price:'???', tag:'DROP_002 · P_04' },
+/* ── ARTISTS ─────────────────────────────── */
+const ARTISTS={
+  otrosdias:{name:'otrosdias',role:'comunidad creadora',id:'A_00',
+    historia:'Plataforma de artistas profesionales fundada en Puebla, México. Una congregación abierta de fotógrafos, visuales, animadores, músicos, escritores y actores que se expresan a través de la ropa y la galería rotativa. Cada autor recibe regalías por su obra.',
+    hechos:[['Origen','Puebla, MX'],['Fundación','2024'],['Miembros','17+'],['Drop activo','001'],['Próximo','Drop 002']],
+    obra:'Ropa de autor de tiraje limitado. Galería rotativa con piezas de los miembros. Pop-ups nocturnos por invitación. Cada prenda es una obra firmada.',
+    cita:'"Si llegaste hasta aquí, ya formas parte." — manifiesto otrosdias'},
+  kai_arcy:{name:'Kai Arcy',role:'fotografía',id:'A_01',
+    historia:'Fotografía de atmósfera y retrato. Captura los momentos donde la luz aún no decide qué quiere ser.',
+    hechos:[['Disciplina','Fotografía'],['Formato','Análogo · Digital'],['Activa desde','2024']],
+    obra:'Serie fotográfica continua. Trabaja con luz natural y silencios largos.',
+    cita:'"Lo que no se mira con tiempo, no se ve."'},
+  essppora:{name:'Essympora',role:'fotografía',id:'A_02',
+    historia:'Fotógrafa y artista visual. Trabaja la imagen como archivo y como gesto.',
+    hechos:[['Disciplina','Fotografía / Visual'],['Estilo','Documental · Intervenido'],['Activa desde','2024']],
+    obra:'Serie fotográfica con manipulación a mano. Dobles exposiciones y collage físico.',
+    cita:'"La foto no termina cuando se toma."'},
+  mmicelio:{name:'Nymicelio',role:'fotografía',id:'A_03',
+    historia:'Documentación visual de espacios en tránsito. Miembro fundador.',
+    hechos:[['Disciplina','Fotografía documental'],['Tema','Espacios · Arquitectura'],['Activa desde','2024']],
+    obra:'Archivo fotográfico de espacios en transición.',
+    cita:'"Los lugares también se mueren cuando nadie los nombra."'},
+  derwent:{name:'Deewent',role:'música',id:'A_04',
+    historia:'Productor de electrónica ambiental. Crea los paisajes sonoros que acompañan cada drop de ropa.',
+    hechos:[['Disciplina','Música electrónica'],['Género','Ambient · IDM'],['Activa desde','2024']],
+    obra:'Composiciones largas para los pop-ups nocturnos.',
+    cita:'"El silencio también tiene textura."'},
+  ezk:{name:'ΞЖ',role:'arte visual',id:'A_05',
+    historia:'Arte visual e ilustración experimental. Serigrafía y grabado.',
+    hechos:[['Disciplina','Serigrafía · Grabado'],['Activa desde','2024']],
+    obra:'Carteles y piezas impresas para los drops.',
+    cita:'"Tipografía es paisaje."'},
+  papiwabisabi:{name:'PAPIWABISABI',role:'ilustración · tatuaje',id:'A_06',
+    historia:'Ilustración y tatuaje. Iconografía densa, trazo manual, imperfección como principio.',
+    hechos:[['Disciplina','Tatuaje · Ilustración'],['Estilo','Trazo grueso'],['Activa desde','2024']],
+    obra:'Tatuajes y obra en papel.',
+    cita:'"Lo roto también es la pieza."'},
+  ozkar:{name:'ozkar',role:'fotografía · diseño',id:'A_07',
+    historia:'Fotografía y dirección visual. Contribuye a la identidad gráfica del colectivo.',
+    hechos:[['Disciplina','Foto · Diseño'],['Rol','Dirección visual'],['Activa desde','2024']],
+    obra:'Imagen editorial para los drops.',
+    cita:'"Diseñar es decidir qué se omite."'},
+  piedro:{name:'piedro',role:'arte visual',id:'A_08',
+    historia:'Artista multidisciplinario. Obra en proceso continuo de edición.',
+    hechos:[['Disciplina','Multidisciplina'],['Activa desde','2024']],
+    obra:'Producción híbrida entre soportes.',
+    cita:'"La obra es un cuaderno que no se cierra."'},
+  espontaneo:{name:'Espontáneo',role:'fotografía',id:'A_09',
+    historia:'Fotografía documental. Registra los momentos entre los momentos.',
+    hechos:[['Disciplina','Fotografía documental'],['Activa desde','2024']],
+    obra:'Cobertura visual de pop-ups y reuniones.',
+    cita:'"Solo tomo lo que ya estaba ahí."'},
+  jcess:{name:'Jces.s',role:'ilustración',id:'A_10',
+    historia:'Ilustradora a línea. Motivos orgánicos y formas en tensión.',
+    hechos:[['Disciplina','Ilustración'],['Técnica','Línea fina'],['Activa desde','2024']],
+    obra:'Serie de ilustraciones a línea publicadas por entregas.',
+    cita:'"La línea ya sabe a dónde va."'},
+  aldo:{name:'Aldo López Malo',role:'diseño · dirección',id:'A_11',
+    historia:'Dirección creativa y diseño. Coordina los lanzamientos.',
+    hechos:[['Disciplina','Dirección · Diseño'],['Activa desde','2024']],
+    obra:'Identidad visual del colectivo.',
+    cita:'"La marca no es un logo, es un acuerdo."'},
+  pinkiman:{name:'Pink!man',role:'arte visual',id:'A_12',
+    historia:'Arte urbano y producción de objetos. Edición limitada en cada pieza.',
+    hechos:[['Disciplina','Arte urbano · Objeto'],['Activa desde','2024']],
+    obra:'Intervenciones urbanas y piezas seriadas.',
+    cita:'"El muro también es un papel grande."'},
+  vertedero:{name:'Vertedero Don Emilio',role:'instalación',id:'A_13',
+    historia:'Arte de instalación y objeto encontrado.',
+    hechos:[['Disciplina','Instalación'],['Material','Encontrado'],['Activa desde','2024']],
+    obra:'Instalaciones temporales en pop-ups.',
+    cita:'"Nada se tira, todo se traduce."'},
+  ayra:{name:'Ayra',role:'fotografía',id:'A_14',
+    historia:'Fotografía de retrato e intimidad. Serie editorial en curso.',
+    hechos:[['Disciplina','Fotografía de retrato'],['Activa desde','2025']],
+    obra:'Serie editorial de retratos en interiores.',
+    cita:'"Para mirar de cerca, primero hay que confiar."'},
+  mata:{name:'Mata',role:'música',id:'A_15',
+    historia:'Música e intervención sonora para los pop-ups nocturnos.',
+    hechos:[['Disciplina','Música · Sonido'],['Activa desde','2025']],
+    obra:'Sesiones en vivo y piezas grabadas.',
+    cita:'"Improvisar es escuchar mucho antes de tocar."'},
+  flwrs:{name:'Flwrs',role:'ilustración · textil',id:'A_16',
+    historia:'Ilustración y diseño textil. Estampados para los drops.',
+    hechos:[['Disciplina','Ilustración · Textil'],['Activa desde','2025']],
+    obra:'Estampados para tank tops y camisetas.',
+    cita:'"Un patrón es un jardín pequeño."'},
+  jose_alberto:{name:'José Alberto Morales',role:'arte visual',id:'A_17',
+    historia:'Arte visual y fotografía análoga. Film expirado y proceso casero.',
+    hechos:[['Disciplina','Foto análoga'],['Material','Film expirado'],['Activa desde','2026']],
+    obra:'Serie en proceso. Resultados parcialmente impredecibles.',
+    cita:'"El error también es la pieza."'}
+};
+
+/* Panel */
+const panelBD=document.getElementById('panelBackdrop');
+function openArtistPanel(id){
+  const d=ARTISTS[id];if(!d)return;
+  document.getElementById('panelId').textContent='— '+d.id;
+  document.getElementById('panelName').textContent=d.name;
+  document.getElementById('panelRole').textContent=d.role;
+  document.getElementById('content-historia').innerHTML='<p class="p-text">'+d.historia+'</p>';
+  document.getElementById('content-hechos').innerHTML=
+    d.hechos.map(([l,v])=>`<li><span class="lbl">${l}</span><span class="val">${v}</span></li>`).join('');
+  document.getElementById('content-obra').innerHTML='<p class="p-text">'+d.obra+'</p>';
+  document.getElementById('content-cita').innerHTML=
+    `<blockquote class="quote">${d.cita}</blockquote><div class="quote-by">— ${d.name}</div>`;
+  document.getElementById('panelMeta').textContent='archivo · comunidad otrosdias';
+  const cta=document.getElementById('panelCta');
+  cta.textContent='Instagram';cta.disabled=false;cta.style.opacity='1';
+  cta.onclick=()=>window.open('https://instagram.com/otrosdias','_blank');
+  setActiveTab('historia');
+  panelBD.classList.add('open');
+}
+
+const PRODUCTS={
+  serafin:{name:'Serafín',role:'tank top · por secret.eyes888',id:'P_01',
+    historia:'Tank top de algodón estampado con serigrafía a una tinta. Diseño de secret.eyes888. Pieza inaugural del Drop 001.',
+    hechos:[['Material','Algodón 100%'],['Técnica','Serigrafía 1 tinta'],['Tiraje','30 piezas'],['Precio','$150 MXN']],
+    obra:'Pieza con estampado del personaje "Serafín". Tela ligera, corte regular.',
+    cita:'"Cada prenda es una obra firmada."'},
+  transmision:{name:'Transmisión',role:'hoodie · por bat_grafik',id:'P_02',
+    historia:'Hoodie negro con bordado al pecho. Edición conjunta con bat_grafik.',
+    hechos:[['Material','Algodón pesado'],['Técnica','Bordado'],['Tiraje','20 piezas'],['Precio','$320 MXN']],
+    obra:'Hoodie con bordado al pecho. Tela pesada, terminado mate.',
+    cita:'"Cada obra es una transmisión."'},
+  lente:{name:'Lente',role:'tee · por nula',id:'P_03',sold:true,
+    historia:'Camiseta con foto-estampado de la serie Lente. Pieza agotada.',
+    hechos:[['Material','Algodón'],['Técnica','Foto-estampado'],['Tiraje','25 piezas'],['Estado','Agotado']],
+    obra:'Camiseta con foto-estampado de la serie "Lente" de nula.',
+    cita:'"Lo que se mira queda."'},
+  sintitulo:{name:'Sin título',role:'próximamente · por henro',id:'P_04',
+    historia:'Pieza en producción. Información liberada cuando el archivo se abra.',
+    hechos:[['Estado','En producción'],['Drop','002']],
+    obra:'Detalles aún no revelados.',
+    cita:'"Lo que viene, viene."'}
+};
   // Transmissions
   trans_01: { kind:'trans', name:'01·06·2026', desc:'trans.full.01', tag:'BITÁCORA_06' },
   trans_02: { kind:'trans', name:'28·05·2026', desc:'trans.full.02', tag:'BITÁCORA_05' },
