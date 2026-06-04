@@ -1,193 +1,170 @@
-# otrosdias.com — v1.1
-
-Sitio del colectivo **otrosdias** — plataforma de artistas profesionales.
-Single-file HTML con **scene engine** interactivo y soporte **bilingüe ES/EN**.
-Listo para GitHub Pages.
-
+otrosdias · index v4
+Sitio web interactivo de otrosdias — colectivo de artistas y plataforma de ropa de serigrafía fundada por Randy García Mejía, Puebla, México.
 ---
-
-## Concepto
-
-El sitio NO es una página de scroll tradicional. Es un **mundo horizontal** de cinco habitaciones conectadas. El visitante controla un personaje ASCII que las recorre con teclado (o d-pad en móvil). Cada habitación tiene **hotspots** (artistas, productos, transmisiones) que se iluminan al acercarse y se abren con ENTER.
-
+Descripción general
+Un archivo HTML único, sin dependencias externas ni frameworks. El sitio funciona como un videojuego de exploración 2D: el usuario mueve un personaje por cinco salas navegables, cada una representando una sección del colectivo. La estética es CRT/terminal con tipografía mono y efectos de ruido de pantalla.
+La tienda carga su catálogo dinámicamente desde Google Sheets y abre un modal de producto de pantalla completa al hacer clic en cualquier prenda.
+---
+Estructura del proyecto
 ```
-[INICIO] ←→ [MANIFIESTO] ←→ [ARTISTAS] ←→ [TIENDA] ←→ [TRANSMISIONES]
+index_otrosdias_v4.html   ← único archivo, todo incluido
+otrosdias_catalogo.xlsx   ← catálogo de productos (conecta con la web)
 ```
-
+No requiere servidor, compilador ni instalación. Se abre directamente en el navegador.
 ---
-
-## Mecánica de juego
-
-### Movimiento
-- `↑ ↓ ← →` o `WASD` — mueven al personaje en X/Y dentro de la escena
-- Al tocar el borde izquierdo o derecho → transición automática a la habitación contigua (fade 350ms)
-- `TAB` — viaje rápido a la siguiente escena
-- Click en los **tabs superiores** o en las **puertas** laterales — teletransporte directo
-- `ENTER` o `ESPACIO` — interactuar con el hotspot activo
-
-### Hotspots
-Cada elemento interactivo (artista, prenda, monitor) es un **hotspot** posicionado en coordenadas `%` de la escena. Cuando el personaje está dentro de un radio de 12 unidades, el hotspot:
-1. Se ilumina (borde ámbar, glow)
-2. Muestra `[ENTER]` parpadeando encima
-3. Revela su label debajo
-4. Queda como `activeHotspot`. Presionar ENTER abre el panel modal con detalles.
-
-### Salidas (exits)
-Las puertas izq/der se activan cuando el personaje pasa cerca de los bordes. También se pueden clickear directamente.
-
-### Panel modal
-- **Artistas:** nombre, rol, bio extendida, CTA a Instagram
-- **Productos:** nombre editorial (italic serif), autor, descripción, precio, CTA a WhatsApp (link `wa.me/?text=Quiero+SERAFÍN`)
-- **Transmisiones:** fecha, mensaje completo, badge "archivado"
-
+Las 5 salas
+#	ID	Contenido
+1	`inicio`	Página de entrada con frase del colectivo
+2	`manifiesto`	Texto fundacional de otrosdias
+3	`artistas`	Grid de los 33 miembros del colectivo
+4	`tienda`	Catálogo dinámico de prendas desde Google Sheets
+5	`transmisiones`	Bitácora pública de 6 entradas archivadas
+La navegación entre salas es lateral: el personaje camina hasta el borde de la pantalla y cruza hacia la siguiente sala, o bien se usan los tabs de navegación rápida en la parte superior.
 ---
-
-## Bilingüe (ES / EN)
-
-Sistema de i18n por diccionario centralizado en `I18N = { es: {...}, en: {...} }`.
-
-- Cada elemento traducible tiene `data-i18n="clave.subclave"`
-- El botón `EN` / `ES` en el nav superior derecho alterna el idioma completo
-- Persiste en `localStorage` con la llave `od_lang`
-- También cambia: textos del boot, mensajes aleatorios, contenido del panel modal, labels del HUD, todo
-
-Para agregar un idioma nuevo:
-1. Duplica el objeto `I18N.es` como `I18N.pt` (por ejemplo)
-2. Traduce todos los valores
-3. Modifica el ciclo del botón `langBtn`
-
+Controles
+Desktop (teclado)
+Tecla	Acción
+`←` `→` `↑` `↓` o `WASD`	Mover personaje
+`ENTER` o `SPACE`	Interactuar con hotspot cercano
+`ESC`	Cerrar panel abierto
+`TAB`	Viaje rápido a la siguiente sala
+Móvil (D-pad táctil)
+D-pad de 5 botones fijo en la esquina inferior derecha: `↑ ↓ ← → ⏎`. Aparece automáticamente en pantallas menores a 900px. Soporta hold para movimiento continuo.
 ---
+Funcionalidades
+Boot sequence
+Al cargar la página por primera vez en la sesión, aparece una terminal que escribe líneas de texto animado estilo CRT antes de revelar el sitio. Se muestra una sola vez por sesión (`sessionStorage`).
+Personaje
+ASCII art de `(lol)` que camina por la escena activa, anima las piernas al moverse y se voltea según la dirección. Tamaño `20px` con sombra ámbar.
+Hotspots y proximidad
+En las salas Artistas y Transmisiones, al acercarse a un elemento aparece el indicador `[↵]` y se puede interactuar con `ENTER`. En Tienda y Artistas (grid), el clic directo también abre el panel.
+Panel de artistas (pestañas tipo Arkham Asylum)
+Al interactuar con cualquier miembro del colectivo se abre un panel con tres pestañas:
+ATRIBUTOS — nombre, rol y biografía
+HECHOS — ficha técnica en grid (disciplina, estado, proyectos)
+HISTORIA — biografía completa + slot para subir una foto PNG/JPG del artista (se guarda en memoria de sesión por artista)
+Tienda dinámica (Google Sheets)
+La tienda carga el catálogo desde un CSV público de Google Sheets. Si no hay URL configurada, usa 4 productos de demostración. Las tarjetas de producto muestran imagen real o placeholder SVG de camiseta.
+Modal de producto
+Al hacer clic en una prenda se abre un modal de pantalla completa con:
+Imagen principal (frente)
+Thumbnail del reverso (si existe) para cambiar vista
+Nombre en tipografía grande, autor, precio
+Descripción de compra
+Botón de WhatsApp que abre una conversación con mensaje prellenado
+Popup de transmisiones aleatorio
+Cada 30–70 segundos aparece un mensaje emergente en la parte inferior con un texto del catálogo `random.01`–`random.08`. Primera aparición a los 18 segundos.
+Modo invertido (colores)
+El botón `INVERTIR` en la esquina superior derecha alterna entre fondo negro (oscuro) y fondo crema (claro). Preferencia guardada en `localStorage`.
+Idioma ES / EN
+El botón `EN` / `ES` alterna todos los textos del sitio. Los mensajes del popup de transmisiones se mantienen en español en ambos idiomas. Preferencia guardada en `localStorage`.
+HUD
+Dos bloques de información fijos en la pantalla:
+Inferior izquierdo: reloj en tiempo real, `Cada día · hoy`
+Inferior derecho: sala actual `XX / 05`, posición `X,Y`, señal `ESTABLE`
+---
+Configuración inicial (dos pasos)
+1. Conectar WhatsApp
+En el archivo, busca las dos apariciones de `wa.me` y reemplaza la URL:
+```javascript
+// Antes
+window.open('https://wa.me/?text=' + msg, '_blank');
 
-## Estructura del archivo
-
-Todo está en un solo `index.html` (~1100 líneas). Tres bloques principales:
-
-1. **`<style>` (CSS) — tokens, layout, escenas, hotspots, panel, d-pad, responsive**
-2. **`<body>` (HTML) — boot, overlays, wordmark, tabs, tools, HUD, world (5 escenas), panel, d-pad**
-3. **`<script>` (JS) — i18n, boot, theme, HUD, character controller, scene transitions, hotspot proximity, panel logic, input (keyboard + d-pad), random transmissions**
-
-### Estado global (un solo objeto)
-
-```js
-const STATE = {
-  scene: 'inicio',         // escena actual
-  x: 50, y: 75,            // posición % del personaje
-  facing: 'right',         // dirección visual
-  lang: 'es',              // idioma
-  theme: 'dark',           // tema
-  activeHotspot: null,     // hotspot bajo el personaje
-  activeExit: null,        // puerta cercana
-  transitioning: false,    // bloqueo durante fade
-};
+// Después (con tu número mexicano de 10 dígitos)
+window.open('https://wa.me/52TUNUMERO?text=' + msg, '_blank');
 ```
-
----
-
-## Personalización rápida
-
-### Agregar un artista
-1. En la escena `scene-artistas`, agrega un nuevo `.hotspot.artist-frame` con `data-id="nuevo_id"` y posición `style="left:X%; top:Y%;"`
-2. Agrega la entrada en `PANEL_DATA`:
-```js
-nuevo_id: { kind:'artist', name:'NUEVO_NOMBRE', role:'artist.nuevo_id.role', bio:'artist.nuevo_id.bio', tag:'PERFIL_A_00X' },
+Ejemplo: si tu número es `2221234567` → escribe `522221234567`
+Hay dos instancias: una en el panel de artistas (botón CONTACTAR) y una en el modal de producto (botón COMPRAR VÍA WHATSAPP).
+2. Conectar el catálogo de Google Sheets
+```javascript
+// Línea ~2342 del archivo
+const SHEET_CSV_URL = 'TU_URL_CSV_AQUI';
 ```
-3. Agrega las traducciones en `I18N.es` y `I18N.en`:
-```js
-'artist.nuevo_id.role': 'ROL',
-'artist.nuevo_id.bio': 'Bio del artista...',
+Reemplaza `'TU_URL_CSV_AQUI'` con la URL CSV de tu hoja publicada (ver sección Catálogo más abajo).
+---
+Catálogo de productos (Google Sheets)
+Estructura de la hoja `catalogo`
+Columna	Descripción
+`id`	Identificador único sin espacios. Ej: `fragildevocipn`
+`nombre`	Nombre visible en mayúsculas. Ej: `FRÁGIL DEVOCIÓN`
+`autor`	Nombre del artista. Ej: `secret.eyes888`
+`descripcion`	Texto del modal (máx. 200 caracteres recomendado)
+`precio`	Con signo. Ej: `$180 MXN`
+`estado`	`disponible` · `agotado` · `proximo`
+`imagen_frente`	URL directa de la foto delantera
+`imagen_reverso`	URL directa de la foto trasera (puede quedar vacío)
+Publicar el Sheet como CSV
+Abre tu Google Sheet
+Archivo → Compartir → Publicar en la web
+Selecciona: hoja `catalogo` → formato CSV → clic en Publicar
+Copia el enlace generado
+Pégalo en `SHEET_CSV_URL` dentro del HTML
+La tienda se actualiza automáticamente cada vez que un usuario carga la página. No hay que tocar el HTML de nuevo.
+URLs de imágenes desde Google Drive
+Sube la imagen a Google Drive
+Clic derecho → Compartir → Cualquier persona con el enlace puede ver
+Del URL copia solo el ID: `drive.google.com/file/d/``ESTE_ID``/view`
+La URL final para la hoja queda: `https://drive.google.com/uc?export=view&id=ESTE_ID`
+---
+Tipografías
+Cargadas desde Google Fonts (requiere conexión a internet):
+Variable	Fuente	Uso
+`--font-mono`	JetBrains Mono	Texto general, HUD, botones
+`--font-crt`	VT323	Títulos de salas, nombres de artistas, precios
+`--font-serif`	Instrument Serif	Texto del manifiesto, títulos de panel
+---
+Paleta de colores
+Variable	Valor	Uso
+`--bg`	`#0a0a0a`	Fondo principal
+`--bg-2`	`#111111`	Fondo de elementos
+`--fg`	`#e8e3d3`	Texto principal
+`--fg-dim`	`#8a8578`	Texto secundario
+`--fg-muted`	`#4a4a44`	Texto apagado, bordes
+`--amber`	`#f0b81b`	Acento dorado (precio, activo)
+`--magenta`	`#ff2d6f`	Acento rojo (agotado, pulso)
+`--line`	`#1f1f1f`	Bordes y separadores
+En modo invertido (`body.inverted`) el fondo y texto se invierten a crema/negro.
+---
+Agregar o editar artistas
+Los datos de los 33 artistas viven en el objeto `ARTIST_DATA` dentro del `<script>`. Cada entrada tiene esta forma:
+```javascript
+nombre_id: {
+  name: 'Nombre visible',
+  role: 'Disciplina',
+  tag: 'A01',
+  bio: 'Biografía corta o completa.',
+  attrs: {
+    'Campo': 'Valor',      // aparece en pestaña HECHOS
+  },
+  hechos: {
+    'Campo': 'Valor',      // aparece en pestaña HISTORIA → ficha
+  }
+}
 ```
-
-### Agregar un producto
-Igual que un artista pero en `scene-tienda` con `class="hotspot product-hotspot"`. En `PANEL_DATA` usa `kind:'product'`.
-
-### Cambiar el SVG de una prenda
-Cada producto tiene un SVG inline que representa la prenda. Sustitúyelo por tu propia ilustración (mismo `viewBox="0 0 200 240"`).
-
-### Cambiar transmisiones (la bitácora pública)
-En `scene-transmisiones`, edita los monitores. Cada uno tiene una fecha y un mensaje corto. El mensaje extendido va en `I18N` como `trans.full.0X`.
-
-**Importante:** este es el contenido que cambia con frecuencia para que la gente regrese. Considera moverlo a Firestore (ya tienes `firebase-config.js` en el repo) para poder editarlo sin redeployar.
-
+Para agregar un artista nuevo también hay que:
+Añadir su tarjeta en el HTML dentro de `.artistas-grid`
+Añadir su ID en `PANEL_DATA`
+Añadir sus datos en `ARTIST_DATA`
 ---
-
-## Cosas que NO incluí (intencionalmente)
-
-- **Carrito de compras**: la primera versión usa link a WhatsApp porque es lo más ágil para validar. Si las ventas crecen, conviene Shopify o Stripe Checkout (sin migrar a SaaS pesado).
-- **Backend de regalías**: el manifiesto dice "cada autor recibe regalías". Implementarlo de verdad requiere Stripe Connect o un sistema custom. Tu stack actual (FastAPI + PostgreSQL del CafeteriaOS) podría reutilizarse.
-- **Imágenes reales de productos**: usé SVGs placeholder. Cuando tengas fotos, sustituye los `<svg>` por `<img src="...">` con object-fit cover.
-- **Audios**: tu `index_1.html` tenía audios aleatorios. Los quité porque autoplay con sonido genera fricción inmediata (los browsers lo bloquean y suena spam). Si los quieres, ponles un toggle explícito.
-
+Responsividad
+Breakpoint	Comportamiento
+> 900px	Layout completo, cursor crosshair, sin D-pad
+≤ 900px	D-pad visible, tabs en segunda línea, world ajustado
+≤ 600px	Títulos de sala en múltiples líneas, tienda en 2 columnas, modal apilado verticalmente
+≤ 380px	Tarjetas mínimas, tabs comprimidos
 ---
-
-## Deployment — GitHub Pages + Namecheap
-
-### Paso 1: Subir el archivo
-
-```bash
-git clone https://github.com/otrosdias/otrosdias.github.io.git
-cd otrosdias.github.io
-cp /ruta/a/index.html .
-echo "otrosdias.com" > CNAME      # ← CRÍTICO para custom domain
-git add .
-git commit -m "v1.1 scene engine + i18n"
-git push origin main
-```
-
-> El repo `otrosdias.github.io` sirve la raíz del dominio. Si usas otro nombre (ej. `otrosdias/web`), tendrás que activar Pages manualmente desde `Settings → Pages`.
-
-### Paso 2: Activar GitHub Pages
-
-1. `https://github.com/otrosdias/otrosdias.github.io/settings/pages`
-2. Source: `Deploy from a branch` → `main` / `/ (root)`
-3. **Custom domain**: `otrosdias.com`
-4. **Enforce HTTPS** (después de propagación DNS)
-
-### Paso 3: DNS en Namecheap
-
-Panel Namecheap → `otrosdias.com` → **Advanced DNS**:
-
-| Type    | Host | Value                  | TTL  |
-|---------|------|------------------------|------|
-| A       | @    | `185.199.108.153`      | Auto |
-| A       | @    | `185.199.109.153`      | Auto |
-| A       | @    | `185.199.110.153`      | Auto |
-| A       | @    | `185.199.111.153`      | Auto |
-| CNAME   | www  | `otrosdias.github.io.` | Auto |
-
-> ⚠️ Borra los registros `URL Redirect` o `Parking Page` por default.
-
-Verificación: `dig otrosdias.com +short` debe responder los 4 IPs `185.199.108-111.153`.
-
+Despliegue
+El archivo es 100% estático. Opciones de publicación:
+GitHub Pages — sube el archivo como `index.html` en un repositorio público y activa Pages
+Netlify Drop — arrastra el archivo a app.netlify.com/drop
+Vercel — conecta el repositorio o sube manualmente
+Servidor propio — cualquier hosting de archivos estáticos
+No requiere Node.js, PHP ni base de datos.
 ---
-
-## Migración futura a Vite/React
-
-Tu screenshot mostraba un setup Vite con `Artists.jsx`, `ASCIINavigator.jsx`, `Hero.jsx`. Cuando el contenido crezca, vale la pena migrar este HTML a componentes:
-
-| HTML actual                    | Componente sugerido         |
-|--------------------------------|-----------------------------|
-| `<div class="boot">`           | `<BootSequence />`          |
-| HUD + tools + tabs             | `<TopHUD />` + `<SceneTabs />` |
-| `<div id="world">`             | `<World scenes={...} />`    |
-| Cada `.scene`                  | `<SceneInicio />`, `<SceneArtistas />`, etc. |
-| `<div id="char">`              | `<Character state={...} />` |
-| `<div class="hotspot">`        | `<Hotspot data={...} />`    |
-| Panel modal                    | `<InfoPanel />`             |
-| `I18N` diccionario             | `react-i18next` o context propio |
-| `PANEL_DATA`                   | JSON desde Firestore        |
-| Posiciones de hotspots         | JSON `artists.json`, `products.json` |
-
-Una vez en React, podrías agregar:
-- **CMS visual** para editar transmisiones desde un panel
-- **Animaciones más complejas** con Framer Motion (el personaje deslizándose entre escenas en vez de fade)
-- **Multi-step character pathfinding** (clickeas un cuadro, el personaje camina hasta allí solo)
-- **Sonido espacial** (cada escena con un ambient track, atenuado por distancia)
-
+Créditos
+Concepto y dirección: Randy García Mejía / otrosdias  
+Sitio: marlonstevegm.com  
+Colectivo: @otrosdias  
+Año: 2026
 ---
-
-## Archivos
-
-- `index.html` — sitio completo (~1100 líneas, 0 dependencias JS externas)
-- `README.md` — este archivo
-
-Solo se cargan **Google Fonts** desde CDN. Todo lo demás es local.
+otrosdias · todos los derechos reservados · 2020–2026
