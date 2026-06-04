@@ -207,9 +207,9 @@ body.inverted .crt-overlay{ mix-blend-mode: screen; opacity: 0.3; }
 
 .scene-title{
   position: absolute;
-  top: 8%; left: 50%; transform: translateX(-50%);
+  top: 6%; left: 50%; transform: translateX(-50%);
   font-family: var(--font-crt);
-  font-size: clamp(56px, 11vw, 160px);
+  font-size: clamp(44px, 9vw, 130px);
   letter-spacing: 0.01em;
   line-height: 0.9;
   white-space: nowrap;
@@ -221,11 +221,12 @@ body.inverted .crt-overlay{ mix-blend-mode: screen; opacity: 0.3; }
 
 .scene-tag{
   position: absolute;
-  top: 4%; left: 50%; transform: translateX(-50%);
+  top: 2%; left: 50%; transform: translateX(-50%);
   font-size: 10px;
   letter-spacing: 0.2em;
   color: var(--fg-dim);
   text-transform: uppercase;
+  z-index: 2;
 }
 .scene-tag::before{ content: '// '; color: var(--magenta); }
 
@@ -273,23 +274,23 @@ body.inverted .crt-overlay{ mix-blend-mode: screen; opacity: 0.3; }
 .exit .arrow{ font-size: 24px; }
 
 /* ============================================
-   CHARACTER (lives in #world, position absolute)
+   CHARACTER — más grande
 ============================================ */
 .character{
   position: absolute;
   z-index: 50;
   white-space: pre;
   font-family: var(--font-mono);
-  font-size: 14px;
-  line-height: 1.15;
+  font-size: 20px;
+  line-height: 1.2;
   color: var(--amber);
-  text-shadow: 0 0 8px rgba(240,184,27,0.5);
-  transition: left 0.12s linear, bottom 0.12s linear, transform 0.12s;
+  text-shadow: 0 0 12px rgba(240,184,27,0.6);
+  transition: left 0.12s linear, top 0.12s linear, transform 0.12s;
   pointer-events: none;
   text-align: center;
 }
-.character.facing-left { transform: translateX(-50%) scaleX(-1); }
-.character.facing-right{ transform: translateX(-50%) scaleX(1); }
+.character.facing-left { transform: translate(-50%, -50%) scaleX(-1); }
+.character.facing-right{ transform: translate(-50%, -50%) scaleX(1); }
 
 /* ============================================
    HOTSPOTS
@@ -398,70 +399,446 @@ body.inverted .crt-overlay{ mix-blend-mode: screen; opacity: 0.3; }
 .scene-manifiesto .stamp-2{ top: 18%; right: 12%; transform: rotate(3deg); color: var(--magenta); border-color: var(--magenta); }
 
 /* ============================================
-   SCENE: ARTISTAS — frames on walls
+   SCENE: ARTISTAS — grid horizontal, todos iguales
 ============================================ */
-.artist-frame .frame{
-  width: 92px; height: 110px;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 8px;
+.scene-artistas{
+  overflow-y: auto;
+  overflow-x: hidden;
 }
-.artist-frame.featured .frame{
-  width: 130px; height: 150px;
+.scene-artistas::-webkit-scrollbar{ width: 4px; }
+.scene-artistas::-webkit-scrollbar-track{ background: transparent; }
+.scene-artistas::-webkit-scrollbar-thumb{ background: var(--fg-muted); }
+
+.scene-artistas .scene-title{
+  font-size: clamp(32px, 6vw, 80px);
+  top: 3%;
 }
-.artist-frame .name{
-  font-family: var(--font-crt);
-  font-size: 18px;
-  color: var(--fg);
-  line-height: 1;
-  text-align: center;
-  letter-spacing: 0.02em;
-}
-.artist-frame.featured .name{
-  font-size: 26px;
-  color: var(--amber);
-}
-.artist-frame .id-badge{
+
+.artistas-grid{
   position: absolute;
-  top: 4px; left: 6px;
+  top: 20%;
+  left: 0; right: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 14px;
+  padding: 0 80px 80px 80px;
+  z-index: 5;
+}
+
+/* Tarjeta horizontal rectangular */
+.artist-card{
+  position: static !important;
+  transform: none !important;
+  flex: 0 0 auto;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.artist-card .frame{
+  width: 160px; height: 52px;
+  display: flex; flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border: 1px solid var(--fg-muted);
+  background: var(--bg-2);
+  position: relative;
+  transition: all 0.2s;
+  overflow: hidden;
+}
+.artist-card:hover .frame,
+.artist-card.active .frame{
+  border-color: var(--amber);
+  box-shadow: 0 0 18px -4px var(--amber);
+  background: radial-gradient(circle at 20% 50%, rgba(240,184,27,0.07), transparent 70%), var(--bg-2);
+}
+.artist-card .id-badge{
   font-size: 8px;
   color: var(--fg-muted);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
+  flex: 0 0 auto;
+  min-width: 20px;
 }
-.artist-frame.featured::after{
-  content: '◉';
+.artist-card .name{
+  font-family: var(--font-crt);
+  font-size: 16px;
+  color: var(--fg);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+.artist-card .role-tag{
   position: absolute;
-  top: -10px; right: -10px;
+  bottom: 3px; right: 6px;
+  font-size: 7px;
+  color: var(--fg-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+/* enter indicator */
+.artist-card.active::before{
+  content: '[↵]';
+  position: absolute;
+  top: -18px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
   color: var(--magenta);
-  font-size: 14px;
-  animation: pulse 1.4s ease-in-out infinite;
+  letter-spacing: 0.1em;
+  animation: pulse 1s ease-in-out infinite;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 /* ============================================
-   SCENE: TIENDA — hanging garments
+   SCENE: TIENDA — A24-style grid, 14 recuadros
 ============================================ */
-.product-hotspot .frame{
-  width: 110px; height: 160px;
-  padding: 6px;
-  background:
-    radial-gradient(circle, var(--fg-muted) 0.8px, transparent 1.5px) center / 6px 6px,
-    var(--bg-2);
+.scene-tienda{
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
 }
-.product-hotspot .frame svg{ width: 100%; height: 100%; }
-.product-hotspot .price-tag{
+.scene-tienda::-webkit-scrollbar{ width: 4px; }
+.scene-tienda::-webkit-scrollbar-track{ background: transparent; }
+.scene-tienda::-webkit-scrollbar-thumb{ background: var(--fg-muted); }
+
+.scene-tienda .scene-title{
+  font-size: clamp(28px, 5vw, 70px);
+  top: 2%;
+  z-index: 2;
+}
+
+/* Grid principal — 5 columnas en desktop */
+.tienda-grid{
   position: absolute;
-  top: -6px; right: -6px;
-  font-size: 9px;
+  top: 17%;
+  left: 0; right: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2px;
+  padding: 0 90px 100px 90px;
+  z-index: 5;
+}
+
+/* Cada tarjeta de producto */
+.product-card{
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  aspect-ratio: 3/4;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  transition: border-color 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+.product-card:hover{
+  border-color: var(--fg-muted);
+  z-index: 2;
+}
+.product-card:hover .card-overlay{ opacity: 1; }
+
+/* Área de imagen — ocupa casi toda la tarjeta */
+.card-img{
+  flex: 1;
+  overflow: hidden;
+  background: var(--bg-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.card-img img{
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.product-card:hover .card-img img{
+  transform: scale(1.04);
+}
+.card-img .card-svg{
+  width: 60%; height: 60%;
+  opacity: 0.4;
+}
+
+/* Overlay hover */
+.card-overlay{
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+.card-overlay span{
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--fg);
+  border: 1px solid var(--fg);
+  padding: 6px 14px;
+  text-transform: uppercase;
+  background: rgba(10,10,10,0.6);
+}
+
+/* Footer de la tarjeta */
+.card-footer{
+  padding: 7px 8px 7px;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-shrink: 0;
+}
+.card-footer .card-name{
+  font-family: var(--font-crt);
+  font-size: 13px;
+  color: var(--fg);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%;
+}
+.card-footer .card-price{
+  font-size: 10px;
+  color: var(--fg-dim);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.product-card.sold .card-footer .card-price{ color: var(--magenta); }
+.product-card.proximo .card-footer .card-price{ color: var(--amber); }
+
+/* Badge agotado/próximo */
+.card-badge{
+  position: absolute;
+  top: 8px; left: 0;
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  padding: 3px 8px;
+  text-transform: uppercase;
+  z-index: 3;
+  pointer-events: none;
+}
+.product-card.sold .card-badge{ background: var(--magenta); color: #fff; }
+.product-card.proximo .card-badge{ background: var(--fg-muted); color: var(--bg); }
+
+/* Loading state */
+.tienda-loading{
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 0;
+  color: var(--fg-dim);
+  font-size: 12px;
+  letter-spacing: 0.15em;
+}
+.tienda-loading::before{
+  content: '◉';
+  display: block;
+  font-size: 28px;
+  color: var(--magenta);
+  margin-bottom: 14px;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+/* ============================================
+   PRODUCT DETAIL MODAL (tipo A24)
+============================================ */
+.product-modal-backdrop{
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 600;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+}
+body.inverted .product-modal-backdrop{ background: rgba(200,195,185,0.9); }
+.product-modal-backdrop.open{ opacity: 1; visibility: visible; }
+
+.product-modal{
+  display: flex;
+  width: 100%;
+  max-width: 860px;
   background: var(--bg);
   border: 1px solid var(--fg);
-  color: var(--fg);
-  padding: 3px 6px;
-  letter-spacing: 0.05em;
+  position: relative;
+  max-height: 88vh;
+  overflow: hidden;
+  transform: translateY(30px) scale(0.97);
+  transition: transform 0.35s cubic-bezier(.2,.8,.3,1);
+  flex-shrink: 0;
 }
-.product-hotspot.sold .price-tag{
+.product-modal-backdrop.open .product-modal{
+  transform: translateY(0) scale(1);
+}
+
+/* Panel izquierdo — imágenes */
+.pm-images{
+  flex: 0 0 48%;
+  background: var(--bg-2);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 3px;
+  overflow: hidden;
+  min-height: 400px;
+}
+.pm-img-main{
+  flex: 1;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-2);
+}
+.pm-img-main img{
+  width: 100%; height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.pm-img-main .pm-placeholder{
+  opacity: 0.25;
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+}
+.pm-img-thumbs{
+  display: flex;
+  gap: 3px;
+  height: 66px;
+  flex-shrink: 0;
+}
+.pm-thumb{
+  flex: 1;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-2);
+}
+.pm-thumb.active{ border-color: var(--amber); }
+.pm-thumb:hover{ border-color: var(--fg-dim); }
+.pm-thumb img{ width: 100%; height: 100%; object-fit: cover; }
+
+/* Panel derecho — info */
+.pm-info{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 26px 26px 18px;
+  overflow-y: auto;
+}
+.pm-info::-webkit-scrollbar{ width: 3px; }
+.pm-info::-webkit-scrollbar-thumb{ background: var(--fg-muted); }
+
+.pm-tag{
+  font-size: 9px;
+  letter-spacing: 0.2em;
   color: var(--magenta);
-  border-color: var(--magenta);
+  text-transform: uppercase;
+  margin-bottom: 8px;
 }
+.pm-tag::before{ content: '// '; }
+.pm-title{
+  font-family: var(--font-crt);
+  font-size: clamp(26px, 3.5vw, 48px);
+  line-height: 0.95;
+  color: var(--fg);
+  margin: 0 0 6px;
+  letter-spacing: 0.02em;
+}
+.pm-author{
+  font-size: 11px;
+  color: var(--amber);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.pm-price{
+  font-family: var(--font-crt);
+  font-size: 38px;
+  color: var(--fg);
+  line-height: 1;
+  margin-bottom: 18px;
+}
+.pm-price.sold{ color: var(--magenta); }
+.pm-price.proximo{ color: var(--amber); }
+.pm-divider{
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 0 0 14px;
+}
+.pm-desc-label{
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+.pm-desc-text{
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--fg-dim);
+  margin-bottom: 6px;
+}
+.pm-desc-note{
+  font-size: 11px;
+  color: var(--fg-muted);
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+.pm-buy-btn{
+  width: 100%;
+  background: var(--amber);
+  color: var(--bg);
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-top: auto;
+}
+.pm-buy-btn:hover{ background: var(--fg); color: var(--bg); }
+.pm-buy-btn:disabled{
+  background: var(--fg-muted);
+  color: var(--bg);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.pm-brand{
+  text-align: center;
+  margin-top: 12px;
+  font-family: var(--font-crt);
+  font-size: 18px;
+  color: var(--fg-muted);
+  letter-spacing: 0.1em;
+  opacity: 0.4;
+}
+.pm-close{
+  position: absolute;
+  top: 10px; right: 12px;
+  background: transparent;
+  border: none;
+  color: var(--fg-dim);
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 10;
+  padding: 4px 8px;
+}
+.pm-close:hover{ color: var(--magenta); background: transparent; }
 
 /* ============================================
    SCENE: TRANSMISIONES — monitors
@@ -497,7 +874,7 @@ body.inverted .crt-overlay{ mix-blend-mode: screen; opacity: 0.3; }
 }
 
 /* ============================================
-   INFO PANEL (modal)
+   INFO PANEL (modal) — con pestañas tipo Arkham
 ============================================ */
 .panel-backdrop{
   position: fixed; inset: 0;
@@ -510,18 +887,56 @@ body.inverted .crt-overlay{ mix-blend-mode: screen; opacity: 0.3; }
 }
 body.inverted .panel-backdrop{ background: rgba(232,227,211,0.85); }
 .panel-backdrop.open{ opacity: 1; visibility: visible; }
+
 .panel{
   background: var(--bg);
   border: 1px solid var(--fg);
-  max-width: 520px;
+  max-width: 580px;
   width: 100%;
-  padding: 28px 30px 26px;
   position: relative;
   transform: translateY(20px) scale(0.98);
   transition: transform 0.3s;
   font-family: var(--font-mono);
+  overflow: hidden;
 }
 .panel-backdrop.open .panel{ transform: translateY(0) scale(1); }
+
+/* === PESTAÑAS TIPO ARKHAM ASYLUM === */
+.panel-tabs{
+  display: flex;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-2);
+}
+.panel-tab-btn{
+  border: none;
+  border-right: 1px solid var(--line);
+  background: transparent;
+  color: var(--fg-dim);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  padding: 10px 14px;
+  cursor: pointer;
+  text-transform: uppercase;
+  flex: 1;
+  position: relative;
+  transition: all 0.15s;
+}
+.panel-tab-btn:hover{ background: rgba(240,184,27,0.05); color: var(--fg); }
+.panel-tab-btn.active{
+  background: var(--bg);
+  color: var(--amber);
+  border-bottom: 2px solid var(--amber);
+}
+.panel-tab-btn:last-child{ border-right: none; }
+
+/* === CONTENIDO DE PESTAÑAS === */
+.panel-tab-content{
+  display: none;
+  padding: 22px 28px 20px;
+  min-height: 200px;
+}
+.panel-tab-content.active{ display: block; }
+
 .panel-tag{
   font-size: 10px; letter-spacing: 0.2em;
   color: var(--fg-dim); text-transform: uppercase;
@@ -546,13 +961,18 @@ body.inverted .panel-backdrop{ background: rgba(232,227,211,0.85); }
   line-height: 1.65;
   color: var(--fg);
   margin-bottom: 22px;
+  max-height: 160px;
+  overflow-y: auto;
 }
+.panel-body::-webkit-scrollbar{ width: 3px; }
+.panel-body::-webkit-scrollbar-thumb{ background: var(--fg-muted); }
+
 .panel-foot{
   display: flex; gap: 10px;
   justify-content: space-between;
   align-items: center;
   border-top: 1px solid var(--line);
-  padding-top: 16px;
+  padding-top: 14px;
   font-size: 10px;
   letter-spacing: 0.1em;
   color: var(--fg-dim);
@@ -568,6 +988,7 @@ body.inverted .panel-backdrop{ background: rgba(232,227,211,0.85); }
   cursor: pointer;
   padding: 4px 8px;
   letter-spacing: 0;
+  z-index: 10;
 }
 .panel-close:hover{ color: var(--magenta); background: transparent; }
 .panel-cta{
@@ -578,6 +999,98 @@ body.inverted .panel-backdrop{ background: rgba(232,227,211,0.85); }
   font-size: 11px;
 }
 .panel-cta:hover{ background: var(--fg); border-color: var(--fg); }
+
+/* === PESTAÑA HISTORIA (foto + bio) === */
+.tab-historia-inner{
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.artist-photo-slot{
+  flex: 0 0 120px;
+  width: 120px;
+  height: 150px;
+  border: 1px dashed var(--fg-muted);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.artist-photo-slot img{
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: none;
+}
+.artist-photo-slot img.loaded{ display: block; }
+.artist-photo-placeholder{
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: #aaa;
+  text-align: center;
+  padding: 8px;
+  pointer-events: none;
+}
+.artist-photo-input{
+  position: absolute; inset: 0;
+  opacity: 0; cursor: pointer;
+  width: 100%; height: 100%;
+}
+.historia-bio{
+  flex: 1;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--fg);
+  max-height: 200px;
+  overflow-y: auto;
+}
+.historia-bio::-webkit-scrollbar{ width: 3px; }
+.historia-bio::-webkit-scrollbar-thumb{ background: var(--fg-muted); }
+.historia-attrs{
+  margin-top: 10px;
+  font-size: 10px;
+  color: var(--fg-dim);
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+.historia-attrs span{
+  display: inline-block;
+  margin-right: 12px;
+  margin-bottom: 4px;
+}
+.historia-attrs b{ color: var(--amber); }
+
+/* === PESTAÑA ATRIBUTOS / HECHOS (para artistas) === */
+.attr-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 20px;
+}
+.attr-row{
+  font-size: 11px;
+  border-bottom: 1px solid var(--line);
+  padding: 6px 0;
+}
+.attr-row .ak{ color: var(--fg-dim); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; }
+.attr-row .av{ color: var(--fg); margin-top: 2px; }
+
+/* Waveform decoration for panels */
+.panel-wave{
+  height: 30px;
+  background: repeating-linear-gradient(90deg, transparent, transparent 3px, var(--line) 3px, var(--line) 4px);
+  margin: 8px 0;
+  position: relative;
+  overflow: hidden;
+}
+.panel-wave::after{
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='30'><polyline points='0,15 20,5 40,22 60,8 80,20 100,4 120,18 140,10 160,24 180,6 200,15' fill='none' stroke='%23f0b81b' stroke-width='1.5'/></svg>") repeat-x center;
+  opacity: 0.6;
+}
 
 /* ============================================
    MOBILE D-PAD
@@ -643,22 +1156,104 @@ body.inverted .panel-backdrop{ background: rgba(232,227,211,0.85); }
    RESPONSIVE
 ============================================ */
 @media (max-width: 900px){
-  .scene-tabs{ font-size: 9px; }
-  .scene-tabs button{ padding: 4px 6px; font-size: 9px; }
-  .scene-title{ font-size: clamp(40px, 13vw, 90px); }
+  .scene-tabs{
+    top: 52px;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 95vw;
+  }
+  .scene-tabs button{ padding: 4px 7px; font-size: 9px; }
+  .scene-title{ font-size: clamp(36px, 11vw, 80px); }
   .hud{ font-size: 9px; }
   .scene-manifiesto .manifesto-text{ font-size: 16px; top: 24%; }
   .dpad{ display: grid; }
   .hint-bar{ display: none; }
   .wordmark{ font-size: 22px; }
   body{ cursor: default; }
+  #world{ inset: 90px 0 90px 0; }
+
+  .artistas-grid{ padding: 0 30px 80px 30px; gap: 8px 10px; }
+  .artist-card .frame{ width: 140px; }
+
+  /* Tienda: 4 cols en tablet */
+  .tienda-grid{
+    grid-template-columns: repeat(4, 1fr);
+    padding: 0 50px 100px 50px;
+    top: 18%;
+  }
 }
+
 @media (max-width: 600px){
-  .scene-tabs{ top: 50px; left: 50%; }
-  .scene-tabs button{ padding: 3px 5px; }
-  .scene-manifiesto .stamp{ display: none; }
+  .wordmark{ font-size: 18px; top: 12px; left: 14px; }
+  .tools{ top: 10px; right: 14px; gap: 4px; }
+  .tools button{ padding: 4px 8px; font-size: 9px; }
+
+  .scene-tabs{
+    top: 44px;
+    gap: 2px;
+    padding: 3px;
+  }
+  .scene-tabs button{ padding: 3px 5px; font-size: 8px; letter-spacing: 0.05em; }
+
+  #world{ inset: 88px 0 88px 0; }
+
+  .scene-title{
+    font-size: clamp(28px, 9vw, 60px);
+    top: 4%;
+    white-space: normal;
+    text-align: center;
+    width: 90%;
+    left: 5%;
+    transform: none;
+  }
+  .scene-tag{ top: 1%; font-size: 8px; }
+
+  /* Artistas en mobile */
+  .artistas-grid{ padding: 0 12px 80px 12px; gap: 6px 8px; top: 22%; }
+  .artist-card .frame{ width: 130px; height: 46px; }
+  .artist-card .name{ font-size: 14px; }
+
+  /* Tienda mobile: 2 cols */
+  .tienda-grid{
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 8px 80px 8px;
+    gap: 2px;
+    top: 22%;
+  }
+  .card-footer .card-name{ font-size: 11px; }
+  .card-footer .card-price{ font-size: 9px; }
+
+  /* Modal mobile */
+  .product-modal{ flex-direction: column; max-height: 95vh; overflow-y: auto; max-width: 100%; }
+  .pm-images{ flex: none; height: 260px; min-height: unset; }
+  .pm-info{ padding: 16px 16px 14px; }
+  .pm-title{ font-size: 28px; }
+  .pm-price{ font-size: 28px; }
+
+  /* Panel full screen en mobile */
+  .panel{ max-width: 100%; margin: 0 8px; }
+  .panel-title{ font-size: 28px; }
+  .panel-tab-btn{ font-size: 8px; padding: 8px 8px; }
+  .tab-historia-inner{ flex-direction: column; }
+  .artist-photo-slot{ width: 100%; height: 160px; flex: none; }
+  .scene-manifiesto .manifesto-text{ font-size: 14px; top: 22%; width: 88%; }
   .hud--br{ bottom: 200px; right: 14px; }
   .hud--bl{ bottom: 22px; left: 14px; }
+  .dpad{ bottom: 14px; right: 14px; }
+}
+
+
+@media (max-width: 380px){
+  .scene-tabs button{ padding: 2px 4px; font-size: 7.5px; }
+  .artistas-grid{ gap: 5px 6px; }
+  .artist-card .frame{ width: 110px; height: 42px; }
+  .tienda-grid{
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 4px 80px 4px;
+    gap: 2px;
+  }
 }
 </style>
 </head>
@@ -689,14 +1284,14 @@ body.inverted .panel-backdrop{ background: rgba(232,227,211,0.85); }
 <!-- TOOLS -->
 <div class="tools">
   <button id="langBtn" title="Language">EN</button>
-  <button id="themeBtn" title="Theme" data-i18n="ui.theme">LIGHT</button>
+  <button id="themeBtn" title="Theme">INVERTIR</button>
   <button onclick="window.open('https://instagram.com/otrosdias','_blank')">IG</button>
 </div>
 
 <!-- HUD -->
 <div class="hud hud--bl">
   <b id="clock">--:--:--</b> tiempo<br>
-  <span class="pulse">◉</span> <span data-i18n="ui.system_online">Cada día </span> · hoy
+  <span class="pulse">◉</span> Cada día · hoy
 </div>
 <div class="hud hud--br">
   <span data-i18n="ui.scene">Sala</span>: <b id="hudScene">01 / 05</b><br>
@@ -726,8 +1321,8 @@ body.inverted .panel-backdrop{ background: rgba(232,227,211,0.85); }
     <div class="hub-meta right">
     </div>
     <div class="hub-sub">
-      <span data-i18n="inicio.sub">“(...) todos hemos tenido una consciencia muy clara de que no,
-no, no somos la culminación de nada, sino el principio de algo”.</span>
+      <span data-i18n="inicio.sub">"(...) todos hemos tenido una consciencia muy clara de que no,
+no, no somos la culminación de nada, sino el principio de algo".</span>
     </div>
     <div class="exit exit-right" data-go="manifiesto" data-side="right">
       <span data-i18n="ui.go_right">→</span>
@@ -740,8 +1335,6 @@ no, no somos la culminación de nada, sino el principio de algo”.</span>
   <div class="scene scene-manifiesto" data-scene="manifiesto">
     <div class="scene-tag" data-i18n="manifiesto.tag">.</div>
     <h2 class="scene-title" data-i18n="nav.manifiesto">.</h2>
-    <div class="stamp stamp-1" data-i18n="manifiesto.stamp1">.</div>
-    <div class="stamp stamp-2" data-i18n="manifiesto.stamp2">.</div>
     <div class="manifesto-text">
       <p data-i18n="manifiesto.p1">Todas las líneas que trazamos se están desvaneciendo lentamente,</p>
       <p data-i18n="manifiesto.p2"> esos castillos derrumbados en un mundo inmutable, ahora todo está saliendo a la superficie.</p>
@@ -761,85 +1354,40 @@ no, no somos la culminación de nada, sino el principio de algo”.</span>
     <div class="scene-tag" data-i18n="artistas.tag">miembros del colectivo</div>
     <h2 class="scene-title" data-i18n="artistas.title">Congregación</h2>
 
-    <!-- Featured -->
-    <div class="hotspot artist-frame featured" style="left:50%; top:55%;" data-id="essppora">
-      <div class="frame">
-        <span class="id-badge">A1</span>
-        <span class="name">essppora</span>
-      </div>
-      <span class="label" data-i18n="artist.bat_grafik.role">Fotografía urbana y tatuadora.</span>
-    </div>
-
-    <!-- Top row of frames -->
-    <div class="hotspot artist-frame" style="left:10%; top:42%;" data-id="secret_eyes">
-      <div class="frame"><span class="id-badge">A2</span><span class="name">SECRET<br>.EYES</span></div>
-      <span class="label" data-i18n="artist.secret_eyes.role">Ilustradora.</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:20%; top:42%;" data-id="nula">
-      <div class="frame"><span class="id-badge">A3</span><span class="name">mmicelio</span></div>
-      <span class="label" data-i18n="artist.nula.role">Fotografía natural</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:30%; top:42%;" data-id="henro">
-      <div class="frame"><span class="id-badge">A4</span><span class="name">Derwent</span></div>
-      <span class="label" data-i18n="artist.henro.role">Músico</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:40%; top:42%;" data-id="del_realismo">
-      <div class="frame"><span class="id-badge">A5</span><span class="name">del<br>Aldo Lopez Malo</span></div>
-      <span class="label" data-i18n="artist.del_realismo.role">Escritor</span>
-    </div>
-     <div class="hotspot artist-frame" style="left:50%; top:42%;" data-id="secret_eyes">
-      <div class="frame"><span class="id-badge">A6</span><span class="name">papiwabisabi<br>.</span></div>
-      <span class="label" data-i18n="artist.secret_eyes.role">Artista e ilustrador.</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:60%; top:42%;" data-id="nula">
-      <div class="frame"><span class="id-badge">A7</span><span class="name">Piedro</span></div>
-      <span class="label" data-i18n="artist.nula.role">Actor y director de Teatro</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:70%; top:42%;" data-id="henro">
-      <div class="frame"><span class="id-badge">A8</span><span class="name">Espontáneo</span></div>
-      <span class="label" data-i18n="artist.henro.role">Mundos Perdidos</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:80%; top:42%;" data-id="del_realismo">
-      <div class="frame"><span class="id-badge">A9</span><span class="name">Jce<br>s.s</span></div>
-      <span class="label" data-i18n="artist.del_realismo.role">Mundos Perdidos</span>
-    </div>    
-   <div class="hotspot artist-frame" style="left:90%; top:42%;" data-id="del_realismo">
-      <div class="frame"><span class="id-badge">A10</span><span class="name">Ay<br>ra</span></div>
-      <span class="label" data-i18n="artist.del_realismo.role">Mundos Perdidos</span>
-    </div>
-     
-
-    <!-- Bottom row -->
-    <div class="hotspot artist-frame" style="left:20%; top:75%;" data-id="oxida">
-      <div class="frame"><span class="id-badge">A11</span><span class="name">MATA</span></div>
-      <span class="label" data-i18n="artist.oxida.role">Mundos Perdidos</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:30%; top:75%;" data-id="Pink!man">
-      <div class="frame"><span class="id-badge">A12</span><span class="name">Pink!<br>man</span></div>
-      <span class="label" data-i18n="artist.luna_negra.role">DJ RAVE</span>
-    </div>
-
-    <div class="exit exit-left" data-go="manifiesto" data-side="left">
-      <span class="arrow">←</span><span data-i18n="nav.manifiesto">MANIFIESTO</span>
-    </div>
-    <div class="exit exit-right" data-go="tienda" data-side="right">
-      <span data-i18n="nav.tienda">TIENDA</span><span class="arrow">→</span>
-    </div>
-         <div class="hotspot artist-frame" style="left:40%; top:75%;" data-id="Vertedero Don Emilio">
-      <div class="frame"><span class="id-badge">A13</span><span class="name">Vertedero Don Emilio</span></div>
-      <span class="label" data-i18n="artist.oxida.role">ILUSTRADOR Y ARTISTA DE ANIMACIÓN</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:50%; top:75%;" data-id="otrosdias">
-      <div class="frame"><span class="id-badge">A14</span><span class="name">otrosd<br>ias</span></div>
-      <span class="label" data-i18n="artist.luna_negra.role">artista</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:60%; top:75%;" data-id="flwrs">
-      <div class="frame"><span class="id-badge">A15</span><span class="name">flwrs</span></div>
-      <span class="label" data-i18n="artist.oxida.role">Productor</span>
-    </div>
-    <div class="hotspot artist-frame" style="left:70%; top:75%;" data-id="José Alberto Morales">
-      <div class="frame"><span class="id-badge">A16</span><span class="name">José<br>Alberto Morales</span></div>
-      <span class="label" data-i18n="artist.luna_negra.role">ACTUACIÓN</span>
+    <div class="artistas-grid">
+      <div class="hotspot artist-card" data-id="essppora"><div class="frame"><span class="id-badge">01</span><span class="name">essppora</span><span class="role-tag">fotografía</span></div></div>
+      <div class="hotspot artist-card" data-id="mmicelio"><div class="frame"><span class="id-badge">02</span><span class="name">mmicelio</span><span class="role-tag">fotografía</span></div></div>
+      <div class="hotspot artist-card" data-id="secret_eyes"><div class="frame"><span class="id-badge">03</span><span class="name">secret eyes</span><span class="role-tag">ilustración</span></div></div>
+      <div class="hotspot artist-card" data-id="derwent"><div class="frame"><span class="id-badge">04</span><span class="name">Derwent / Frank</span><span class="role-tag">música</span></div></div>
+      <div class="hotspot artist-card" data-id="Aldo_Lopez_Malo"><div class="frame"><span class="id-badge">05</span><span class="name">Aldo Lopez Malo</span><span class="role-tag">escritura</span></div></div>
+      <div class="hotspot artist-card" data-id="papiwabisabi"><div class="frame"><span class="id-badge">06</span><span class="name">papiwabisabi</span><span class="role-tag">arte visual</span></div></div>
+      <div class="hotspot artist-card" data-id="piedro"><div class="frame"><span class="id-badge">07</span><span class="name">Piedro / Spot</span><span class="role-tag">teatro</span></div></div>
+      <div class="hotspot artist-card" data-id="Espontáneo"><div class="frame"><span class="id-badge">08</span><span class="name">Espontáneo</span><span class="role-tag">producción</span></div></div>
+      <div class="hotspot artist-card" data-id="Jcess"><div class="frame"><span class="id-badge">09</span><span class="name">Jces.s</span><span class="role-tag">rap · lo-fi</span></div></div>
+      <div class="hotspot artist-card" data-id="Ayra"><div class="frame"><span class="id-badge">10</span><span class="name">Ayra</span><span class="role-tag">vocal</span></div></div>
+      <div class="hotspot artist-card" data-id="Mata"><div class="frame"><span class="id-badge">11</span><span class="name">Mata</span><span class="role-tag">hip-hop</span></div></div>
+      <div class="hotspot artist-card" data-id="Pink1man"><div class="frame"><span class="id-badge">12</span><span class="name">Pink!man</span><span class="role-tag">dj · techno</span></div></div>
+      <div class="hotspot artist-card" data-id="Vertedero_Don_Emilio"><div class="frame"><span class="id-badge">13</span><span class="name">Vertedero D.E.</span><span class="role-tag">ilustración</span></div></div>
+      <div class="hotspot artist-card" data-id="Flwrs"><div class="frame"><span class="id-badge">14</span><span class="name">Flwrs / Alan</span><span class="role-tag">producción</span></div></div>
+      <div class="hotspot artist-card" data-id="José_Alberto_Morales"><div class="frame"><span class="id-badge">15</span><span class="name">José A. Morales</span><span class="role-tag">cantautor</span></div></div>
+      <div class="hotspot artist-card" data-id="Jafeth"><div class="frame"><span class="id-badge">16</span><span class="name">Jafeth</span><span class="role-tag">—</span></div></div>
+      <div class="hotspot artist-card" data-id="Fobos"><div class="frame"><span class="id-badge">17</span><span class="name">Fobos</span><span class="role-tag">—</span></div></div>
+      <div class="hotspot artist-card" data-id="GROW"><div class="frame"><span class="id-badge">18</span><span class="name">GROW</span><span class="role-tag">—</span></div></div>
+      <div class="hotspot artist-card" data-id="Vecco_Gallo"><div class="frame"><span class="id-badge">19</span><span class="name">Vecco Gallo</span><span class="role-tag">—</span></div></div>
+      <div class="hotspot artist-card" data-id="naonomis"><div class="frame"><span class="id-badge">20</span><span class="name">naonomis</span><span class="role-tag">—</span></div></div>
+      <div class="hotspot artist-card" data-id="Jurassic_Snack"><div class="frame"><span class="id-badge">21</span><span class="name">Jurassic Snack</span><span class="role-tag">—</span></div></div>
+      <div class="hotspot artist-card" data-id="otrosdias"><div class="frame"><span class="id-badge">22</span><span class="name">otrosdias</span><span class="role-tag">fundador</span></div></div>
+      <div class="hotspot artist-card" data-id="michelleerreve"><div class="frame"><span class="id-badge">23</span><span class="name">michelleerreve</span><span class="role-tag">—</span></div></div>
+      <div class="hotspot artist-card" data-id="Marlon_Steve"><div class="frame"><span class="id-badge">24</span><span class="name">Marlon Steve</span><span class="role-tag">—</span></div></div>
+      <div class="hotspot artist-card" data-id="Chaco_Mete_La_Pata"><div class="frame"><span class="id-badge">25</span><span class="name">Chaco M.L.P.</span><span class="role-tag">—</span></div></div>
+      <div class="hotspot artist-card" data-id="Moisés_Yael"><div class="frame"><span class="id-badge">26</span><span class="name">Moisés Yael</span><span class="role-tag">—</span></div></div>
+      <div class="hotspot artist-card" data-id="Elliot_Kendryek"><div class="frame"><span class="id-badge">27</span><span class="name">Elliot Kendryek</span><span class="role-tag">—</span></div></div>
+      <div class="hotspot artist-card" data-id="Lennin_Flores"><div class="frame"><span class="id-badge">28</span><span class="name">Lennin Flores</span><span class="role-tag">—</span></div></div>
+      <div class="hotspot artist-card" data-id="Oscar_Palacios"><div class="frame"><span class="id-badge">29</span><span class="name">Oscar Palacios</span><span class="role-tag">—</span></div></div>
+      <div class="hotspot artist-card" data-id="El_SNOP"><div class="frame"><span class="id-badge">30</span><span class="name">El SNOP</span><span class="role-tag">—</span></div></div>
+      <div class="hotspot artist-card" data-id="Mike_Rivera"><div class="frame"><span class="id-badge">31</span><span class="name">Mike Rivera</span><span class="role-tag">—</span></div></div>
+      <div class="hotspot artist-card" data-id="ohnozelt"><div class="frame"><span class="id-badge">32</span><span class="name">ohnozelt</span><span class="role-tag">—</span></div></div>
+      <div class="hotspot artist-card" data-id="ARISTAS"><div class="frame"><span class="id-badge">33</span><span class="name">ARISTAS</span><span class="role-tag">—</span></div></div>
     </div>
 
     <div class="exit exit-left" data-go="manifiesto" data-side="left">
@@ -850,60 +1398,13 @@ no, no somos la culminación de nada, sino el principio de algo”.</span>
     </div>
   </div>
 
-  <!-- SCENE: TIENDA -->
+  <!-- SCENE: TIENDA — dinámica desde Google Sheets -->
   <div class="scene scene-tienda" data-scene="tienda">
     <div class="scene-tag" data-i18n="tienda.tag">galería y ropa</div>
     <h2 class="scene-title" data-i18n="nav.tienda">Tienda</h2>
 
-    <!-- Product 1: Serafín tank -->
-    <div class="hotspot product-hotspot" style="left:22%; top:55%;" data-id="serafin">
-      <div class="frame">
-        <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
-          <path d="M50 40 Q50 30 60 28 L80 20 L90 35 Q100 42 110 35 L120 20 L140 28 Q150 30 150 40 L155 90 L140 100 L140 220 L60 220 L60 100 L45 90 Z" fill="#f5f1e6" stroke="#0a0a0a" stroke-width="1.5"/>
-          <circle cx="100" cy="130" r="14" stroke="#0a0a0a" stroke-width="1" fill="none"/>
-          <path d="M90 145 Q100 165 110 145" stroke="#0a0a0a" stroke-width="1" fill="none"/>
-        </svg>
-      </div>
-      <span class="price-tag">$150</span>
-      <span class="label" data-i18n="product.serafin.short">SERAFÍN · TANK</span>
-    </div>
-
-    <!-- Product 2: Hoodie -->
-    <div class="hotspot product-hotspot" style="left:42%; top:55%;" data-id="transmision">
-      <div class="frame">
-        <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
-          <path d="M40 50 L70 30 L100 40 L130 30 L160 50 L150 80 L150 220 L50 220 L50 80 Z" fill="#1a1a1a" stroke="#e8e3d3" stroke-width="1.5"/>
-          <path d="M70 30 L80 60 L100 50 L120 60 L130 30" stroke="#e8e3d3" stroke-width="1.5" fill="none"/>
-          <text x="100" y="145" text-anchor="middle" fill="#f0b81b" font-family="VT323" font-size="28">◉</text>
-        </svg>
-      </div>
-      <span class="price-tag">$320</span>
-      <span class="label" data-i18n="product.transmision.short">TRANSMISIÓN · HOODIE</span>
-    </div>
-
-    <!-- Product 3: Lente -->
-    <div class="hotspot product-hotspot sold" style="left:60%; top:55%;" data-id="lente">
-      <div class="frame">
-        <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
-          <path d="M50 50 L75 30 L100 45 L125 30 L150 50 L145 90 L145 220 L55 220 L55 90 Z" fill="#f5f1e6" stroke="#0a0a0a" stroke-width="1.5"/>
-          <circle cx="100" cy="100" r="26" stroke="#ff2d6f" stroke-width="2" fill="none"/>
-          <circle cx="100" cy="100" r="12" stroke="#0a0a0a" stroke-width="1" fill="none"/>
-        </svg>
-      </div>
-      <span class="price-tag" data-i18n="ui.sold">NUEVO</span>
-      <span class="label" data-i18n="product.lente.short">LENTE · TEE</span>
-    </div>
-
-    <!-- Product 4: Next drop -->
-    <div class="hotspot product-hotspot" style="left:78%; top:55%;" data-id="sintitulo">
-      <div class="frame">
-        <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
-          <rect x="40" y="40" width="120" height="180" stroke="#e8e3d3" stroke-width="1.5" fill="#0a0a0a" stroke-dasharray="4 4"/>
-          <text x="100" y="135" text-anchor="middle" fill="#f0b81b" font-family="VT323" font-size="48">?</text>
-        </svg>
-      </div>
-      <span class="price-tag">???</span>
-      <span class="label" data-i18n="product.sintitulo.short">PRÓXIMA PIEZA</span>
+    <div class="tienda-grid" id="tiendaGrid">
+      <div class="tienda-loading" id="tiendaLoading">CARGANDO CATÁLOGO...</div>
     </div>
 
     <div class="exit exit-left" data-go="artistas" data-side="left">
@@ -961,24 +1462,96 @@ no, no somos la culminación de nada, sino el principio de algo”.</span>
     </div>
   </div>
 
-  <!-- CHARACTER (single element, moves across scenes) -->
+  <!-- CHARACTER -->
   <div class="character facing-right" id="char">   O
  (lol)
    W
   / |</div>
 </div>
 
-<!-- INFO PANEL -->
+<!-- INFO PANEL — con pestañas tipo Arkham -->
 <div class="panel-backdrop" id="panelBackdrop">
   <div class="panel">
     <button class="panel-close" onclick="closePanel()">✕</button>
-    <div class="panel-tag" id="panelTag">PERFIL</div>
-    <h3 class="panel-title" id="panelTitle">Title</h3>
-    <div class="panel-sub" id="panelSub">SUB</div>
-    <div class="panel-body" id="panelBody">Body text</div>
-    <div class="panel-foot">
-      <span id="panelMeta">META</span>
-      <button class="panel-cta" id="panelCta" data-i18n="ui.contact">CONTACTAR</button>
+
+    <!-- Pestañas (solo para artistas) -->
+    <div class="panel-tabs" id="panelTabs">
+      <button class="panel-tab-btn active" data-tab="atributos">ATRIBUTOS</button>
+      <button class="panel-tab-btn" data-tab="hechos">HECHOS</button>
+      <button class="panel-tab-btn" data-tab="historia">HISTORIA</button>
+    </div>
+
+    <!-- Tab: Atributos (info principal) -->
+    <div class="panel-tab-content active" id="tab-atributos">
+      <div class="panel-tag" id="panelTag">PERFIL</div>
+      <h3 class="panel-title" id="panelTitle">Title</h3>
+      <div class="panel-sub" id="panelSub">SUB</div>
+      <div class="panel-body" id="panelBody">Body text</div>
+      <div class="panel-foot">
+        <span id="panelMeta">META</span>
+        <button class="panel-cta" id="panelCta" data-i18n="ui.contact">CONTACTAR</button>
+      </div>
+    </div>
+
+    <!-- Tab: Hechos (atributos tipo ficha) -->
+    <div class="panel-tab-content" id="tab-hechos">
+      <div class="panel-wave"></div>
+      <div class="attr-grid" id="panelAttrGrid">
+        <!-- generado por JS -->
+      </div>
+    </div>
+
+    <!-- Tab: Historia (foto + bio larga) -->
+    <div class="panel-tab-content" id="tab-historia">
+      <div class="tab-historia-inner">
+        <div class="artist-photo-slot" id="artistPhotoSlot" title="Haz clic para insertar imagen PNG">
+          <img id="artistPhotoImg" alt="Foto del artista" />
+          <span class="artist-photo-placeholder">PNG / JPG<br>haz clic<br>para insertar</span>
+          <input type="file" accept="image/png,image/jpeg,image/webp" class="artist-photo-input" id="artistPhotoInput" />
+        </div>
+        <div>
+          <div class="historia-bio" id="historiaBio">—</div>
+          <div class="historia-attrs" id="historiaAttrs"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT DETAIL MODAL -->
+<div class="product-modal-backdrop" id="productModalBackdrop">
+  <div class="product-modal">
+    <button class="pm-close" id="pmClose">✕</button>
+
+    <!-- LEFT: images -->
+    <div class="pm-images">
+      <div class="pm-img-main" id="pmImgMain">
+        <div class="pm-placeholder">◉</div>
+      </div>
+      <div class="pm-img-thumbs" id="pmThumbs">
+        <!-- thumbnails injected by JS -->
+      </div>
+    </div>
+
+    <!-- RIGHT: info -->
+    <div class="pm-info">
+      <div class="pm-tag" id="pmTag">DROP_001</div>
+      <h2 class="pm-title" id="pmTitle">NOMBRE</h2>
+      <div class="pm-author" id="pmAuthor">POR AUTOR</div>
+      <div class="pm-price" id="pmPrice">$000</div>
+      <hr class="pm-divider">
+      <div class="pm-desc-label">DESCRIPCIÓN DE TU COMPRA:</div>
+      <div class="pm-desc-text" id="pmDesc">Descripción del producto.</div>
+      <div class="pm-desc-note">
+        Costo válido hasta la siguiente actualización.<br>
+        Puntos de entrega especificados en <b>@otrosdias</b>
+      </div>
+      <button class="pm-buy-btn" id="pmBuyBtn">COMPRAR</button>
+      <div class="pm-brand">
+        <svg viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <text x="0" y="22" font-family="VT323,monospace" font-size="18" fill="currentColor" opacity="0.6">otrosdias</text>
+        </svg>
+      </div>
     </div>
   </div>
 </div>
@@ -1026,42 +1599,21 @@ const I18N = {
     'manifiesto.p3':'cada autor recibe regalías de su obra impresa en serigrafía. El colectivo está integrado por',
     'manifiesto.p4':'<em>fotógrafos (essppora y mmicelio), artistas visuales (vertedero don emilio, Papiwabisabi, Secret Eyes),',
     'manifiesto.p5':'escritores (Aldo Lopez Malo) Músicos (Pink!man, Flwrs, José Alberto Morales, Derwent, Mundos Perdidos) y actores de teatro (Pedro Medina y Spot de artes de La Libertad).</em>',
-     
+
     'artistas.tag':'Congregación','artistas.title':'Miembros del colectivo',
-    'artist.essppora':'Fotografía · Tatuajes',
-    'artist.essppora':'Nombre o alias: essppora Biografía: Nací y crecí en el estado Puebla, actualmente tengo 25 años y soy egresada de la licenciatura en Filosofía. Comencé a interesarme por la fotografía cuando tenía 17 años, pero considero que fue hasta los 22 años cuando me tomé con más seriedad este pasatiempo, y poco a poco fui desarrollando mi estilo propio hasta llegar a lo que actualmente soy y por cómo me conocen; ‘’essppora’’. Algunas de mis mayores inspiraciones son: Graciela Iturbide, Tina Modotti, Juan Rulfo, Lola y Manuel Álvarez Bravo. Gracias a la ayuda de amigxs y otras personas he tenido la oportunidad de vender mis fotografías, ya sea para portadas de álbumes o para coleccionar, también este año pude presentar algunas de mis fotografías en una exposición visual en el zócalo del centro de Puebla. Actualmente soy uno de los miembros del colectivo otrosdias, donde creamos, compartimos y vendemos un poco de nuestro arte. Nombre real: Lizbeth Michel Silva Vázquez Ocupación: Sin ocupación por el momento Base de operaciones: Puebla, pue. Ojos: Negros Cabello: Cobrizo claro Altura:1.59 Peso: 60 kg Año y mes en el que empezaron con su proyecto: Octubre 2022 Atributos: Soy muy observadora, por lo que puedo detectar detalles o ángulos que otros pueden pasar por alto. Constantemente exploro nuevos estilos y técnicas, y siempre tengo algo nuevo que mostrar.',
+    'artist.bat_grafik.role':'Fotografía · Tatuajes',
     'artist.secret_eyes.role':'ILUSTRACIÓN',
     'artist.secret_eyes.bio':'Autora del Serafín tank top. Ilustración a línea con motivos sagrados y profanos.',
-    'artist.mmicelio':'Fotografía y revelado',
-    'artist.mmicelio':'Fotógrafa de luz dura y silencios. Documenta los espacios entre las cosas. Próximamente: zine impreso.',
-    'artist.Derwent':'Músico',
-    'artist.Derwent':'Compositor y cantautor. Compositor del álbum Vivencias de una eterna vida simétrica.',
-    'artist.Aldo Lopez Malo':'Escritor, ilustrador y programador de videojuegos',
-    'artist.Aldo Lopez Malo':'Aldo López Malo Soy estudiante de Arte Digital, apasionado por los conceptos de lo oscuro, surreal y grotesco. Suelo expresarlo a través de ilustraciones tanto tradicionales como digitales, a través de la escritura, o el desarrollo de videojuegos. Nombre real: Aldo López Malo Ocupación: Estudiante de Arte Digital Base de operaciones: Puebla Ojos: Café Cabello: Castaño, ondulado Altura: 1.76cm Peso: 60kg Año y mes en el que empecé: Diciembre 2019 Atributos: Creativo, Ambicioso, Crítico',
-    'artist.papiwabisabi':'Artista visual',
-    'artist.papiwabisabi':'Nombre o alias: papiwabisabi Biografía: me gusta trabajar con lo orgánico, lo húmedo y lo visceral. disfruto mucho anteponer conceptos, símbolos y mensajes. me cuesta mucho comunicar lo que siento, así que lo hago mejor a través de la creación Nombre real: karel Ocupación; artista visual Base de operaciones: Puebla Ojos: café Cabello: café rizado Altura: 1.75m Peso: 65kg Año y mes en el que empezaron con su proyecto: septiembre 2020',
-    'artist.piedro':'Actor y fundador de Spot de Artes de La Libertad',
-    'artist.piedro':'Performance y dramaturgia corta.Esto no es Dinamarca. Últimas funciones 29 de mayo 11 am. puebla 30 de mayo 5pm. hidalgo 3 de junio 5pm. puebla',
-    'artist.Espontáneo':'Productor y beatmaker',
-    'artist.Espontáneo':'Nombre o alias: Espontáneo. Biografía: Productor musical de puebla enfocado en diversos generos en esocial hiphop y cumbia, también organizo eventos para darle difusión y presentación a la escena local y emergente. Nombre real: Alan García Ocupación; Trabajo en logística en ecomerce Base de operaciones: Puebla capital. Ojos: cafe. Cabello: Negro Altura: 1.75 Peso: 67 kg Año y mes en el que empezaron con su proyecto: enero 2023. Atributos: Amable, tolerante, abierto a escuchar y dialogar, empático y servicial, musicalidad.',
-    'artist.Jces.s':'Músico',
-    'artist.Jces.s':'Nací un 21 de octubre de 1999 en la ciudad de los Ángeles, Puebla de Zaragoza dónde se baila y se goza, Crecí en el centro histérico ( Histórico ) de la ciudad, mi papá y mamá: Estilistas amantes de la música y el baile. Desde pequeño me adentre a escuchar de todo tipo de géneros musicales pero dormido en la silla porque aún no nos íbamos de la fiesta, mi vida dió un cambio cuando escuché las canciones detalladamente, tanto en la letra como en los ritmos, conforme paso el tiempo fui creciendo con la idea de algún día hacer música y justo en mi adolescencia fue cuando me decidí a hacer algo, después de pasar por una banda fallida de rock. Junto con mi amigo BSD comenzamos a tratar de hacer nuestra primeras canciones de RAP, freestyleando altas horas de la noche con beats que nos encontrábamos en internet mientras tomábamos una cerveza sentados en una plaza de la Margot ( Unidad habitacional la Margarita) Noches mágicas que marcaron mi vida. Encontré mi estilo en todo lo que me gustaba, retas de basquetbol con los amigos, salir a echarme un skate con otros, ir de fiesta con algunos más y en lo más importante mi estilo de vida y mi familia. Todo mejorará en mi etapa universitaria. Conocí a unos amigos que llevaban tiempo haciendo música, me instruteron en como poder pulir y mejorar mi estilo, hasta que lo encontré. Finalmente sabía que lo mío era el Lo-fi, era con lo que yo me identificaba, una mezcla de beats suaves que te hace relajarte después de un mal día o después de un buen día, aunque también me acoplo a cualquier beat es bueno variarle de vez en cuando. Cuando pensé que todo iba bien, todo se derrumbó dentro de mi dentro de mi, mi productor se fue al gabacho y California está muy lejos para ir a grabar, los amigos que conocí que hacían música dejaron de hacerlo porque ya tenían trabajos, intenté con más gente pero no veía interés en realmente querer hacer música. Justo cuando pensé dejar la música, llega ESPONTÁNEO, al cuál lo conocí por otro amigo con el que salía a patinar, hablamos de hacer música, realizar un ep y quien diría que me encontré con los MUNDOS PERDIDOS. Nombre real: Julio César. Ocupación; Subgerente en un restaurante de comida japonesa, vayan está bueno el ramen. Base de operaciones: (ciudad) Puebla capital Ojos: cafés Cabello: Negro ( medio quebrado ) Altura: 1.74 Peso: 73 aprox Año y mes en el que empezaron con su proyecto: Yo empeze oficialmente el 20 de noviembre del 2020 Atributos:  Creatividad, versátidad, comunicativo, responsable.',
-    'artist.Ayra':'Vocalista',
-    'artist.Ayra':'Nombre o alias: Ayra Biografía: 5 de Junio 1998, nacida en la ciudad de Puebla, con formación teatral por las escuelas de iniciación artística del INBAL, y estudios independientes cursos y diplomados, en gestión cultural y música. Nombre real: Ana Yoselin Rodriguez Arellano Ocupación; Cocinero Base de operaciones: (ciudad) Puebla, Pue Ojos: Café obscuro Cabello: cobrizo (teñido) Altura: 1.49 cm Peso: 54 kg Año y mes en el que empezaron con su proyecto: Marzo 2019 (empecé pero le di continuidad hasta 2023) Atributos: Cantante, compositora, curadora musical, gestora cultural, productora musical en proceso, cocinera de oficio, tengo dos proyectos personales que se enfocan en compartir mi perspectiva, herramientas con acciones para la descentralización de las artes en puebla y tambien visibilizar, crear nuevos públicos para géneros afro descendientes y alternativos (soul, r&b) , todo esto nace bajo mis propias necesidades como artista pero me ha llevado a conectar con gente que comparte visión y metas personales.',
-    'artist.Mata':'Músico',
-    'artist.Mata':'Mata Soy de San Luis Potosi, 24 años. Estudio gastronomía y hago letras para hip hop y lofi melancólico. Daniel Flores Mata Puebla Ojos negros Cabello castaño obscuro Mido 1.64 Peso como 66-68 Empece en Diciembre del 2024 Atributos. No tengo',
-    'artist.Pink!man':'Músico',
-    'artist.Pink!man':'De padres músicos, Pink!man comienza su carrera como dj en la escena de Acapulco y Puebla. A sus 23 años, ha cultivado un estilo hipnótico que explora los paisajes más oscuros y envolventes del techno, buscando fusionar el minimal con lo psicodélico: navegando por subgéneros como el psytechno, dark minimal y peaktime.  Su conexión con la música va más allá de las pistas: cada set de Pink!man es un portal hacia dimensiones paralelas, un caleidoscopio de ritmos pulsantes y texturas psicodélicas diseñadas para expandir la percepción. Actualmente ha incursionado en la producción musical, con un track en camino, por parte del Sello de ADN Mutan World. Dj y Productor musical Puebla ojos café oscuro cabello largo y ondulado Mayo de 2022',
-    'artist.Vertedero Don Emilio':'Ser cabrón',
-    'artist.Vertedero Don Emilio':'ALGÚN TEXTO QUE DIGA, QUE ESTE PRODUCTO ES UNA MAMADA, QUE NO SE DEBERÍA FUMAR, UNA MIERDA ASÍ. QUE NO SOY AFILIADO NI AL PAN, NI AL PRI, NI AL PRD. TAMPOCO ME VAN A TRAER DE SU PENDEJO, YO SOY LA MERA RIATA, PENDEJO, IDIOTA, ESTUPIDO EL QUE LO LEA. SI VAN A FUMAR INVITEN, SI NO TAMBIÉN, SI ME VAN A DEJAR AQUÍ COMO PENDEJO HACIENDO NADA MEJOR NI HUBIERAN DICHO NADA. TONTOS.',
-    'artist.otrosdias':'Artista',
-    'artist.otrosdias':'Escritor, ilustrador, animador, músico, productor y futuro',
-    'artist.Flwrs':'Artista y productor musical',
-    'artist.Flwrs':'Artista humano que sabe escuchar',
-    'artist.José Alberto Morales':'Cantautor',
-    'artist.José Alberto Morales':'-Cantautor, canalla y embustero-',
-
-     
+    'artist.nula.role':'FOTOGRAFÍA',
+    'artist.nula.bio':'Fotógrafa de luz dura y silencios. Documenta los espacios entre las cosas. Próximamente: zine impreso.',
+    'artist.henro.role':'MÚSICA',
+    'artist.henro.bio':'Compositor y cantautor. Compositor del álbum Vivencias de una eterna vida simétrica.',
+    'artist.del_realismo.role':'ESCRITURA',
+    'artist.del_realismo.bio':'Escribe los textos que acompañan los drops.',
+    'artist.oxida.role':'ANIMACIÓN',
+    'artist.oxida.bio':'Animador cuadro a cuadro.',
+    'artist.luna_negra.role':'PERFORMANCE',
+    'artist.luna_negra.bio':'Performance y dramaturgia corta.',
 
     'tienda.tag':'Galería y ropa',
     'product.serafin.short':'SERAFÍN · TANK',
@@ -1117,44 +1669,43 @@ const I18N = {
 
     'inicio.tag':'INTERACTIVE_SYSTEM_v1.1',
     'inicio.title_top':'OTROSDIAS','inicio.title_bot':'OTROSDIAS',
-    'inicio.sub':'otrosdias es <b>Randy García Mejía</b>. Todos los derechos reservados a su obra.2020 - 2026. Serigrafía y ropa de artistas.',
+    'inicio.sub':'otrosdias es <b>Randy García Mejía</b>. All rights reserved to his work. 2020 - 2026. Screen printing and artists clothing.',
 
     'manifiesto.tag':'FRAGMENT_001',
     'manifiesto.stamp1':'SIGNED','manifiesto.stamp2':'VERIFIED',
     'manifiesto.p1':'otrosdias is a <em>congregation</em> of artists that rejects the single format.',
     'manifiesto.p2':'Each garment is a signed work. Each work is a <em>broadcast</em>.',
-    'manifiesto.p3':'Each author receives royalties for what they create — because art without ownership is not freedom, it is dispossession.',
+    'manifiesto.p3':'Each author receives royalties for what they create.',
     'manifiesto.p4':'<em>If you got this far, you are already part of it.</em>',
 
     'artistas.tag':'AUTHOR_PANEL','artistas.title':'OTHER_ARTISTS',
     'artist.bat_grafik.role':'VISUAL · TATTOO',
-    'artist.bat_grafik.bio':'Visual artist and tattooer. Heavy iconography built with saturated ink and thick strokes. Central piece of the rotating gallery.',
     'artist.secret_eyes.role':'ILLUSTRATION',
-    'artist.secret_eyes.bio':'Author of the Serafín tank top. Line illustration with sacred and profane motifs. Works in series of 30.',
+    'artist.secret_eyes.bio':'Author of the Serafín tank top. Line illustration with sacred and profane motifs.',
     'artist.nula.role':'PHOTOGRAPHY',
-    'artist.nula.bio':'Photographer of hard light and silences. Documents the spaces between things. Coming soon: printed zine.',
+    'artist.nula.bio':'Photographer of hard light and silences. Documents the spaces between things.',
     'artist.henro.role':'MUSIC',
-    'artist.henro.bio':'Producer of hypnagogic electronics. Sonic drops linked to each clothing release. Plays at pop-ups.',
+    'artist.henro.bio':'Songwriter and composer. Composer of the album Vivencias de una eterna vida simétrica.',
     'artist.del_realismo.role':'WRITING',
-    'artist.del_realismo.bio':'Writes the texts that accompany the drops. Voice of the manifesto. Keeps the public log open.',
+    'artist.del_realismo.bio':'Writes the texts that accompany the drops.',
     'artist.oxida.role':'ANIMATION',
-    'artist.oxida.bio':'Frame-by-frame animator. Builds short loops that rotate on monitors during pop-ups.',
+    'artist.oxida.bio':'Frame-by-frame animator.',
     'artist.luna_negra.role':'PERFORMANCE',
-    'artist.luna_negra.bio':'Performance and short dramaturgy. Latest addition. Next piece scheduled for the next drop.',
+    'artist.luna_negra.bio':'Performance and short dramaturgy.',
 
     'tienda.tag':'DROP_001 · COLD_SEASON',
     'product.serafin.short':'SERAFÍN · TANK',
     'product.serafin.name':'Serafín','product.serafin.author':'BY SECRET.EYES888',
-    'product.serafin.desc':'Cotton tank top with one-color screen print. Limited run of 30 pieces. Pickup points specified at @otrosdias.',
+    'product.serafin.desc':'Cotton tank top with one-color screen print. Limited run of 30 pieces.',
     'product.transmision.short':'BROADCAST · HOODIE',
     'product.transmision.name':'Broadcast','product.transmision.author':'BY BAT_GRAFIK',
-    'product.transmision.desc':'Black hoodie with chest embroidery. Joint edition with bat_grafik. 20 signed pieces, numbered and traceable.',
+    'product.transmision.desc':'Black hoodie with chest embroidery. Joint edition with bat_grafik. 20 signed pieces.',
     'product.lente.short':'LENS · TEE',
     'product.lente.name':'Lens','product.lente.author':'BY NULA',
-    'product.lente.desc':'T-shirt with photo print from the Lens series. Sold out from the last drop. Next rotation: uncertain.',
+    'product.lente.desc':'T-shirt with photo print from the Lens series. Sold out from the last drop.',
     'product.sintitulo.short':'NEXT PIECE',
     'product.sintitulo.name':'Untitled','product.sintitulo.author':'BY HENRO',
-    'product.sintitulo.desc':'In production. Info released when the archive opens. Subscribe to Instagram for signal.',
+    'product.sintitulo.desc':'In production. Info released when the archive opens.',
 
     'transmisiones.tag':'PUBLIC_LOG',
     'trans.01':'<em>Serafín</em> tank top released. Run of 30.',
@@ -1163,21 +1714,21 @@ const I18N = {
     'trans.04':'Collab with <em>bat_grafik</em>. Embroidered hoodie.',
     'trans.05':'Rotating gallery updated. Pieces by <em>nula</em>.',
     'trans.06':'First public <em>broadcast</em>. We are online.',
-    'trans.full.01':'Serafín tank released June 1st. Unique run of 30 pieces, one-color screen print on cotton. The piece is born from a session with secret.eyes888 documented in the archive. Each delivery carries the author signature.',
-    'trans.full.02':'luna_negra joins the congregation. Performance and short dramaturgy. Next piece scheduled for drop_002. Extended bio available at the ARTISTS scene.',
-    'trans.full.03':'Night pop-up held May 14th at la libertad. Invitation only. Upcoming pop-ups will be announced via DM to the closed list.',
-    'trans.full.04':'Embroidered hoodie with bat_grafik. Edition of 20 signed pieces. Chest embroidery, heavy fabric, matte finish.',
-    'trans.full.05':'Four new pieces by nula entered the rotating gallery on April 18th. They will remain until June 30th. After that they will be archived.',
-    'trans.full.06':'First broadcast issued April 13th. System online since then with no interruptions. We are with you.',
+    'trans.full.01':'Serafín tank released June 1st. Unique run of 30 pieces, one-color screen print on cotton.',
+    'trans.full.02':'luna_negra joins the congregation. Performance and short dramaturgy.',
+    'trans.full.03':'Night pop-up held May 14th at la libertad. Invitation only.',
+    'trans.full.04':'Embroidered hoodie with bat_grafik. Edition of 20 signed pieces.',
+    'trans.full.05':'Four new pieces by nula entered the rotating gallery on April 18th.',
+    'trans.full.06':'First broadcast issued April 13th. System online since then.',
 
-    'random.01':'Signal recovered.',
-    'random.02':'New piece in production.',
-    'random.03':'Pop-up incoming. Check @otrosdias.',
-    'random.04':'The manifesto has been edited.',
-    'random.05':'Gallery rotated. New frames.',
-    'random.06':'Run limited to 30 pieces.',
-    'random.07':'You are being watched by art.',
-    'random.08':'Next drop: in preparation.',
+    'random.01':'Hola.',
+    'random.02':'Nueva álbum en producción.',
+    'random.03':'Revisa @otrosdias.',
+    'random.04':'Cada caos - remasterizado 2026.',
+    'random.05':'Nuevos integrantes en el colectivo.',
+    'random.06':'Tiraje de playeras limitado a 30 piezas.',
+    'random.07':'Hola mundo.',
+    'random.08':'Gorra infinidad en $400 si mandas captura de este mensaje.',
 
     'enter_to_view':'Get close and press ENTER',
   }
@@ -1185,7 +1736,7 @@ const I18N = {
 
 const STATE = {
   scene: 'inicio',
-  x: 50, y: 75,     // % within scene viewport
+  x: 50, y: 75,
   facing: 'right',
   lang: (localStorage.getItem('od_lang') || 'es'),
   theme: (localStorage.getItem('od_theme') || 'dark'),
@@ -1201,30 +1752,8 @@ const t = k => (I18N[STATE.lang] && I18N[STATE.lang][k]) || I18N.es[k] || k;
    BOOT SEQUENCE
 ============================================================ */
 const bootLinesByLang = {
-  es: [
-    'otrosdias',
-    '2026 - 3752',
-    '',
-    '> Dos mil veinte',
-    '> 2000 Veintiuno',
-    '> dos mil 22',
-    '> MMXXIII',
-    'A04',
-    'V5',
-    ''
-  ],
-  en: [
-    'otrosdias',
-    '2026 - 3752',
-    '',
-    '> Dos mil veinte',
-    '> 2000 Veintiuno',
-    '> dos mil 22',
-    '> MMXXIII',
-    'A04',
-    'V5',
-    ''
-  ]
+  es: ['otrosdias','2026 - 3752','','> Dos mil veinte','> 2000 Veintiuno','> dos mil 22','> MMXXIII','A04','V5',''],
+  en: ['otrosdias','2026 - 3752','','> Dos mil veinte','> 2000 Veintiuno','> dos mil 22','> MMXXIII','A04','V5','']
 };
 const bootEl = document.getElementById('bootText');
 let bootIdx = 0, bootChar = 0;
@@ -1261,7 +1790,6 @@ function applyLang(){
   localStorage.setItem('od_lang', STATE.lang);
 }
 applyLang();
-
 document.getElementById('langBtn').addEventListener('click', () => {
   STATE.lang = STATE.lang === 'es' ? 'en' : 'es';
   applyLang();
@@ -1273,7 +1801,7 @@ document.getElementById('langBtn').addEventListener('click', () => {
 const themeBtn = document.getElementById('themeBtn');
 function applyTheme(){
   document.body.classList.toggle('inverted', STATE.theme === 'light');
-  themeBtn.textContent = STATE.theme === 'light' ? 'DARK' : 'LIGHT';
+  themeBtn.textContent = 'INVERTIR';
   localStorage.setItem('od_theme', STATE.theme);
 }
 applyTheme();
@@ -1301,12 +1829,11 @@ function tick(){
 tick(); setInterval(tick, 1000);
 
 /* ============================================================
-   CHARACTER
+   CHARACTER — más grande
 ============================================================ */
 const character = document.getElementById('char');
 let walkToggle = false;
 function renderCharacter(){
-  // Position character within active scene
   const scene = document.querySelector(`.scene[data-scene="${STATE.scene}"]`);
   if(!scene) return;
   const rect = scene.getBoundingClientRect();
@@ -1317,29 +1844,24 @@ function renderCharacter(){
   character.style.transform = STATE.facing === 'left'
     ? 'translate(-50%, -50%) scaleX(-1)'
     : 'translate(-50%, -50%) scaleX(1)';
-  // Walk animation: alternate legs
   walkToggle = !walkToggle;
-  character.textContent = walkToggle
-    ? '   O\n (lol)\n   W\n  / |'
-    : '   O\n (lol)\n   W\n  | \\';
+  if(walkToggle){
+    character.textContent = '   O\n (lol)\n   W\n  / |';
+  } else {
+    character.textContent = '   O\n (lol)\n   W\n  | \\';
+  }
 }
+
 function moveCharacter(dx, dy){
   if(STATE.transitioning) return;
-
   if(dx > 0) STATE.facing = 'right';
   else if(dx < 0) STATE.facing = 'left';
 
   let nx = STATE.x + dx;
   let ny = STATE.y + dy;
 
-  // Boundary detection → trigger exits
-  if(nx > 95){
-    tryExit('right');
-    nx = 95;
-  } else if(nx < 5){
-    tryExit('left');
-    nx = 5;
-  }
+  if(nx > 95){ tryExit('right'); nx = 95; }
+  else if(nx < 5){ tryExit('left'); nx = 5; }
   ny = Math.max(35, Math.min(85, ny));
 
   STATE.x = nx;
@@ -1363,7 +1885,6 @@ function changeScene(target, fromSide){
     const next = document.querySelector(`.scene[data-scene="${target}"]`);
     next.classList.add('active');
     STATE.scene = target;
-    // Position character at entry edge
     if(fromSide === 'left') STATE.x = 10;
     else if(fromSide === 'right') STATE.x = 90;
     else STATE.x = 50;
@@ -1380,16 +1901,12 @@ function changeScene(target, fromSide){
 }
 function tryExit(side){
   const idx = SCENES.indexOf(STATE.scene);
-  if(side === 'right' && idx < SCENES.length - 1){
-    changeScene(SCENES[idx+1], 'left');
-  } else if(side === 'left' && idx > 0){
-    changeScene(SCENES[idx-1], 'right');
-  }
+  if(side === 'right' && idx < SCENES.length - 1){ changeScene(SCENES[idx+1], 'left'); }
+  else if(side === 'left' && idx > 0){ changeScene(SCENES[idx-1], 'right'); }
 }
 function goTo(scene){ changeScene(scene, 'fade'); }
 window.goTo = goTo;
 
-/* Tab navigation */
 function updateTabs(){
   document.querySelectorAll('.scene-tabs button').forEach(b => {
     b.classList.toggle('active', b.dataset.jump === STATE.scene);
@@ -1398,12 +1915,8 @@ function updateTabs(){
 document.querySelectorAll('.scene-tabs button').forEach(b => {
   b.addEventListener('click', () => goTo(b.dataset.jump));
 });
-
-/* Exit click navigation */
 document.querySelectorAll('.exit').forEach(ex => {
-  ex.addEventListener('click', () => {
-    goTo(ex.dataset.go);
-  });
+  ex.addEventListener('click', () => { goTo(ex.dataset.go); });
 });
 
 /* ============================================================
@@ -1415,13 +1928,13 @@ function checkNearby(){
   const scene = document.querySelector(`.scene[data-scene="${STATE.scene}"]`);
   if(!scene) return;
 
-  // Hotspots
   const hs = scene.querySelectorAll('.hotspot');
   let nearestH = null, dminH = 12;
   hs.forEach(h => {
     h.classList.remove('active');
     const hx = parseFloat(h.style.left);
     const hy = parseFloat(h.style.top);
+    if(isNaN(hx) || isNaN(hy)) return; // grid items (tienda/artistas) - skip proximity
     const d = dist(STATE.x, STATE.y, hx, hy);
     if(d < dminH){ dminH = d; nearestH = h; }
   });
@@ -1432,7 +1945,6 @@ function checkNearby(){
     STATE.activeHotspot = null;
   }
 
-  // Exits
   const exits = scene.querySelectorAll('.exit');
   STATE.activeExit = null;
   exits.forEach(ex => {
@@ -1459,26 +1971,161 @@ function interact(){
 }
 
 /* ============================================================
-   INFO PANEL
+   ARTIST DATA — con pestañas completas
+============================================================ */
+const ARTIST_DATA = {
+  essppora: {
+    name: 'essppora', role: 'Fotografía · Tatuajes', tag: 'A1',
+    bio: 'Nací y crecí en el estado Puebla, actualmente tengo 25 años y soy egresada de la licenciatura en Filosofía. Comencé a interesarme por la fotografía cuando tenía 17 años, pero fue hasta los 22 cuando me tomé más en serio este pasatiempo, y poco a poco fui desarrollando mi estilo propio hasta llegar a lo que actualmente soy: essppora. Algunas de mis mayores inspiraciones son: Graciela Iturbide, Tina Modotti, Juan Rulfo, Lola y Manuel Álvarez Bravo. He tenido la oportunidad de vender mis fotografías para portadas de álbumes y para coleccionar; este año pude presentar algunas en una exposición visual en el zócalo del centro de Puebla.',
+    attrs: { 'Nombre real': 'Lizbeth Michel Silva Vázquez', 'Ocupación': 'Sin ocupación por el momento', 'Base': 'Puebla, Pue.', 'Ojos': 'Negros', 'Cabello': 'Cobrizo claro', 'Altura': '1.59 m', 'Peso': '60 kg', 'Inicio': 'Octubre 2022' },
+    hechos: { 'Disciplina': 'Fotografía', 'Colectivo': 'otrosdias', 'Status': 'Activa', 'Colaboraciones': 'Serafín tank', 'Estilo': 'Observadora, detallista' }
+  },
+  secret_eyes: {
+    name: 'SECRET.EYES888', role: 'Ilustración', tag: 'A2',
+    bio: 'Autora del Serafín tank top. Ilustración a línea con motivos sagrados y profanos. Trabaja en series de 30.',
+    attrs: { 'Disciplina': 'Ilustración', 'Proyecto': 'Serafín tank top', 'Tiraje': '30 piezas', 'Técnica': 'Línea / serigrafía' },
+    hechos: { 'Colectivo': 'otrosdias', 'Status': 'Activa', 'Motivos': 'Sagrados y profanos' }
+  },
+  mmicelio: {
+    name: 'mmicelio', role: 'Fotografía natural', tag: 'A3',
+    bio: 'Fotógrafa de luz dura y silencios. Documenta los espacios entre las cosas. Próximamente: zine impreso.',
+    attrs: { 'Disciplina': 'Fotografía', 'Estilo': 'Luz dura, silencios', 'Próximo': 'Zine impreso' },
+    hechos: { 'Colectivo': 'otrosdias', 'Status': 'Activa' }
+  },
+  derwent: {
+    name: 'Derwent', role: 'Músico', tag: 'A4',
+    bio: 'Compositor y cantautor. Compositor del álbum Vivencias de una eterna vida simétrica.',
+    attrs: { 'Disciplina': 'Música', 'Álbum': 'Vivencias de una eterna vida simétrica' },
+    hechos: { 'Colectivo': 'otrosdias', 'Status': 'Activo', 'Género': 'Cantautor' }
+  },
+  Aldo_Lopez_Malo: {
+    name: 'Aldo Lopez Malo', role: 'Escritor · Ilustrador · Dev', tag: 'A5',
+    bio: 'Soy estudiante de Arte Digital, apasionado por los conceptos de lo oscuro, surreal y grotesco. Suelo expresarlo a través de ilustraciones tanto tradicionales como digitales, a través de la escritura, o el desarrollo de videojuegos.',
+    attrs: { 'Nombre real': 'Aldo López Malo', 'Ocupación': 'Estudiante de Arte Digital', 'Base': 'Puebla', 'Ojos': 'Café', 'Cabello': 'Castaño ondulado', 'Altura': '1.76 cm', 'Peso': '60 kg', 'Inicio': 'Diciembre 2019' },
+    hechos: { 'Disciplina': 'Escritura · Ilustración · Videojuegos', 'Status': 'Activo', 'Estilo': 'Oscuro, surreal, grotesco', 'Atributos': 'Creativo, Ambicioso, Crítico' }
+  },
+  papiwabisabi: {
+    name: 'papiwabisabi', role: 'Artista visual', tag: 'A6',
+    bio: 'Me gusta trabajar con lo orgánico, lo húmedo y lo visceral. Disfruto mucho anteponer conceptos, símbolos y mensajes. Me cuesta mucho comunicar lo que siento, así que lo hago mejor a través de la creación.',
+    attrs: { 'Nombre real': 'Karel', 'Ocupación': 'Artista visual', 'Base': 'Puebla', 'Ojos': 'Café', 'Cabello': 'Café rizado', 'Altura': '1.75 m', 'Peso': '65 kg', 'Inicio': 'Septiembre 2020' },
+    hechos: { 'Disciplina': 'Arte visual', 'Status': 'Activo', 'Estilo': 'Orgánico, visceral, simbólico' }
+  },
+  piedro: {
+    name: 'Piedro', role: 'Actor · Director de Teatro', tag: 'A7',
+    bio: 'Performance y dramaturgia corta. Esto no es Dinamarca. Últimas funciones 29 de mayo 11am Puebla / 30 de mayo 5pm Hidalgo / 3 de junio 5pm Puebla.',
+    attrs: { 'Ocupación': 'Actor y director', 'Proyecto': 'Spot de Artes de La Libertad', 'Base': 'Puebla' },
+    hechos: { 'Disciplina': 'Teatro · Performance', 'Status': 'Activo', 'Obra': 'Esto no es Dinamarca' }
+  },
+  Espontáneo: {
+    name: 'Espontáneo', role: 'Productor · Beatmaker', tag: 'A8',
+    bio: 'Productor musical de Puebla enfocado en diversos géneros, especialmente hip-hop y cumbia. También organizo eventos para darle difusión y presentación a la escena local y emergente.',
+    attrs: { 'Nombre real': 'Alan García', 'Ocupación': 'Logística en ecommerce', 'Base': 'Puebla capital', 'Ojos': 'Café', 'Cabello': 'Negro', 'Altura': '1.75 m', 'Peso': '67 kg', 'Inicio': 'Enero 2023' },
+    hechos: { 'Disciplina': 'Producción musical · Eventos', 'Status': 'Activo', 'Géneros': 'Hip-hop, cumbia', 'Proyecto': 'Mundos Perdidos' }
+  },
+  Jcess: {
+    name: 'Jces.s', role: 'Lo-fi · Rap', tag: 'A9',
+    bio: 'Nací un 21 de octubre de 1999 en Puebla. Encontré mi estilo en lo que me gustaba: retas de basquetbol, skate, fiestas y mi familia. Todo mejoró en la universidad, donde conocí a gente que hacía música y me instruyeron a pulir mi estilo. Finalmente encontré que lo mío era el Lo-fi. Cuando pensé dejar la música llegó Espontáneo, y encontré los MUNDOS PERDIDOS.',
+    attrs: { 'Nombre real': 'Julio César', 'Ocupación': 'Subgerente en restaurante japonés', 'Base': 'Puebla capital', 'Ojos': 'Cafés', 'Cabello': 'Negro medio quebrado', 'Altura': '1.74 m', 'Peso': '73 kg', 'Inicio': '20 noviembre 2020' },
+    hechos: { 'Disciplina': 'Rap · Lo-fi', 'Status': 'Activo', 'Proyecto': 'Mundos Perdidos', 'Atributos': 'Creatividad, versátilidad, comunicativo, responsable' }
+  },
+  Ayra: {
+    name: 'Ayra', role: 'Vocalista · Gestora cultural', tag: 'A10',
+    bio: 'Nacida el 5 de junio de 1998 en Puebla. Con formación teatral por las escuelas de iniciación artística del INBAL, y estudios en gestión cultural y música. Tengo dos proyectos personales enfocados en compartir mi perspectiva y visibilizar géneros afrodescendientes y alternativos (soul, r&b), todo bajo la meta de descentralizar las artes en Puebla.',
+    attrs: { 'Nombre real': 'Ana Yoselin Rodriguez Arellano', 'Ocupación': 'Cocinera', 'Base': 'Puebla, Pue.', 'Ojos': 'Café oscuro', 'Cabello': 'Cobrizo (teñido)', 'Altura': '1.49 cm', 'Peso': '54 kg', 'Inicio': 'Marzo 2019' },
+    hechos: { 'Disciplina': 'Canto · Composición · Gestión cultural', 'Status': 'Activa', 'Géneros': 'Soul, R&B', 'Formación': 'INBAL + estudios independientes' }
+  },
+  Mata: {
+    name: 'Mata', role: 'Hip-hop · Lo-fi melancólico', tag: 'A11',
+    bio: 'Soy de San Luis Potosí, 24 años. Estudio gastronomía y hago letras para hip-hop y lo-fi melancólico.',
+    attrs: { 'Nombre real': 'Daniel Flores Mata', 'Base': 'Puebla', 'Ojos': 'Negros', 'Cabello': 'Castaño oscuro', 'Altura': '1.64 m', 'Peso': '66-68 kg', 'Inicio': 'Diciembre 2024' },
+    hechos: { 'Disciplina': 'Hip-hop · Lo-fi', 'Status': 'Activo', 'Atributos': 'En proceso' }
+  },
+  Pink1man: {
+    name: 'Pink!man', role: 'DJ · Techno · Psicodélico', tag: 'A12',
+    bio: 'De padres músicos, Pink!man comienza su carrera como DJ en la escena de Acapulco y Puebla. A sus 23 años ha cultivado un estilo hipnótico que explora los paisajes más oscuros del techno, fusionando minimal con lo psicodélico: psytechno, dark minimal y peaktime. Cada set es un portal hacia dimensiones paralelas. Actualmente incursiona en producción musical con un track en camino por el Sello ADN Mutan World.',
+    attrs: { 'Ocupación': 'DJ y Productor', 'Base': 'Puebla', 'Ojos': 'Café oscuro', 'Cabello': 'Largo y ondulado', 'Inicio': 'Mayo 2022' },
+    hechos: { 'Disciplina': 'DJ · Producción', 'Status': 'Activo', 'Géneros': 'Psytechno, dark minimal, peaktime', 'Sello': 'ADN Mutan World' }
+  },
+  Vertedero_Don_Emilio: {
+    name: 'Vertedero Don Emilio', role: 'Ilustración · Animación', tag: 'A13',
+    bio: 'ALGÚN TEXTO QUE DIGA, QUE ESTE PRODUCTO ES UNA MAMADA, QUE NO SE DEBERÍA FUMAR, UNA MIERDA ASÍ. QUE NO SOY AFILIADO NI AL PAN, NI AL PRI, NI AL PRD. TAMPOCO ME VAN A TRAER DE SU PENDEJO, YO SOY LA MERA RIATA, PENDEJO, IDIOTA, ESTUPIDO EL QUE LO LEA. SI VAN A FUMAR INVITEN, SI NO TAMBIÉN, SI ME VAN A DEJAR AQUÍ COMO PENDEJO HACIENDO NADA MEJOR NI HUBIERAN DICHO NADA. TONTOS.',
+    attrs: { 'Disciplina': 'Ilustración · Animación', 'Estilo': 'Cabrón' },
+    hechos: { 'Status': 'Activo', 'Colectivo': 'otrosdias' }
+  },
+  otrosdias: {
+    name: 'otrosdias', role: 'Artista', tag: 'A14',
+    bio: 'Escritor, ilustrador, animador, músico, productor y futuro.',
+    attrs: { 'Nombre real': 'Randy García Mejía', 'Rol': 'Fundador', 'Base': 'Puebla, México', 'Año': '2020-2026' },
+    hechos: { 'Disciplina': 'Multidisciplinar', 'Status': 'Activo', 'Proyecto': 'otrosdias colectivo' }
+  },
+  Flwrs: {
+    name: 'Flwrs', role: 'Productor musical', tag: 'A15',
+    bio: 'Artista humano que sabe escuchar.',
+    attrs: { 'Disciplina': 'Producción musical' },
+    hechos: { 'Status': 'Activo', 'Atributo': 'Escucha activa' }
+  },
+  José_Alberto_Morales: {
+    name: 'José Alberto Morales', role: 'Cantautor', tag: 'A16',
+    bio: '-Cantautor, canalla y embustero-',
+    attrs: { 'Disciplina': 'Cantautor', 'Descripción': 'Canalla y embustero' },
+    hechos: { 'Status': 'Activo', 'Colectivo': 'otrosdias' }
+  },
+  Jafeth: { name: 'Jafeth', role: '—', tag: 'A17', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  Fobos: { name: 'Fobos', role: '—', tag: 'A18', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  GROW: { name: 'GROW', role: '—', tag: 'A19', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  Vecco_Gallo: { name: 'Vecco Gallo', role: '—', tag: 'A20', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  naonomis: { name: 'naonomis', role: '—', tag: 'A21', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  Jurassic_Snack: { name: 'Jurassic Snack', role: '—', tag: 'A22', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  michelleerreve: { name: 'michelleerreve', role: '—', tag: 'A23', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  Marlon_Steve: { name: 'Marlon Steve', role: '—', tag: 'A24', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  Chaco_Mete_La_Pata: { name: 'Chaco Mete La Pata', role: '—', tag: 'A25', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  'Moisés_Yael': { name: 'Moisés Yael', role: '—', tag: 'A26', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  Elliot_Kendryek: { name: 'Elliot Kendryek', role: '—', tag: 'A27', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  Lennin_Flores: { name: 'Lennin Flores', role: '—', tag: 'A28', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  Oscar_Palacios: { name: 'Oscar Palacios', role: '—', tag: 'A29', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  El_SNOP: { name: 'El SNOP', role: '—', tag: 'A30', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  Mike_Rivera: { name: 'Mike Rivera', role: '—', tag: 'A31', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  ohnozelt: { name: 'ohnozelt', role: '—', tag: 'A32', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  ARISTAS: { name: 'ARISTAS', role: '—', tag: 'A33', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } }
+};
+
+/* ============================================================
+   INFO PANEL DATA
 ============================================================ */
 const PANEL_DATA = {
-  // Artists
-  essppora: { kind:'artist', name:'essppora', role:'fotografía', bio:'artist.bat_grafik.bio', tag:'A1' },
-  secret_eyes: { kind:'artist', name:'SECRET.EYES888', role:'Ilustradora', bio:'artist.secret_eyes.bio', tag:'A2' },
-  mmicelio:       { kind:'artist', name:'mmicelio', role:'fotografía', bio:'artist.nula.bio', tag:'A3' },
-  derwent:      { kind:'artist', name:'derwent', role:'músico', bio:'artist.henro.bio', tag:'A4' },
-  Aldo_Lopez_Malo:{kind:'artist', name:'Aldo Lopez Malo', role:'artist.del_realismo.role', bio:'artist.del_realismo.bio', tag:'A5' },
-  papiwabisabi:      { kind:'artist', name:'papiwabisabi', role:'artist.oxida.role', bio:'artist.oxida.bio', tag:'A6' },
-  piedro: { kind:'artist', name:'piedro', role:'artist.luna_negra.role', bio:'artist.luna_negra.bio', tag:'A7' },
-  Espontáneo: { kind:'artist', name:'Espontáneo', role:'fotografía', bio:'artist.bat_grafik.bio', tag:'A8' },
-  Jcess: { kind:'artist', name:'Jces.s', role:'Ilustradora', bio:'artist.secret_eyes.bio', tag:'A9' },
-  Ayra:       { kind:'artist', name:'Ayra', role:'fotografía', bio:'artist.nula.bio', tag:'A10' },
-  Mata:      { kind:'artist', name:'Mata', role:'músico', bio:'artist.henro.bio', tag:'A11' },
-  Pink1man:{kind:'artist', name:'Pink!man', role:'artist.del_realismo.role', bio:'artist.del_realismo.bio', tag:'A12' },
-  Vertedero_Don_Emilio:      { kind:'artist', name:'Vertedero Don Emilio', role:'artist.oxida.role', bio:'artist.oxida.bio', tag:'A13' },
-  otrosdias: { kind:'artist', name:'otrosdias', role:'artist.luna_negra.role', bio:'artist.luna_negra.bio', tag:'A14' },
-  Flwrs:      { kind:'artist', name:'Flwrs', role:'artist.oxida.role', bio:'artist.oxida.bio', tag:'A15' },
-  José_Alberto_Morales: { kind:'artist', name:'José Alberto Morales', role:'artist.luna_negra.role', bio:'artist.luna_negra.bio', tag:'A16' },
+  essppora:             { kind:'artist', id:'essppora' },
+  secret_eyes:          { kind:'artist', id:'secret_eyes' },
+  mmicelio:             { kind:'artist', id:'mmicelio' },
+  derwent:              { kind:'artist', id:'derwent' },
+  Aldo_Lopez_Malo:      { kind:'artist', id:'Aldo_Lopez_Malo' },
+  papiwabisabi:         { kind:'artist', id:'papiwabisabi' },
+  piedro:               { kind:'artist', id:'piedro' },
+  'Espontáneo':         { kind:'artist', id:'Espontáneo' },
+  Jcess:                { kind:'artist', id:'Jcess' },
+  Ayra:                 { kind:'artist', id:'Ayra' },
+  Mata:                 { kind:'artist', id:'Mata' },
+  Pink1man:             { kind:'artist', id:'Pink1man' },
+  Vertedero_Don_Emilio: { kind:'artist', id:'Vertedero_Don_Emilio' },
+  otrosdias:            { kind:'artist', id:'otrosdias' },
+  Flwrs:                { kind:'artist', id:'Flwrs' },
+  'José_Alberto_Morales':{ kind:'artist', id:'José_Alberto_Morales' },
+  Jafeth:               { kind:'artist', id:'Jafeth' },
+  Fobos:                { kind:'artist', id:'Fobos' },
+  GROW:                 { kind:'artist', id:'GROW' },
+  Vecco_Gallo:          { kind:'artist', id:'Vecco_Gallo' },
+  naonomis:             { kind:'artist', id:'naonomis' },
+  Jurassic_Snack:       { kind:'artist', id:'Jurassic_Snack' },
+  michelleerreve:       { kind:'artist', id:'michelleerreve' },
+  Marlon_Steve:         { kind:'artist', id:'Marlon_Steve' },
+  Chaco_Mete_La_Pata:   { kind:'artist', id:'Chaco_Mete_La_Pata' },
+  'Moisés_Yael':        { kind:'artist', id:'Moisés_Yael' },
+  Elliot_Kendryek:      { kind:'artist', id:'Elliot_Kendryek' },
+  Lennin_Flores:        { kind:'artist', id:'Lennin_Flores' },
+  Oscar_Palacios:       { kind:'artist', id:'Oscar_Palacios' },
+  El_SNOP:              { kind:'artist', id:'El_SNOP' },
+  Mike_Rivera:          { kind:'artist', id:'Mike_Rivera' },
+  ohnozelt:             { kind:'artist', id:'ohnozelt' },
+  ARISTAS:              { kind:'artist', id:'ARISTAS' },
   // Products
   serafin:    { kind:'product', name:'product.serafin.name', author:'product.serafin.author', desc:'product.serafin.desc', price:'$150 MXN', tag:'DROP_001 · P_01' },
   transmision:{ kind:'product', name:'product.transmision.name', author:'product.transmision.author', desc:'product.transmision.desc', price:'$320 MXN', tag:'DROP_001 · P_02' },
@@ -1493,20 +2140,116 @@ const PANEL_DATA = {
   trans_06: { kind:'trans', name:'13·04·2026', desc:'trans.full.06', tag:'BITÁCORA_01' },
 };
 
+/* ============================================================
+   PANEL TABS LOGIC
+============================================================ */
+let currentArtistId = null;
+// Photos stored by artist id
+const artistPhotos = {};
+
+document.querySelectorAll('.panel-tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('.panel-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel-tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + tab).classList.add('active');
+  });
+});
+
+// Photo upload handler
+document.getElementById('artistPhotoInput').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  if(!file || !currentArtistId) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    artistPhotos[currentArtistId] = ev.target.result;
+    const img = document.getElementById('artistPhotoImg');
+    img.src = ev.target.result;
+    img.classList.add('loaded');
+    document.querySelector('.artist-photo-placeholder').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+});
+
 const panel = document.getElementById('panelBackdrop');
+
 function openPanel(id){
   const d = PANEL_DATA[id];
   if(!d) return;
-  document.getElementById('panelTag').textContent = d.tag;
+
+  const tabsEl = document.getElementById('panelTabs');
 
   if(d.kind === 'artist'){
-    document.getElementById('panelTitle').textContent = d.name;
-    document.getElementById('panelSub').textContent = t(d.role);
-    document.getElementById('panelBody').textContent = t(d.bio);
+    const artist = ARTIST_DATA[d.id];
+    if(!artist) return;
+    currentArtistId = d.id;
+
+    // Show tabs
+    tabsEl.style.display = 'flex';
+
+    // Reset to atributos tab
+    document.querySelectorAll('.panel-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel-tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelector('[data-tab="atributos"]').classList.add('active');
+    document.getElementById('tab-atributos').classList.add('active');
+
+    // Fill atributos tab
+    document.getElementById('panelTag').textContent = artist.tag;
+    document.getElementById('panelTitle').textContent = artist.name;
+    document.getElementById('panelSub').textContent = artist.role;
+    document.getElementById('panelBody').textContent = artist.bio || '—';
     document.getElementById('panelMeta').textContent = STATE.lang === 'es' ? 'AUTOR VERIFICADO' : 'VERIFIED AUTHOR';
-    document.getElementById('panelCta').textContent = t('ui.contact');
-    document.getElementById('panelCta').onclick = () => window.open('https://instagram.com/otrosdias','_blank');
+    const cta = document.getElementById('panelCta');
+    cta.textContent = t('ui.contact');
+    cta.disabled = false;
+    cta.style.opacity = '1';
+    cta.onclick = () => window.open('https://instagram.com/otrosdias','_blank');
+
+    // Fill hechos tab
+    const attrGrid = document.getElementById('panelAttrGrid');
+    attrGrid.innerHTML = '';
+    const data = artist.hechos || {};
+    Object.entries(data).forEach(([k, v]) => {
+      const row = document.createElement('div');
+      row.className = 'attr-row';
+      row.innerHTML = `<div class="ak">${k}</div><div class="av">${v}</div>`;
+      attrGrid.appendChild(row);
+    });
+
+    // Fill historia tab
+    document.getElementById('historiaBio').textContent = artist.bio || '—';
+    const attrsEl = document.getElementById('historiaAttrs');
+    attrsEl.innerHTML = '';
+    const attrsData = artist.attrs || {};
+    Object.entries(attrsData).forEach(([k, v]) => {
+      const sp = document.createElement('span');
+      sp.innerHTML = `<b>${k}:</b> ${v}`;
+      attrsEl.appendChild(sp);
+    });
+
+    // Restore photo if previously uploaded
+    const img = document.getElementById('artistPhotoImg');
+    const placeholder = document.querySelector('.artist-photo-placeholder');
+    if(artistPhotos[currentArtistId]){
+      img.src = artistPhotos[currentArtistId];
+      img.classList.add('loaded');
+      placeholder.style.display = 'none';
+    } else {
+      img.src = '';
+      img.classList.remove('loaded');
+      placeholder.style.display = '';
+    }
+    // Reset file input
+    document.getElementById('artistPhotoInput').value = '';
+
   } else if(d.kind === 'product'){
+    currentArtistId = null;
+    tabsEl.style.display = 'none';
+    document.querySelectorAll('.panel-tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-atributos').classList.add('active');
+
+    document.getElementById('panelTag').textContent = d.tag;
     document.getElementById('panelTitle').textContent = t(d.name);
     document.getElementById('panelSub').textContent = t(d.author);
     document.getElementById('panelBody').textContent = t(d.desc);
@@ -1520,14 +2263,25 @@ function openPanel(id){
       const msg = encodeURIComponent('Hola otrosdias, quiero comprar: ' + t(d.name));
       window.open('https://wa.me/?text=' + msg, '_blank');
     };
+
   } else if(d.kind === 'trans'){
+    currentArtistId = null;
+    tabsEl.style.display = 'none';
+    document.querySelectorAll('.panel-tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-atributos').classList.add('active');
+
+    document.getElementById('panelTag').textContent = d.tag;
     document.getElementById('panelTitle').textContent = d.name;
     document.getElementById('panelSub').textContent = STATE.lang === 'es' ? 'TRANSMISIÓN ARCHIVADA' : 'ARCHIVED BROADCAST';
     document.getElementById('panelBody').textContent = t(d.desc);
     document.getElementById('panelMeta').textContent = STATE.lang === 'es' ? 'BITÁCORA PÚBLICA' : 'PUBLIC LOG';
-    document.getElementById('panelCta').textContent = STATE.lang === 'es' ? 'CERRAR' : 'CLOSE';
-    document.getElementById('panelCta').onclick = closePanel;
+    const cta = document.getElementById('panelCta');
+    cta.textContent = STATE.lang === 'es' ? 'CERRAR' : 'CLOSE';
+    cta.disabled = false;
+    cta.style.opacity = '1';
+    cta.onclick = closePanel;
   }
+
   panel.classList.add('open');
 }
 function closePanel(){ panel.classList.remove('open'); }
@@ -1538,7 +2292,6 @@ panel.addEventListener('click', e => { if(e.target === panel) closePanel(); });
    INPUT — keyboard + d-pad
 ============================================================ */
 const STEP_X = 3, STEP_Y = 2.5;
-let keyHold = {};
 
 function handleKey(action){
   if(panel.classList.contains('open')){
@@ -1573,32 +2326,230 @@ document.addEventListener('keydown', e => {
   if(action){ e.preventDefault(); handleKey(action); }
 });
 
-/* D-pad with hold-to-repeat */
 document.querySelectorAll('.dpad button').forEach(b => {
   let repeatId = null;
   const fire = () => handleKey(b.dataset.move);
   b.addEventListener('touchstart', e => {
     e.preventDefault();
     fire();
-    if(b.dataset.move !== 'enter'){
-      repeatId = setInterval(fire, 130);
-    }
+    if(b.dataset.move !== 'enter'){ repeatId = setInterval(fire, 130); }
   }, { passive: false });
   b.addEventListener('touchend', () => { if(repeatId){ clearInterval(repeatId); repeatId = null; } });
   b.addEventListener('mousedown', () => {
     fire();
-    if(b.dataset.move !== 'enter'){
-      repeatId = setInterval(fire, 130);
-    }
+    if(b.dataset.move !== 'enter'){ repeatId = setInterval(fire, 130); }
   });
   b.addEventListener('mouseup',    () => { if(repeatId){ clearInterval(repeatId); repeatId = null; } });
   b.addEventListener('mouseleave', () => { if(repeatId){ clearInterval(repeatId); repeatId = null; } });
 });
 
-/* Click on hotspot to interact (desktop convenience) */
-document.querySelectorAll('.hotspot').forEach(h => {
-  h.addEventListener('click', () => openPanel(h.dataset.id));
+// Click on hotspot (solo artistas; la tienda ahora usa su propio sistema)
+// Exits también se re-registran aquí de forma segura con event delegation
+document.getElementById('world').addEventListener('click', e => {
+  const exit = e.target.closest('.exit');
+  if(exit){ e.stopPropagation(); goTo(exit.dataset.go); return; }
+  const hspot = e.target.closest('.hotspot.artist-card');
+  if(hspot){ openPanel(hspot.dataset.id); return; }
 });
+
+/* ============================================================
+   GOOGLE SHEETS → TIENDA DINÁMICA
+   ─────────────────────────────────────────────────────────
+   INSTRUCCIONES:
+   1. Abre tu Google Sheet
+   2. Archivo → Compartir → Publicar en la web → CSV
+   3. Copia el enlace y pégalo abajo en SHEET_CSV_URL
+   4. Columnas requeridas (fila 1 = encabezados):
+      id | nombre | autor | descripcion | precio | estado | imagen_frente | imagen_reverso
+   estado: "disponible", "agotado", o "proximo"
+   imágenes: URL de Google Drive (formato: https://drive.google.com/uc?export=view&id=TU_ID)
+============================================================ */
+const SHEET_CSV_URL = 'TU_URL_CSV_AQUI';
+// Ejemplo: 'https://docs.google.com/spreadsheets/d/1s7iIwuhlLtJlNqFI4kOj3jLywaS6mvtR_OYoPfEpB_w/export?format=csv&gid=0'
+
+// Datos demo para cuando no haya Sheet configurado
+const DEMO_PRODUCTS = [
+  { id:'fragildevociopn', nombre:'FRÁGIL DEVOCIÓN', autor:'POR SECRET.EYES888', descripcion:'Tank Top de algodón de manga corta, estampada con serigrafía. Costo válido hasta la siguiente actualización.', precio:'$180 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'transmision', nombre:'TRANSMISIÓN', autor:'POR otrosdias', descripcion:'Hoodie negro con bordado al pecho. Edición conjunta con bat_grafik. 20 piezas firmadas, numeradas y trazables.', precio:'$320 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'lente', nombre:'LENTE', autor:'POR OTROSDIAS', descripcion:'Gorra de Gamuza con alambre de púas. Edición agotada.', precio:'AGOTADO', estado:'agotado', imagen_frente:'', imagen_reverso:'' },
+  { id:'sintitulo', nombre:'SIN TÍTULO', autor:'POR HENRO', descripcion:'En producción. Información liberada cuando el archivo se abra.', precio:'???', estado:'proximo', imagen_frente:'', imagen_reverso:'' },
+];
+
+function parseCSV(text){
+  const lines = text.trim().split('\n');
+  if(lines.length < 2) return [];
+  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g,'').toLowerCase());
+  return lines.slice(1).map(line => {
+    // Handle commas inside quoted fields
+    const cols = [];
+    let cur = '', inQ = false;
+    for(const ch of line){
+      if(ch === '"'){ inQ = !inQ; }
+      else if(ch === ',' && !inQ){ cols.push(cur.trim()); cur = ''; }
+      else { cur += ch; }
+    }
+    cols.push(cur.trim());
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = (cols[i] || '').replace(/^"|"$/g,'').trim(); });
+    return obj;
+  }).filter(r => r.id || r.nombre);
+}
+
+async function loadTiendaFromSheet(){
+  const grid = document.getElementById('tiendaGrid');
+  let products = DEMO_PRODUCTS;
+
+  if(SHEET_CSV_URL && SHEET_CSV_URL !== 'TU_URL_CSV_AQUI'){
+    try {
+      const res = await fetch(SHEET_CSV_URL);
+      if(res.ok){
+        const text = await res.text();
+        const parsed = parseCSV(text);
+        if(parsed.length > 0) products = parsed;
+      }
+    } catch(e) {
+      console.warn('No se pudo cargar el Sheet, usando demo:', e);
+    }
+  }
+
+  renderTiendaGrid(grid, products);
+}
+
+function renderTiendaGrid(grid, products){
+  grid.innerHTML = '';
+  // Limitar a 14 productos máximo
+  const display = products.slice(0, 14);
+  if(!display.length){
+    grid.innerHTML = '<div class="tienda-loading">CATÁLOGO VACÍO</div>';
+    return;
+  }
+  display.forEach(p => {
+    const isSold   = (p.estado || '').toLowerCase() === 'agotado';
+    const isProximo= (p.estado || '').toLowerCase() === 'proximo';
+    const card = document.createElement('div');
+    card.className = 'product-card' + (isSold ? ' sold' : '') + (isProximo ? ' proximo' : '');
+
+    const imgHTML = p.imagen_frente
+      ? `<img src="${p.imagen_frente}" alt="${p.nombre || ''}" loading="lazy" onerror="this.parentNode.innerHTML='${buildShirtSVGInline(isSold,isProximo)}'">` 
+      : buildShirtSVGInline(isSold, isProximo);
+
+    const badgeHTML = isSold
+      ? '<span class="card-badge">AGOTADO</span>'
+      : isProximo ? '<span class="card-badge">PRÓXIMO</span>' : '';
+
+    const priceText = isSold ? 'AGOTADO' : (isProximo ? 'PRÓXIMO' : (p.precio || ''));
+
+    card.innerHTML = `
+      <div class="card-img">
+        ${imgHTML}
+        ${badgeHTML}
+        <div class="card-overlay"><span>VER DETALLE</span></div>
+      </div>
+      <div class="card-footer">
+        <span class="card-name">${p.nombre || '—'}</span>
+        <span class="card-price">${priceText}</span>
+      </div>
+    `;
+    card.addEventListener('click', () => openProductModal(p));
+    grid.appendChild(card);
+  });
+}
+
+function buildShirtSVGInline(sold, proximo){
+  const fill   = sold ? '#1a0a0a' : (proximo ? '#0a0f0a' : '#181818');
+  const stroke = sold ? '#ff2d6f66' : (proximo ? '#f0b81b44' : '#4a4a4466');
+  return `<svg class="card-svg" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="none">
+    <path d="M50 40 Q50 30 60 28 L80 20 L90 35 Q100 42 110 35 L120 20 L140 28 Q150 30 150 40 L155 90 L140 100 L140 220 L60 220 L60 100 L45 90 Z" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>
+    ${proximo ? `<text x="100" y="135" text-anchor="middle" fill="#f0b81b" font-family="VT323" font-size="56" opacity="0.5">?</text>` : ''}
+  </svg>`;
+}
+
+/* ============================================================
+   PRODUCT DETAIL MODAL
+============================================================ */
+const productModalBackdrop = document.getElementById('productModalBackdrop');
+document.getElementById('pmClose').addEventListener('click', closeProductModal);
+productModalBackdrop.addEventListener('click', e => {
+  if(e.target === productModalBackdrop) closeProductModal();
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && productModalBackdrop.classList.contains('open')){
+    closeProductModal();
+  }
+});
+
+let currentImages = [];
+let currentImgIdx = 0;
+
+function openProductModal(p){
+  const isSold = (p.estado || '').toLowerCase() === 'agotado';
+  const isProximo = (p.estado || '').toLowerCase() === 'proximo';
+
+  document.getElementById('pmTag').textContent = p.id ? ('DROP · ' + p.id.toUpperCase().slice(0,8)) : 'DROP_001';
+  document.getElementById('pmTitle').textContent = p.nombre || '';
+  document.getElementById('pmAuthor').textContent = p.autor || '';
+  document.getElementById('pmPrice').textContent = isSold ? 'AGOTADO' : (isProximo ? 'PRÓXIMAMENTE' : (p.precio || ''));
+  document.getElementById('pmPrice').className = 'pm-price' + (isSold ? ' sold' : '') + (isProximo ? ' proximo' : '');
+  document.getElementById('pmDesc').textContent = p.descripcion || '';
+
+  const buyBtn = document.getElementById('pmBuyBtn');
+  if(isSold || isProximo){
+    buyBtn.disabled = true;
+    buyBtn.textContent = isSold ? 'AGOTADO' : 'PRÓXIMAMENTE';
+  } else {
+    buyBtn.disabled = false;
+    buyBtn.textContent = 'COMPRAR VÍA WHATSAPP';
+    buyBtn.onclick = () => {
+      const msg = encodeURIComponent('Hola otrosdias, quiero comprar: ' + (p.nombre || ''));
+      window.open('https://wa.me/?text=' + msg, '_blank');
+    };
+  }
+
+  // Images setup
+  currentImages = [];
+  if(p.imagen_frente) currentImages.push({ url: p.imagen_frente, label: 'FRENTE' });
+  if(p.imagen_reverso) currentImages.push({ url: p.imagen_reverso, label: 'REVERSO' });
+
+  const mainEl = document.getElementById('pmImgMain');
+  const thumbsEl = document.getElementById('pmThumbs');
+  thumbsEl.innerHTML = '';
+
+  if(currentImages.length > 0){
+    currentImgIdx = 0;
+    showProductImage(0);
+    currentImages.forEach((img, i) => {
+      const th = document.createElement('div');
+      th.className = 'pm-thumb' + (i === 0 ? ' active' : '');
+      th.innerHTML = `<img src="${img.url}" alt="${img.label}" loading="lazy">`;
+      th.addEventListener('click', () => { currentImgIdx = i; showProductImage(i); updateThumbsActive(); });
+      thumbsEl.appendChild(th);
+    });
+    if(currentImages.length === 1) thumbsEl.style.display = 'none';
+    else thumbsEl.style.display = 'flex';
+  } else {
+    mainEl.innerHTML = `<div class="pm-placeholder">${buildShirtSVG(isSold, isProximo)}</div>`;
+    thumbsEl.style.display = 'none';
+  }
+
+  productModalBackdrop.classList.add('open');
+}
+
+function showProductImage(idx){
+  const mainEl = document.getElementById('pmImgMain');
+  const img = currentImages[idx];
+  if(!img) return;
+  mainEl.innerHTML = `<img src="${img.url}" alt="${img.label}" loading="lazy">`;
+}
+
+function updateThumbsActive(){
+  document.querySelectorAll('.pm-thumb').forEach((th, i) => {
+    th.classList.toggle('active', i === currentImgIdx);
+  });
+}
+
+function closeProductModal(){
+  productModalBackdrop.classList.remove('open');
+}
 
 /* ============================================================
    RANDOM TRANSMISSIONS
@@ -1620,6 +2571,9 @@ setTimeout(function loop(){
 ============================================================ */
 window.addEventListener('resize', renderCharacter);
 setTimeout(() => { renderCharacter(); checkNearby(); updateHud(); }, 100);
+
+// Cargar tienda al inicio
+loadTiendaFromSheet();
 </script>
 </body>
 </html>
