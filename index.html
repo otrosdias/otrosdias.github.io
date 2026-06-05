@@ -346,16 +346,17 @@ body.inverted .crt-overlay{ mix-blend-mode: screen; opacity: 0.3; }
 }
 
 /* ============================================
-   SCENE: INICIO
+   SCENE: INICIO — decoración ASCII sala de casa
 ============================================ */
 .scene-inicio .hub-sub{
   position: absolute;
-  bottom: 18%; left: 50%; transform: translateX(-50%);
+  bottom: 10%; left: 50%; transform: translateX(-50%);
   text-align: center;
   max-width: 540px;
   font-size: 13px;
   color: var(--fg-dim);
   line-height: 1.7;
+  z-index: 2;
 }
 .scene-inicio .hub-sub b{ color: var(--fg); }
 .scene-inicio .hub-meta{
@@ -371,32 +372,271 @@ body.inverted .crt-overlay{ mix-blend-mode: screen; opacity: 0.3; }
 .scene-inicio .hub-meta.right{ right: 5%; text-align: right; }
 .scene-inicio .hub-meta b{ color: var(--fg); }
 
-/* ============================================
-   SCENE: MANIFIESTO
-============================================ */
-.scene-manifiesto .manifesto-text{
+/* Muebles ASCII — posicionados en la sala */
+.ascii-obj{
   position: absolute;
-  top: 28%; left: 50%; transform: translateX(-50%);
-  max-width: 720px; width: 80%;
-  font-family: var(--font-serif);
-  font-size: clamp(18px, 2.2vw, 26px);
-  line-height: 1.4;
-  text-align: center;
-  color: var(--fg);
+  font-family: var(--font-mono);
+  white-space: pre;
+  line-height: 1.3;
+  pointer-events: none;
+  z-index: 3;
+  user-select: none;
 }
-.scene-manifiesto .manifesto-text p{ margin: 0 0 16px; }
-.scene-manifiesto .manifesto-text em{ color: var(--amber); font-style: italic; }
-.scene-manifiesto .stamp{
-  position: absolute;
-  font-size: 9px;
-  letter-spacing: 0.2em;
+.ascii-obj.tocadiscos{
+  left: 7%; bottom: 12%;
+  font-size: clamp(9px, 1.1vw, 13px);
   color: var(--fg-muted);
-  border: 1px solid var(--fg-muted);
-  padding: 4px 8px;
+  animation: vinilo 4s linear infinite;
+}
+@keyframes vinilo{
+  0%  { text-shadow: 0 0 4px rgba(240,184,27,0.0); }
+  50% { text-shadow: 0 0 8px rgba(240,184,27,0.35); }
+  100%{ text-shadow: 0 0 4px rgba(240,184,27,0.0); }
+}
+.ascii-obj.maceta{
+  right: 8%; bottom: 12%;
+  font-size: clamp(9px, 1.1vw, 13px);
+  color: var(--fg-muted);
+}
+.ascii-obj.cuadro{
+  left: 50%; transform: translateX(-50%);
+  top: 16%;
+  font-size: clamp(7px, 0.9vw, 11px);
+  color: var(--fg-muted);
+  border: 1px solid var(--line);
+  padding: 6px 10px;
+}
+.ascii-obj.lampara{
+  right: 22%; bottom: 12%;
+  font-size: clamp(8px, 1vw, 12px);
+  color: var(--fg-muted);
+}
+.ascii-obj.sofa{
+  left: 50%; transform: translateX(-50%);
+  bottom: 12%;
+  font-size: clamp(8px, 1vw, 11px);
+  color: var(--fg-muted);
+}
+/* en mobile ocultar algunos objetos para no saturar */
+@media(max-width:600px){
+  .ascii-obj.cuadro{ display:none; }
+  .ascii-obj.lampara{ display:none; }
+  .ascii-obj.sofa{ font-size:7px; }
+  .ascii-obj.tocadiscos{ font-size:7px; left:2%; }
+  .ascii-obj.maceta{ font-size:7px; right:2%; }
+}
+
+/* ============================================
+   SCENE: JARDÍN (antes MANIFIESTO)
+============================================ */
+.scene-jardin .jardin-wrap{
+  position: absolute;
+  top: 18%; left: 50%; transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  pointer-events: none;
+}
+.scene-jardin .jardin-arbol{
+  font-family: var(--font-mono);
+  white-space: pre;
+  line-height: 1.25;
+  font-size: clamp(7px, 0.9vw, 11px);
+  color: var(--fg-muted);
+  text-align: center;
+  margin-bottom: 4px;
+}
+.scene-jardin .jardin-flores{
+  font-family: var(--font-mono);
+  white-space: pre;
+  line-height: 1.3;
+  font-size: clamp(7px, 0.85vw, 10px);
+  color: var(--fg-muted);
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+.scene-jardin .manifesto-text{
+  position: absolute;
+  bottom: 14%; left: 50%; transform: translateX(-50%);
+  max-width: 680px; width: 82%;
+  font-family: var(--font-serif);
+  font-size: clamp(15px, 1.8vw, 22px);
+  line-height: 1.5;
+  text-align: center;
+  color: var(--fg-dim);
+  z-index: 2;
+}
+.scene-jardin .manifesto-text p{ margin: 0 0 10px; }
+.scene-jardin .manifesto-text em{ color: var(--amber); font-style: italic; }
+/* mariposas flotantes */
+.mariposa{
+  position: absolute;
+  font-size: clamp(8px, 1vw, 12px);
+  color: var(--amber);
+  pointer-events: none;
+  animation: volar 6s ease-in-out infinite;
+  opacity: 0.5;
+}
+.mariposa:nth-child(2){ animation-delay: -2s; animation-duration: 7s; }
+.mariposa:nth-child(3){ animation-delay: -4s; animation-duration: 5s; }
+@keyframes volar{
+  0%  { transform: translate(0,0) rotate(-5deg); opacity:0.4; }
+  25% { transform: translate(6px,-8px) rotate(5deg); opacity:0.7; }
+  50% { transform: translate(-4px,-14px) rotate(-3deg); opacity:0.5; }
+  75% { transform: translate(8px,-6px) rotate(4deg); opacity:0.6; }
+  100%{ transform: translate(0,0) rotate(-5deg); opacity:0.4; }
+}
+@media(max-width:600px){
+  .scene-jardin .jardin-arbol{ font-size:6.5px; }
+  .scene-jardin .jardin-flores{ font-size:6px; }
+}
+
+/* ============================================
+   CUARTO SECRETO — overlay completo
+============================================ */
+.secreto-backdrop{
+  position: fixed; inset: 0;
+  background: #000;
+  z-index: 800;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.8s ease, visibility 0.8s;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.secreto-backdrop.open{
+  opacity: 1; visibility: visible;
+}
+.secreto-inner{
+  position: relative;
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+}
+/* estrellas de fondo */
+.secreto-stars{
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(circle, rgba(240,184,27,0.15) 1px, transparent 1px) 10px 20px / 60px 60px,
+    radial-gradient(circle, rgba(255,45,111,0.1) 1px, transparent 1px) 35px 45px / 80px 80px,
+    radial-gradient(circle, rgba(232,227,211,0.08) 1px, transparent 1px) 5px 5px / 40px 40px;
+  animation: stars-drift 20s linear infinite;
+  pointer-events: none;
+}
+@keyframes stars-drift{ to{ background-position: 10px 20px, -45px 5px, 45px -35px; } }
+/* escena ASCII del cuarto secreto */
+.secreto-room{
+  font-family: var(--font-mono);
+  white-space: pre;
+  line-height: 1.4;
+  font-size: clamp(7px, 0.85vw, 11px);
+  color: var(--fg-muted);
+  text-align: center;
+  position: absolute;
+  bottom: 8%; left: 50%; transform: translateX(-50%);
+  pointer-events: none;
+}
+.secreto-title{
+  font-family: var(--font-crt);
+  font-size: clamp(32px, 5vw, 72px);
+  color: var(--amber);
+  letter-spacing: 0.04em;
+  text-align: center;
+  margin-bottom: 10px;
+  text-shadow: 0 0 20px rgba(240,184,27,0.4);
+  animation: glitch-text 8s steps(1) infinite;
+}
+@keyframes glitch-text{
+  0%,90%,100%{ text-shadow: 0 0 20px rgba(240,184,27,0.4); transform: none; }
+  92%{ transform: translate(-2px,0); text-shadow: -2px 0 var(--magenta); }
+  94%{ transform: translate(2px,0); text-shadow: 2px 0 #0ff; }
+  96%{ transform: none; }
+}
+.secreto-subtitle{
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--fg-dim);
+  text-align: center;
+  margin-bottom: 28px;
   text-transform: uppercase;
 }
-.scene-manifiesto .stamp-1{ top: 18%; left: 12%; transform: rotate(-4deg); }
-.scene-manifiesto .stamp-2{ top: 18%; right: 12%; transform: rotate(3deg); color: var(--magenta); border-color: var(--magenta); }
+.secreto-subtitle::before{ content: '// '; color: var(--magenta); }
+/* contenido del cuarto: hotspots ASCII clickeables */
+.secreto-content{
+  display: flex;
+  gap: 30px 40px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 800px;
+  padding: 0 20px;
+  z-index: 2;
+  position: relative;
+}
+.secreto-item{
+  cursor: pointer;
+  border: 1px solid var(--line);
+  padding: 14px 16px;
+  background: rgba(240,184,27,0.03);
+  transition: all 0.2s;
+  text-align: center;
+  min-width: 140px;
+}
+.secreto-item:hover{
+  border-color: var(--amber);
+  background: rgba(240,184,27,0.07);
+  box-shadow: 0 0 18px -4px var(--amber);
+}
+.secreto-item .si-art{
+  font-family: var(--font-mono);
+  white-space: pre;
+  font-size: clamp(7px, 0.8vw, 10px);
+  line-height: 1.3;
+  color: var(--fg-muted);
+  margin-bottom: 8px;
+}
+.secreto-item:hover .si-art{ color: var(--amber); }
+.secreto-item .si-label{
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--fg-dim);
+  text-transform: uppercase;
+}
+.secreto-item:hover .si-label{ color: var(--fg); }
+/* botón cerrar cuarto */
+.secreto-close{
+  position: absolute;
+  top: 16px; right: 20px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--fg-muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 5px 12px;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.15s;
+}
+.secreto-close:hover{ color: var(--magenta); border-color: var(--magenta); background: transparent; }
+/* popup de novedad que lleva al cuarto secreto */
+.trans-pop.secreto-trigger{
+  border-color: var(--amber) !important;
+  box-shadow: 0 0 20px rgba(240,184,27,0.2);
+  cursor: pointer;
+}
+.trans-pop.secreto-trigger .head{
+  color: var(--amber) !important;
+}
+.trans-pop.secreto-trigger::after{
+  content: '[ TAP PARA ENTRAR ]';
+  display: block;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--amber);
+  margin-top: 6px;
+  animation: pulse 1s ease-in-out infinite;
+}
 
 /* ============================================
    SCENE: ARTISTAS — grid horizontal, todos iguales
@@ -1250,7 +1490,7 @@ body.inverted .panel-backdrop{ background: rgba(232,227,211,0.85); }
 <!-- SCENE TABS (fast travel) -->
 <div class="scene-tabs" id="sceneTabs">
   <button data-jump="inicio" data-i18n="nav.inicio" class="active">INICIO</button>
-  <button data-jump="manifiesto" data-i18n="nav.manifiesto">MANIFIESTO</button>
+  <button data-jump="jardin">JARDÍN</button>
   <button data-jump="artistas" data-i18n="nav.artistas">ARTISTAS</button>
   <button data-jump="tienda" data-i18n="nav.tienda">TIENDA</button>
   <button data-jump="transmisiones" data-i18n="nav.transmisiones">TRANSMISIONES</button>
@@ -1284,36 +1524,130 @@ body.inverted .panel-backdrop{ background: rgba(232,227,211,0.85); }
 <!-- WORLD -->
 <div id="world">
 
-  <!-- SCENE: INICIO -->
+  <!-- SCENE: INICIO — sala de casa ASCII -->
   <div class="scene scene-inicio active" data-scene="inicio">
     <div class="scene-tag" data-i18n="inicio.tag">Sistema</div>
     <h1 class="scene-title">
       <span data-i18n="inicio.title_top">otrosdias</span><br>
       <span class="accent" data-i18n="inicio.title_bot">otrosdias</span>
     </h1>
-    <div class="hub-meta left">
-    </div>
-    <div class="hub-meta right">
-    </div>
+
+    <!-- Tocadiscos -->
+    <div class="ascii-obj tocadiscos">  ___________
+ /     _     \
+|   ( ( ) )   |
+|    `---'    |
+|  [otrosdias]|
+ \_____[=]___/
+   |||||||||</div>
+
+    <!-- Cuadro en la pared -->
+    <div class="ascii-obj cuadro">+------------------+
+|  * . · ✦ · . *  |
+|  . otrosdias .  |
+|  * · 2020–∞ · * |
++------------------+</div>
+
+    <!-- Maceta con planta -->
+    <div class="ascii-obj maceta">    (  )  (   )
+    ) (   ) (
+    ( )  (   )
+    _____________
+   |      |      |
+   |  ~~  |  ~~  |
+    \  \/\/\/  /
+     \        /
+      |      |
+      |______|
+       |    |
+      /|    |\</div>
+
+    <!-- Lámpara de pie -->
+    <div class="ascii-obj lampara">    _____
+   / , , \
+  |       |
+   \_____/
+      |
+      |
+    __|__
+   /     \
+  |  [·]  |
+   \_____/</div>
+
+    <!-- Sofá -->
+    <div class="ascii-obj sofa">  ___________________________
+ |  _____   _____   _____  |
+ | |     | |     | |     | |
+ | |  o  | |  o  | |  o  | |
+ |_|_____|_|_____|_|_____|_|
+ |___________________________|
+   |___|             |___|</div>
+
+    <div class="hub-meta left"></div>
+    <div class="hub-meta right"></div>
     <div class="hub-sub">
       <span data-i18n="inicio.sub">"(...) todos hemos tenido una consciencia muy clara de que no,
 no, no somos la culminación de nada, sino el principio de algo".</span>
     </div>
-    <div class="exit exit-right" data-go="manifiesto" data-side="right">
+    <div class="exit exit-right" data-go="jardin" data-side="right">
       <span data-i18n="ui.go_right">→</span>
-      <span data-i18n="nav.manifiesto">MANIFIESTO</span>
+      <span>JARDÍN</span>
       <span class="arrow">→</span>
     </div>
   </div>
 
-  <!-- SCENE: MANIFIESTO -->
-  <div class="scene scene-manifiesto" data-scene="manifiesto">
-    <div class="scene-tag" data-i18n="manifiesto.tag">.</div>
-    <h2 class="scene-title" data-i18n="nav.manifiesto">.</h2>
+  <!-- SCENE: JARDÍN (antes MANIFIESTO) -->
+  <div class="scene scene-jardin" data-scene="jardin">
+    <div class="scene-tag">// jardín</div>
+    <h2 class="scene-title" style="font-size:clamp(44px,8vw,110px);">Jardín</h2>
+
+    <!-- Mariposas flotantes -->
+    <span class="mariposa" style="left:15%;top:30%;">~&gt;&lt;~</span>
+    <span class="mariposa" style="right:18%;top:38%;">&gt;~&lt;</span>
+    <span class="mariposa" style="left:38%;top:22%;">~&gt;&lt;~</span>
+
+    <div class="jardin-wrap">
+      <!-- Árbol ASCII grande -->
+      <div class="jardin-arbol">                    . * .
+                  *  ( )  *
+                .  *  |  * .
+              *   .   |   .  *
+           .  *  ( )  |  ( )  * .
+          *  .  * | * | * | *  .  *
+        .  *  .  \|/  |  \|/  .  *  .
+       *  .  *  .-+-. | .-+-.  *  .  *
+      .  *  . /  | |  |  | |  \ .  *  .
+     *  . * /   \|/   |   \|/   \ * . *
+    . * . /  *  .+.   |   .+.  * . \ * .
+   * . . |  .  / | \  |  / | \  .  | . *
+   . * . |  * |  |  | | |  |  | *  | * .
+   * . * |  . | ( )  |*|  ( ) | .  | . *
+    `. * |  * |  |   | |   |  | *  | * '
+      `. ` . *\  |  *|*|*  |  /* . ' .'
+        `.  .  `\| .  |  . |/'  .  .'
+          `-.  . \   /|\   / .  .-'
+             `--._\  | |  /_.--'
+                  \  | |  /
+                   \ | | /
+              ______\|_|/______
+            ./                 \.</div>
+
+      <!-- Flores -->
+      <div class="jardin-flores">
+  ,--.   *    ,--.      *    ,--.   *    ,--.      *   ,--.   *    ,--.
+ (    )     (    )         (    )      (    )         (    )      (    )
+  `--'  *    `--'    *     `--'   *    `--'    *     `--'   *     `--'
+   |         |              |           |              |            |
+^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^
+~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~</div>
+    </div>
+
+    <!-- Texto del manifiesto abajo -->
     <div class="manifesto-text">
       <p data-i18n="manifiesto.p1">Todas las líneas que trazamos se están desvaneciendo lentamente,</p>
-      <p data-i18n="manifiesto.p2"> esos castillos derrumbados en un mundo inmutable, ahora todo está saliendo a la superficie.</p>
+      <p data-i18n="manifiesto.p2">esos castillos derrumbados en un mundo inmutable, ahora todo está saliendo a la superficie.</p>
     </div>
+
     <div class="exit exit-left" data-go="inicio" data-side="left">
       <span class="arrow">←</span>
       <span data-i18n="nav.inicio">INICIO</span>
@@ -1362,7 +1696,9 @@ no, no somos la culminación de nada, sino el principio de algo".</span>
       <div class="hotspot artist-card" data-id="El_SNOP"><div class="frame"><span class="id-badge">30</span><span class="name">El SNOP</span><span class="role-tag">—</span></div></div>
       <div class="hotspot artist-card" data-id="Mike_Rivera"><div class="frame"><span class="id-badge">31</span><span class="name">Mike Rivera</span><span class="role-tag">—</span></div></div>
       <div class="hotspot artist-card" data-id="ohnozelt"><div class="frame"><span class="id-badge">32</span><span class="name">ohnozelt</span><span class="role-tag">—</span></div></div>
-      <div class="hotspot artist-card" data-id="ARISTAS"><div class="frame"><span class="id-badge">33</span><span class="name">ARISTAS</span><span class="role-tag">—</span></div></div>
+      <div class="hotspot artist-card" data-id="ARISTAS"><div class="frame"><span class="id-badge">33</span><span class="name">Gamca Serigráfica</span><span class="role-tag">—</span></div></div>
+      <div class="hotspot artist-card" data-id="Sury_Castillo"><div class="frame"><span class="id-badge">34</span><span class="name">Sury Castillo</span><span class="role-tag">—</span></div></div>
+      <div class="hotspot artist-card" data-id="Pameli_Maqueda"><div class="frame"><span class="id-badge">35</span><span class="name">Pameli Maqueda</span><span class="role-tag">—</span></div></div>
     </div>
 
     <div class="exit exit-left" data-go="manifiesto" data-side="left">
@@ -1527,6 +1863,76 @@ no, no somos la culminación de nada, sino el principio de algo".</span>
           <text x="0" y="22" font-family="VT323,monospace" font-size="18" fill="currentColor" opacity="0.6">otrosdias</text>
         </svg>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- CUARTO SECRETO -->
+<div class="secreto-backdrop" id="secretoBackdrop">
+  <div class="secreto-stars"></div>
+  <button class="secreto-close" onclick="cerrarSecreto()">[ SALIR × ]</button>
+  <div class="secreto-inner">
+    <div class="secreto-title">otrosdias/∞</div>
+    <div class="secreto-subtitle">sala que no debería existir</div>
+
+    <div class="secreto-content">
+
+      <div class="secreto-item" onclick="window.open('https://www.instagram.com/otrosdias/','_blank')">
+        <div class="si-art">  .---.
+ / o_o \
+|  | |  |
+|  |_|  |
+ \_____/
+   |||</div>
+        <div class="si-label">@otrosdias</div>
+      </div>
+
+      <div class="secreto-item" id="secreto-msg-item">
+        <div class="si-art">  _____
+ |     |
+ | ??? |
+ |_____|
+  |   |
+  |___|</div>
+        <div class="si-label">mensaje cifrado</div>
+      </div>
+
+      <div class="secreto-item" onclick="secretoGlitch()">
+        <div class="si-art"> .-"""-.
+/        \
+|  X   X  |
+|    __    |
+ \  (__)  /
+  `------'</div>
+        <div class="si-label">[ GLITCH ]</div>
+      </div>
+
+      <div class="secreto-item" onclick="window.open('https://www.instagram.com/otrosdias/','_blank')">
+        <div class="si-art">+-------+
+| *   * |
+|  [·]  |
+| *   * |
++-------+
+  drop?</div>
+        <div class="si-label">próximo drop</div>
+      </div>
+
+    </div>
+
+    <!-- Cuarto ASCII al fondo -->
+    <div class="secreto-room">
+·─────────────────────────────────────────────────────────·
+|    |        |              |             |    ||         |
+|    |        |    [cuadro]  |    [clock]  |    ||         |
+|    +--------+              +─────────────+    ||         |
+|                                               ||         |
+|                                               ++         |
+|       [silla]      [mesa]      [lámpara]                 |
+|      _______    ___________    _________                 |
+|     |       |  |  | | | |  |  |  (*)  |                 |
+|     |  _·_  |  |  | | | |  |  |   |   |                 |
+|     | |   | |  |__|_|_|_|__|  |  _|_  |                 |
+|_____|_|___|_|_________________|_|___|_|_________________|
     </div>
   </div>
 </div>
@@ -1720,7 +2126,7 @@ const STATE = {
   transitioning: false,
 };
 
-const SCENES = ['inicio','manifiesto','artistas','tienda','transmisiones'];
+const SCENES = ['inicio','jardin','artistas','tienda','transmisiones'];
 const t = k => (I18N[STATE.lang] && I18N[STATE.lang][k]) || I18N.es[k] || k;
 
 /* ============================================================
@@ -1890,8 +2296,16 @@ function updateTabs(){
 document.querySelectorAll('.scene-tabs button').forEach(b => {
   b.addEventListener('click', () => goTo(b.dataset.jump));
 });
-document.querySelectorAll('.exit').forEach(ex => {
-  ex.addEventListener('click', () => { goTo(ex.dataset.go); });
+
+// EXIT CLICKS — event delegation en #world para que funcionen siempre,
+// incluso cuando la escena tiene scroll o elementos encima
+document.getElementById('world').addEventListener('click', function(e){
+  const exit = e.target.closest('.exit');
+  if(exit){ e.stopPropagation(); goTo(exit.dataset.go); return; }
+  const hspot = e.target.closest('.hotspot.artist-card');
+  if(hspot){ openPanel(hspot.dataset.id); return; }
+  const monitor = e.target.closest('.hotspot.monitor');
+  if(monitor){ openPanel(monitor.dataset.id); return; }
 });
 
 /* ============================================================
@@ -1951,117 +2365,135 @@ function interact(){
 const ARTIST_DATA = {
   essppora: {
     name: 'essppora', role: 'Fotografía · Tatuajes', tag: 'A1',
+    link: 'https://www.instagram.com/essppora/',
     bio: 'Nací y crecí en el estado Puebla, actualmente tengo 25 años y soy egresada de la licenciatura en Filosofía. Comencé a interesarme por la fotografía cuando tenía 17 años, pero fue hasta los 22 cuando me tomé más en serio este pasatiempo, y poco a poco fui desarrollando mi estilo propio hasta llegar a lo que actualmente soy: essppora. Algunas de mis mayores inspiraciones son: Graciela Iturbide, Tina Modotti, Juan Rulfo, Lola y Manuel Álvarez Bravo. He tenido la oportunidad de vender mis fotografías para portadas de álbumes y para coleccionar; este año pude presentar algunas en una exposición visual en el zócalo del centro de Puebla.',
     attrs: { 'Nombre real': 'Lizbeth Michel Silva Vázquez', 'Ocupación': 'Sin ocupación por el momento', 'Base': 'Puebla, Pue.', 'Ojos': 'Negros', 'Cabello': 'Cobrizo claro', 'Altura': '1.59 m', 'Peso': '60 kg', 'Inicio': 'Octubre 2022' },
     hechos: { 'Disciplina': 'Fotografía', 'Colectivo': 'otrosdias', 'Status': 'Activa', 'Colaboraciones': 'Serafín tank', 'Estilo': 'Observadora, detallista' }
   },
   secret_eyes: {
     name: 'SECRET.EYES888', role: 'Ilustración', tag: 'A2',
+    link: 'https://www.instagram.com/secret.eyes888',
     bio: 'Autora del Serafín tank top. Ilustración a línea con motivos sagrados y profanos. Trabaja en series de 30.',
     attrs: { 'Disciplina': 'Ilustración', 'Proyecto': 'Serafín tank top', 'Tiraje': '30 piezas', 'Técnica': 'Línea / serigrafía' },
     hechos: { 'Colectivo': 'otrosdias', 'Status': 'Activa', 'Motivos': 'Sagrados y profanos' }
   },
   mmicelio: {
     name: 'mmicelio', role: 'Fotografía natural', tag: 'A3',
+    link: 'https://www.instagram.com/_mmicelio/',
     bio: 'Fotógrafa de luz dura y silencios. Documenta los espacios entre las cosas. Próximamente: zine impreso.',
     attrs: { 'Disciplina': 'Fotografía', 'Estilo': 'Luz dura, silencios', 'Próximo': 'Zine impreso' },
     hechos: { 'Colectivo': 'otrosdias', 'Status': 'Activa' }
   },
   derwent: {
     name: 'Derwent', role: 'Músico', tag: 'A4',
+    link: 'https://www.instagram.com/dxrwent/',
     bio: 'Compositor y cantautor. Compositor del álbum Vivencias de una eterna vida simétrica.',
     attrs: { 'Disciplina': 'Música', 'Álbum': 'Vivencias de una eterna vida simétrica' },
     hechos: { 'Colectivo': 'otrosdias', 'Status': 'Activo', 'Género': 'Cantautor' }
   },
   Aldo_Lopez_Malo: {
     name: 'Aldo Lopez Malo', role: 'Escritor · Ilustrador · Dev', tag: 'A5',
+    link: 'https://discord.gg/SGKqJZx2sB',
     bio: 'Soy estudiante de Arte Digital, apasionado por los conceptos de lo oscuro, surreal y grotesco. Suelo expresarlo a través de ilustraciones tanto tradicionales como digitales, a través de la escritura, o el desarrollo de videojuegos.',
     attrs: { 'Nombre real': 'Aldo López Malo', 'Ocupación': 'Estudiante de Arte Digital', 'Base': 'Puebla', 'Ojos': 'Café', 'Cabello': 'Castaño ondulado', 'Altura': '1.76 cm', 'Peso': '60 kg', 'Inicio': 'Diciembre 2019' },
     hechos: { 'Disciplina': 'Escritura · Ilustración · Videojuegos', 'Status': 'Activo', 'Estilo': 'Oscuro, surreal, grotesco', 'Atributos': 'Creativo, Ambicioso, Crítico' }
   },
   papiwabisabi: {
     name: 'papiwabisabi', role: 'Artista visual', tag: 'A6',
+    link: 'https://www.instagram.com/papiwabisabi/',
     bio: 'Me gusta trabajar con lo orgánico, lo húmedo y lo visceral. Disfruto mucho anteponer conceptos, símbolos y mensajes. Me cuesta mucho comunicar lo que siento, así que lo hago mejor a través de la creación.',
     attrs: { 'Nombre real': 'Karel', 'Ocupación': 'Artista visual', 'Base': 'Puebla', 'Ojos': 'Café', 'Cabello': 'Café rizado', 'Altura': '1.75 m', 'Peso': '65 kg', 'Inicio': 'Septiembre 2020' },
     hechos: { 'Disciplina': 'Arte visual', 'Status': 'Activo', 'Estilo': 'Orgánico, visceral, simbólico' }
   },
   piedro: {
     name: 'Piedro', role: 'Actor · Director de Teatro', tag: 'A7',
+    link: 'https://www.instagram.com/_.med.pais._/',
     bio: 'Performance y dramaturgia corta. Esto no es Dinamarca. Últimas funciones 29 de mayo 11am Puebla / 30 de mayo 5pm Hidalgo / 3 de junio 5pm Puebla.',
     attrs: { 'Ocupación': 'Actor y director', 'Proyecto': 'Spot de Artes de La Libertad', 'Base': 'Puebla' },
     hechos: { 'Disciplina': 'Teatro · Performance', 'Status': 'Activo', 'Obra': 'Esto no es Dinamarca' }
   },
   Espontáneo: {
     name: 'Espontáneo', role: 'Productor · Beatmaker', tag: 'A8',
+    link: 'https://www.instagram.com/jazzalan9/',
     bio: 'Productor musical de Puebla enfocado en diversos géneros, especialmente hip-hop y cumbia. También organizo eventos para darle difusión y presentación a la escena local y emergente.',
     attrs: { 'Nombre real': 'Alan García', 'Ocupación': 'Logística en ecommerce', 'Base': 'Puebla capital', 'Ojos': 'Café', 'Cabello': 'Negro', 'Altura': '1.75 m', 'Peso': '67 kg', 'Inicio': 'Enero 2023' },
     hechos: { 'Disciplina': 'Producción musical · Eventos', 'Status': 'Activo', 'Géneros': 'Hip-hop, cumbia', 'Proyecto': 'Mundos Perdidos' }
   },
   Jcess: {
     name: 'Jces.s', role: 'Lo-fi · Rap', tag: 'A9',
+    link: 'https://www.instagram.com/jces.s/',
     bio: 'Nací un 21 de octubre de 1999 en Puebla. Encontré mi estilo en lo que me gustaba: retas de basquetbol, skate, fiestas y mi familia. Todo mejoró en la universidad, donde conocí a gente que hacía música y me instruyeron a pulir mi estilo. Finalmente encontré que lo mío era el Lo-fi. Cuando pensé dejar la música llegó Espontáneo, y encontré los MUNDOS PERDIDOS.',
     attrs: { 'Nombre real': 'Julio César', 'Ocupación': 'Subgerente en restaurante japonés', 'Base': 'Puebla capital', 'Ojos': 'Cafés', 'Cabello': 'Negro medio quebrado', 'Altura': '1.74 m', 'Peso': '73 kg', 'Inicio': '20 noviembre 2020' },
     hechos: { 'Disciplina': 'Rap · Lo-fi', 'Status': 'Activo', 'Proyecto': 'Mundos Perdidos', 'Atributos': 'Creatividad, versátilidad, comunicativo, responsable' }
   },
   Ayra: {
     name: 'Ayra', role: 'Vocalista · Gestora cultural', tag: 'A10',
+    link: 'https://www.instagram.com/ayraisinyouheart/',
     bio: 'Nacida el 5 de junio de 1998 en Puebla. Con formación teatral por las escuelas de iniciación artística del INBAL, y estudios en gestión cultural y música. Tengo dos proyectos personales enfocados en compartir mi perspectiva y visibilizar géneros afrodescendientes y alternativos (soul, r&b), todo bajo la meta de descentralizar las artes en Puebla.',
     attrs: { 'Nombre real': 'Ana Yoselin Rodriguez Arellano', 'Ocupación': 'Cocinera', 'Base': 'Puebla, Pue.', 'Ojos': 'Café oscuro', 'Cabello': 'Cobrizo (teñido)', 'Altura': '1.49 cm', 'Peso': '54 kg', 'Inicio': 'Marzo 2019' },
     hechos: { 'Disciplina': 'Canto · Composición · Gestión cultural', 'Status': 'Activa', 'Géneros': 'Soul, R&B', 'Formación': 'INBAL + estudios independientes' }
   },
   Mata: {
     name: 'Mata', role: 'Hip-hop · Lo-fi melancólico', tag: 'A11',
+    link: 'https://www.instagram.com/mata_valevrga/',
     bio: 'Soy de San Luis Potosí, 24 años. Estudio gastronomía y hago letras para hip-hop y lo-fi melancólico.',
     attrs: { 'Nombre real': 'Daniel Flores Mata', 'Base': 'Puebla', 'Ojos': 'Negros', 'Cabello': 'Castaño oscuro', 'Altura': '1.64 m', 'Peso': '66-68 kg', 'Inicio': 'Diciembre 2024' },
     hechos: { 'Disciplina': 'Hip-hop · Lo-fi', 'Status': 'Activo', 'Atributos': 'En proceso' }
   },
   Pink1man: {
     name: 'Pink!man', role: 'DJ · Techno · Psicodélico', tag: 'A12',
+    link: 'https://www.instagram.com/pink1man_/',
     bio: 'De padres músicos, Pink!man comienza su carrera como DJ en la escena de Acapulco y Puebla. A sus 23 años ha cultivado un estilo hipnótico que explora los paisajes más oscuros del techno, fusionando minimal con lo psicodélico: psytechno, dark minimal y peaktime. Cada set es un portal hacia dimensiones paralelas. Actualmente incursiona en producción musical con un track en camino por el Sello ADN Mutan World.',
     attrs: { 'Ocupación': 'DJ y Productor', 'Base': 'Puebla', 'Ojos': 'Café oscuro', 'Cabello': 'Largo y ondulado', 'Inicio': 'Mayo 2022' },
     hechos: { 'Disciplina': 'DJ · Producción', 'Status': 'Activo', 'Géneros': 'Psytechno, dark minimal, peaktime', 'Sello': 'ADN Mutan World' }
   },
   Vertedero_Don_Emilio: {
     name: 'Vertedero Don Emilio', role: 'Ilustración · Animación', tag: 'A13',
+    link: 'https://www.instagram.com/vertedero.don.emilio/',
     bio: 'ALGÚN TEXTO QUE DIGA, QUE ESTE PRODUCTO ES UNA MAMADA, QUE NO SE DEBERÍA FUMAR, UNA MIERDA ASÍ. QUE NO SOY AFILIADO NI AL PAN, NI AL PRI, NI AL PRD. TAMPOCO ME VAN A TRAER DE SU PENDEJO, YO SOY LA MERA RIATA, PENDEJO, IDIOTA, ESTUPIDO EL QUE LO LEA. SI VAN A FUMAR INVITEN, SI NO TAMBIÉN, SI ME VAN A DEJAR AQUÍ COMO PENDEJO HACIENDO NADA MEJOR NI HUBIERAN DICHO NADA. TONTOS.',
     attrs: { 'Disciplina': 'Ilustración · Animación', 'Estilo': 'Cabrón' },
     hechos: { 'Status': 'Activo', 'Colectivo': 'otrosdias' }
   },
   otrosdias: {
     name: 'otrosdias', role: 'Artista', tag: 'A14',
+    link: 'https://www.instagram.com/otrosdias/',
     bio: 'Escritor, ilustrador, animador, músico, productor y futuro.',
     attrs: { 'Nombre real': 'Randy García Mejía', 'Rol': 'Fundador', 'Base': 'Puebla, México', 'Año': '2020-2026' },
     hechos: { 'Disciplina': 'Multidisciplinar', 'Status': 'Activo', 'Proyecto': 'otrosdias colectivo' }
   },
   Flwrs: {
     name: 'Flwrs', role: 'Productor musical', tag: 'A15',
+    link: 'https://www.instagram.com/floresdeantier/',
     bio: 'Artista humano que sabe escuchar.',
     attrs: { 'Disciplina': 'Producción musical' },
     hechos: { 'Status': 'Activo', 'Atributo': 'Escucha activa' }
   },
   José_Alberto_Morales: {
     name: 'José Alberto Morales', role: 'Cantautor', tag: 'A16',
+    link: 'https://www.instagram.com/jose.alberto.morales/',
     bio: '-Cantautor, canalla y embustero-',
     attrs: { 'Disciplina': 'Cantautor', 'Descripción': 'Canalla y embustero' },
     hechos: { 'Status': 'Activo', 'Colectivo': 'otrosdias' }
   },
-  Jafeth: { name: 'Jafeth', role: '—', tag: 'A17', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
-  Fobos: { name: 'Fobos', role: '—', tag: 'A18', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
-  GROW: { name: 'GROW', role: '—', tag: 'A19', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
-  Vecco_Gallo: { name: 'Vecco Gallo', role: '—', tag: 'A20', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
-  naonomis: { name: 'naonomis', role: '—', tag: 'A21', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
-  Jurassic_Snack: { name: 'Jurassic Snack', role: '—', tag: 'A22', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
-  michelleerreve: { name: 'michelleerreve', role: '—', tag: 'A23', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
-  Marlon_Steve: { name: 'Marlon Steve', role: '—', tag: 'A24', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
-  Chaco_Mete_La_Pata: { name: 'Chaco Mete La Pata', role: '—', tag: 'A25', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
-  'Moisés_Yael': { name: 'Moisés Yael', role: '—', tag: 'A26', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
-  Elliot_Kendryek: { name: 'Elliot Kendryek', role: '—', tag: 'A27', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
-  Lennin_Flores: { name: 'Lennin Flores', role: '—', tag: 'A28', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
-  Oscar_Palacios: { name: 'Oscar Palacios', role: '—', tag: 'A29', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
-  El_SNOP: { name: 'El SNOP', role: '—', tag: 'A30', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
-  Mike_Rivera: { name: 'Mike Rivera', role: '—', tag: 'A31', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
-  ohnozelt: { name: 'ohnozelt', role: '—', tag: 'A32', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
-  ARISTAS: { name: 'ARISTAS', role: '—', tag: 'A33', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } }
+  Jafeth: { name: 'Jafeth', role: '—', tag: 'A17', link: 'https://www.instagram.com/jafethfr/', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  Fobos: { name: 'Fobos', role: '—', tag: 'A18', link: 'https://www.instagram.com/fobos_sxd/', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  GROW: { name: 'GROW', role: '—', tag: 'A19', link: 'https://www.instagram.com/grow_ve/', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  Vecco_Gallo: { name: 'Vecco Gallo', role: '—', tag: 'A20', link: 'https://www.instagram.com/veccogallo/', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  naonomis: { name: 'naonomis', role: '—', tag: 'A21', link: 'https://www.instagram.com/naonomis/', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  Jurassic_Snack: { name: 'Jurassic Snack', role: '—', tag: 'A22', link: 'https://www.instagram.com/snackjurassic/', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  michelleerreve: { name: 'michelleerreve', role: '—', tag: 'A23', link: 'https://www.instagram.com/michelleerreve/', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  Marlon_Steve: { name: 'Marlon Steve', role: '—', tag: 'A24', link: 'https://www.instagram.com/__mojopin/', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  Chaco_Mete_La_Pata: { name: 'Chaco Mete La Pata', role: '—', tag: 'A25', link: 'https://www.instagram.com/chaco.metelapata/', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  'Moisés_Yael': { name: 'Moisés Yael', role: '—', tag: 'A26', link: 'https://www.instagram.com/moisesyaelm/', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  Elliot_Kendryek: { name: 'Elliot Kendryek', role: '—', tag: 'A27', link: 'https://www.instagram.com/kendry.ek/', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  Lennin_Flores: { name: 'Lennin Flores', role: '—', tag: 'A28', link: 'https://www.instagram.com/lennyn_mj/', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  Oscar_Palacios: { name: 'Oscar Palacios', role: '—', tag: 'A29', link: 'https://www.instagram.com/oscar_ph__/', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  El_SNOP: { name: 'El SNOP', role: '—', tag: 'A30', link: 'https://www.instagram.com/ariosto_morales/', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  Mike_Rivera: { name: 'Mike Rivera', role: '—', tag: 'A31', link: 'https://www.instagram.com/mike_rivera_/', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  ohnozelt: { name: 'ohnozelt', role: '—', tag: 'A32', link: 'https://www.instagram.com/ohnozelt/', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  ARISTAS: { name: 'Gamca Serigráfica', role: '—', tag: 'A33', link: 'https://www.instagram.com/otrosdias/', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  Sury_Castillo: { name: 'Sury Castillo', role: '—', tag: 'A34', link: 'https://www.instagram.com/suryccastillo/', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } },
+  Pameli_Maqueda: { name: 'Pameli Maqueda', role: '—', tag: 'A35', link: 'https://www.instagram.com/gatito_miauwu/', bio: 'Miembro del colectivo otrosdias.', attrs: { 'Colectivo': 'otrosdias' }, hechos: { 'Status': 'Activo' } }
 };
 
 /* ============================================================
@@ -2101,6 +2533,8 @@ const PANEL_DATA = {
   Mike_Rivera:          { kind:'artist', id:'Mike_Rivera' },
   ohnozelt:             { kind:'artist', id:'ohnozelt' },
   ARISTAS:              { kind:'artist', id:'ARISTAS' },
+  Sury_Castillo:        { kind:'artist', id:'Sury_Castillo' },
+  Pameli_Maqueda:       { kind:'artist', id:'Pameli_Maqueda' },
   // Products
   serafin:    { kind:'product', name:'product.serafin.name', author:'product.serafin.author', desc:'product.serafin.desc', price:'$150 MXN', tag:'DROP_001 · P_01' },
   transmision:{ kind:'product', name:'product.transmision.name', author:'product.transmision.author', desc:'product.transmision.desc', price:'$320 MXN', tag:'DROP_001 · P_02' },
@@ -2179,7 +2613,7 @@ function openPanel(id){
     cta.textContent = t('ui.contact');
     cta.disabled = false;
     cta.style.opacity = '1';
-    cta.onclick = () => window.open('https://instagram.com/otrosdias','_blank');
+    cta.onclick = () => window.open(artist.link || 'https://www.instagram.com/otrosdias/', '_blank');
 
     // Fill hechos tab
     const attrGrid = document.getElementById('panelAttrGrid');
@@ -2316,15 +2750,6 @@ document.querySelectorAll('.dpad button').forEach(b => {
   });
   b.addEventListener('mouseup',    () => { if(repeatId){ clearInterval(repeatId); repeatId = null; } });
   b.addEventListener('mouseleave', () => { if(repeatId){ clearInterval(repeatId); repeatId = null; } });
-});
-
-// Click on hotspot (solo artistas; la tienda ahora usa su propio sistema)
-// Exits también se re-registran aquí de forma segura con event delegation
-document.getElementById('world').addEventListener('click', e => {
-  const exit = e.target.closest('.exit');
-  if(exit){ e.stopPropagation(); goTo(exit.dataset.go); return; }
-  const hspot = e.target.closest('.hotspot.artist-card');
-  if(hspot){ openPanel(hspot.dataset.id); return; }
 });
 
 /* ============================================================
@@ -2514,19 +2939,115 @@ function closeProductModal(){
 }
 
 /* ============================================================
-   RANDOM TRANSMISSIONS
+   CUARTO SECRETO
+============================================================ */
+const secretoBackdrop = document.getElementById('secretoBackdrop');
+let secretoAbierto = false;
+
+// Mensajes cifrados que rotan en el ítem misterioso
+const MENSAJES_CIFRADOS = [
+  'n0 tod0 10 que ves existe',
+  '_ _ _ _ _ _ _\notrosdias/∞',
+  'hay más salas\nque no están en el mapa',
+  'el drop que no anunciamos\nyá ocurrió',
+  'b u s c a\nel disco rojo',
+  '3752\nes una fecha',
+  'alguien dejó algo\nen transmisiones',
+  'el jardín no es decoración',
+];
+let msgIdx = 0;
+
+function abrirSecreto(){
+  secretoAbierto = true;
+  secretoBackdrop.classList.add('open');
+  document.getElementById('secreto-msg-item').querySelector('.si-art').textContent =
+    MENSAJES_CIFRADOS[msgIdx % MENSAJES_CIFRADOS.length];
+  msgIdx++;
+  document.getElementById('secreto-msg-item').addEventListener('click', rotateMsg);
+}
+
+function rotateMsg(){
+  const el = document.getElementById('secreto-msg-item').querySelector('.si-art');
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.textContent = MENSAJES_CIFRADOS[msgIdx % MENSAJES_CIFRADOS.length];
+    msgIdx++;
+    el.style.opacity = '1';
+  }, 300);
+  el.style.transition = 'opacity 0.3s';
+}
+
+function cerrarSecreto(){
+  secretoBackdrop.classList.remove('open');
+  secretoAbierto = false;
+}
+window.cerrarSecreto = cerrarSecreto;
+
+function secretoGlitch(){
+  const title = document.querySelector('.secreto-title');
+  title.style.animation = 'none';
+  const chars = '█▓▒░▄▀■□▪▫◆◇○●'.split('');
+  const original = 'otrosdias/∞';
+  let i = 0;
+  const id = setInterval(() => {
+    title.textContent = original.split('').map(c =>
+      Math.random() > 0.5 ? chars[Math.floor(Math.random()*chars.length)] : c
+    ).join('');
+    if(++i > 12){ clearInterval(id); title.textContent = original; title.style.animation = ''; }
+  }, 60);
+}
+window.secretoGlitch = secretoGlitch;
+
+// Cerrar con ESC
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && secretoAbierto) cerrarSecreto();
+});
+
+/* ============================================================
+   RANDOM TRANSMISSIONS — con posibilidad de cuarto secreto
+   Probabilidad del trigger secreto: ~4% (muy rara)
 ============================================================ */
 const transPop = document.getElementById('transPop');
 const transMsg = document.getElementById('transMsg');
-function showTrans(msg){
-  transMsg.innerHTML = msg || t('random.0' + (Math.floor(Math.random()*8)+1));
-  transPop.classList.add('show');
-  setTimeout(() => transPop.classList.remove('show'), 4500);
+
+const MENSAJES_NORMALES = [
+  () => t('random.0' + (Math.floor(Math.random()*8)+1)),
+];
+
+// Mensaje secreto especial (aparece con p=0.04)
+const MSG_SECRETO = '◉ señal no identificada detectada';
+
+function showTrans(forceSecreto = false){
+  const esSecreto = forceSecreto || Math.random() < 0.04;
+
+  if(esSecreto){
+    transMsg.textContent = MSG_SECRETO;
+    transPop.classList.add('show', 'secreto-trigger');
+    // si hacen clic en el popup → abrir cuarto secreto
+    const handler = () => {
+      transPop.removeEventListener('click', handler);
+      transPop.classList.remove('show', 'secreto-trigger');
+      abrirSecreto();
+    };
+    transPop.addEventListener('click', handler);
+    // auto-hide después de 8s si no hacen clic
+    setTimeout(() => {
+      transPop.classList.remove('show', 'secreto-trigger');
+      transPop.removeEventListener('click', handler);
+    }, 8000);
+  } else {
+    transMsg.innerHTML = t('random.0' + (Math.floor(Math.random()*8)+1));
+    transPop.classList.add('show');
+    transPop.classList.remove('secreto-trigger');
+    setTimeout(() => transPop.classList.remove('show'), 4500);
+  }
 }
+
+// Primer popup a los 20s, luego cada 35–75s
 setTimeout(function loop(){
   showTrans();
-  setTimeout(loop, 30000 + Math.random()*40000);
-}, 18000);
+  setTimeout(loop, 35000 + Math.random()*40000);
+}, 20000);
 
 /* ============================================================
    INIT
@@ -2539,5 +3060,7 @@ loadTiendaFromSheet();
 </script>
 </body>
 </html>
+
+
 
 
