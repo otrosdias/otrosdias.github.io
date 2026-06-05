@@ -619,8 +619,180 @@ body.inverted .crt-overlay{ mix-blend-mode: screen; opacity: 0.3; }
   transition: all 0.15s;
 }
 .secreto-close:hover{ color: var(--magenta); border-color: var(--magenta); background: transparent; }
-/* popup de novedad que lleva al cuarto secreto */
-.trans-pop.secreto-trigger{
+/* Lámpara clickeable en cuarto secreto */
+.secreto-lampara{
+  position: absolute;
+  right: 6%; bottom: 22%;
+  font-family: var(--font-mono);
+  white-space: pre;
+  line-height: 1.3;
+  font-size: clamp(8px, 0.9vw, 11px);
+  cursor: pointer;
+  transition: color 0.3s, text-shadow 0.3s;
+  z-index: 3;
+  user-select: none;
+}
+.secreto-lampara.on{
+  color: var(--amber);
+  text-shadow: 0 0 12px rgba(240,184,27,0.6), 0 0 24px rgba(240,184,27,0.3);
+}
+.secreto-lampara.off{
+  color: var(--fg-muted);
+  text-shadow: none;
+}
+.secreto-lampara-hint{
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: var(--fg-muted);
+  text-align: center;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+}
+/* cuando la lámpara está apagada, el cuarto se oscurece levemente */
+.secreto-backdrop.luz-apagada .secreto-stars{ opacity: 0.3; }
+.secreto-backdrop.luz-apagada .secreto-title{ opacity: 0.5; }
+.secreto-backdrop.luz-apagada .secreto-content{ opacity: 0.4; }
+.secreto-backdrop.luz-apagada .secreto-room{ opacity: 0.2; }
+.secreto-backdrop.luz-apagada{ background: #000; }
+
+/* ============================================
+   HABITACIÓN DE TIMOTEO — Ping Pong
+============================================ */
+.timoteo-backdrop{
+  position: fixed; inset: 0;
+  background: #050510;
+  z-index: 900;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.6s, visibility 0.6s;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.timoteo-backdrop.open{ opacity: 1; visibility: visible; }
+
+.timoteo-header{
+  position: absolute;
+  top: 16px; left: 0; right: 0;
+  text-align: center;
+}
+.timoteo-title{
+  font-family: var(--font-crt);
+  font-size: clamp(22px, 3.5vw, 42px);
+  color: var(--amber);
+  letter-spacing: 0.06em;
+}
+.timoteo-sub{
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.timoteo-close{
+  position: absolute;
+  top: 14px; right: 18px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--fg-muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 5px 12px;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.15s;
+}
+.timoteo-close:hover{ color: var(--magenta); border-color: var(--magenta); background: transparent; }
+
+/* Marcador */
+.pong-score{
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  margin-bottom: 16px;
+  z-index: 2;
+}
+.pong-score-block{
+  text-align: center;
+}
+.pong-score-block .ps-name{
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.pong-score-block .ps-num{
+  font-family: var(--font-crt);
+  font-size: clamp(32px, 5vw, 54px);
+  color: var(--fg);
+  line-height: 1;
+}
+.pong-score-block.winner .ps-num{ color: var(--amber); }
+.pong-score .ps-divider{
+  font-family: var(--font-crt);
+  font-size: 28px;
+  color: var(--fg-muted);
+}
+/* total de victorias */
+.pong-wins{
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--fg-muted);
+  margin-bottom: 12px;
+  text-align: center;
+}
+.pong-wins b{ color: var(--amber); }
+
+/* Canvas del juego */
+#pongCanvas{
+  border: 1px solid var(--line);
+  background: #000;
+  display: block;
+  image-rendering: pixelated;
+  max-width: 90vw;
+}
+
+/* Timoteo ASCII a la derecha del canvas */
+.timoteo-char{
+  position: absolute;
+  right: 4%; top: 50%; transform: translateY(-50%);
+  font-family: var(--font-mono);
+  white-space: pre;
+  line-height: 1.3;
+  font-size: clamp(8px, 1vw, 12px);
+  color: var(--magenta);
+  text-shadow: 0 0 8px rgba(255,45,111,0.4);
+  pointer-events: none;
+  animation: timoteo-idle 2s steps(2) infinite;
+}
+@keyframes timoteo-idle{
+  0%,100%{ transform: translateY(-50%) scaleX(1); }
+  50%{ transform: translateY(calc(-50% - 3px)) scaleX(-1); }
+}
+.pong-msg{
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--fg-dim);
+  margin-top: 12px;
+  min-height: 16px;
+  text-align: center;
+}
+.pong-controls{
+  font-size: 9px;
+  color: var(--fg-muted);
+  letter-spacing: 0.12em;
+  margin-top: 8px;
+  text-align: center;
+}
+.pong-controls .key{
+  border: 1px solid var(--fg-muted);
+  padding: 1px 5px;
+  margin: 0 2px;
+}
+@media(max-width:600px){
+  .timoteo-char{ display: none; }
+  .pong-score{ gap: 20px; }
+}
   border-color: var(--amber) !important;
   box-shadow: 0 0 20px rgba(240,184,27,0.2);
   cursor: pointer;
@@ -733,7 +905,7 @@ body.inverted .crt-overlay{ mix-blend-mode: screen; opacity: 0.3; }
 }
 
 /* ============================================
-   SCENE: TIENDA — galería dinámica desde Sheets
+   SCENE: TIENDA — galería dinámica, amplia y con scroll
 ============================================ */
 .scene-tienda{
   overflow-y: auto;
@@ -744,25 +916,26 @@ body.inverted .crt-overlay{ mix-blend-mode: screen; opacity: 0.3; }
 .scene-tienda::-webkit-scrollbar-thumb{ background: var(--fg-muted); }
 
 .scene-tienda .scene-title{
-  font-size: clamp(32px, 6vw, 80px);
-  top: 3%;
+  font-size: clamp(28px, 5vw, 70px);
+  top: 2%;
+  z-index: 2;
 }
 
-/* Grid de thumbnails de productos */
+/* Grid amplio — 5 columnas, scroll natural */
 .tienda-grid{
   position: absolute;
-  top: 20%;
+  top: 15%;
   left: 0; right: 0;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: flex-start;
-  gap: 28px 32px;
-  padding: 16px 100px 100px 100px;
+  gap: 18px 20px;
+  padding: 0 70px 120px 70px;
   z-index: 5;
 }
 
-/* Tarjeta de producto en grid */
+/* Tarjeta de producto */
 .product-card{
   position: static !important;
   transform: none !important;
@@ -772,11 +945,11 @@ body.inverted .crt-overlay{ mix-blend-mode: screen; opacity: 0.3; }
   align-items: center;
   cursor: pointer;
   pointer-events: auto;
-  width: 150px;
+  width: 138px;
 }
 .product-card .thumb{
-  width: 150px;
-  height: 190px;
+  width: 138px;
+  height: 174px;
   border: 1px solid var(--fg-muted);
   background: var(--bg-2);
   overflow: hidden;
@@ -787,8 +960,9 @@ body.inverted .crt-overlay{ mix-blend-mode: screen; opacity: 0.3; }
   width: 100%; height: 100%;
   object-fit: cover;
   display: block;
-  transition: opacity 0.3s;
+  transition: transform 0.35s ease;
 }
+.product-card:hover .thumb img{ transform: scale(1.04); }
 .product-card .thumb .thumb-placeholder{
   width: 100%; height: 100%;
   display: flex; align-items: center; justify-content: center;
@@ -796,58 +970,56 @@ body.inverted .crt-overlay{ mix-blend-mode: screen; opacity: 0.3; }
 .product-card:hover .thumb,
 .product-card.active .thumb{
   border-color: var(--amber);
-  box-shadow: 0 0 24px -4px var(--amber);
+  box-shadow: 0 0 20px -4px var(--amber);
 }
 .product-card .sold-badge{
   position: absolute;
   top: 8px; left: 0;
   background: var(--magenta);
   color: #fff;
-  font-size: 8px;
-  letter-spacing: 0.15em;
-  padding: 3px 8px;
+  font-size: 7px;
+  letter-spacing: 0.12em;
+  padding: 3px 7px;
   text-transform: uppercase;
 }
 .product-card .price-chip{
   position: absolute;
-  bottom: 8px; right: 8px;
+  bottom: 6px; right: 6px;
   background: var(--bg);
   border: 1px solid var(--fg);
   color: var(--fg);
-  font-size: 10px;
-  padding: 3px 7px;
-  letter-spacing: 0.04em;
+  font-size: 9px;
+  padding: 2px 5px;
+  letter-spacing: 0.03em;
 }
-.product-card.sold .price-chip{
-  color: var(--magenta);
-  border-color: var(--magenta);
-}
+.product-card.sold .price-chip{ color: var(--magenta); border-color: var(--magenta); }
 .product-card .card-name{
   font-family: var(--font-crt);
-  font-size: 14px;
+  font-size: 13px;
   color: var(--fg-dim);
   text-align: center;
-  margin-top: 8px;
+  margin-top: 5px;
   line-height: 1.2;
-  letter-spacing: 0.05em;
-  max-width: 150px;
+  letter-spacing: 0.04em;
+  max-width: 138px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .product-card:hover .card-name{ color: var(--fg); }
 
-/* Loading state */
+/* Loading */
 .tienda-loading{
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
+  width: 100%;
   text-align: center;
+  padding: 60px 0;
   color: var(--fg-dim);
   font-size: 12px;
   letter-spacing: 0.15em;
 }
 .tienda-loading::before{
   content: '◉';
-  display: block;
-  font-size: 24px;
+  display: block; font-size: 24px;
   color: var(--magenta);
   margin-bottom: 12px;
   animation: pulse 1s ease-in-out infinite;
@@ -1057,14 +1229,47 @@ body.inverted .product-modal-backdrop{ background: rgba(200,195,185,0.9); }
 /* ============================================
    SCENE: TRANSMISIONES — monitors
 ============================================ */
+/* Wrapper para scroll en transmisiones */
+.scene-transmisiones{
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.scene-transmisiones::-webkit-scrollbar{ width: 4px; }
+.scene-transmisiones::-webkit-scrollbar-track{ background: transparent; }
+.scene-transmisiones::-webkit-scrollbar-thumb{ background: var(--fg-muted); }
+
+/* Grid responsive de monitores */
+.trans-grid{
+  position: absolute;
+  top: 22%;
+  left: 0; right: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px 24px;
+  padding: 0 80px 80px 80px;
+  z-index: 5;
+}
+
+.monitor{
+  position: static !important;
+  transform: none !important;
+  flex: 0 0 auto;
+  cursor: pointer;
+  pointer-events: auto;
+}
 .monitor .frame{
-  width: 140px; height: 100px;
-  padding: 8px 10px;
+  width: 180px; height: 110px;
+  padding: 10px 12px;
   background: var(--bg-2);
+  border: 1px solid var(--line);
   display: flex; flex-direction: column;
   justify-content: space-between;
   text-align: left;
+  transition: border-color 0.2s;
+  position: relative;
 }
+.monitor:hover .frame{ border-color: var(--fg-muted); }
 .monitor .time{
   font-size: 9px;
   color: var(--fg-muted);
@@ -1073,18 +1278,23 @@ body.inverted .product-modal-backdrop{ background: rgba(200,195,185,0.9); }
 .monitor .msg{
   font-size: 11px;
   color: var(--fg-dim);
-  line-height: 1.3;
+  line-height: 1.35;
   font-family: var(--font-mono);
 }
 .monitor .msg em{ color: var(--amber); font-style: normal; }
-.monitor::after{
+.monitor .frame::after{
   content: '';
   position: absolute;
-  top: 4px; right: 6px;
+  top: 6px; right: 8px;
   width: 5px; height: 5px;
   border-radius: 50%;
   background: var(--magenta);
   animation: pulse 1.2s ease-in-out infinite;
+}
+@media(max-width:600px){
+  .trans-grid{ padding: 0 12px 80px 12px; gap: 12px 10px; top: 20%; }
+  .monitor .frame{ width: 140px; height: 95px; padding: 7px 9px; }
+  .monitor .msg{ font-size: 10px; }
 }
 
 /* ============================================
@@ -1367,8 +1577,154 @@ body.inverted .panel-backdrop{ background: rgba(232,227,211,0.85); }
 .trans-pop .head::before{ content: '◉ '; animation: pulse 0.8s ease-in-out infinite; }
 
 /* ============================================
-   RESPONSIVE
+   BOLETO DE DESCUENTO — Timoteo winner
 ============================================ */
+.ticket-backdrop{
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.9);
+  z-index: 950;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.4s, visibility 0.4s;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.ticket-backdrop.open{ opacity: 1; visibility: visible; }
+
+.ticket{
+  background: var(--bg);
+  border: 2px solid var(--amber);
+  max-width: 420px; width: 100%;
+  position: relative;
+  font-family: var(--font-mono);
+  overflow: hidden;
+  box-shadow: 0 0 40px -4px rgba(240,184,27,0.35);
+}
+/* borde perforado izquierdo */
+.ticket::before{
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0; width: 18px;
+  background:
+    radial-gradient(circle at 0% 5%, var(--bg) 6px, transparent 7px),
+    radial-gradient(circle at 0% 12%, var(--bg) 6px, transparent 7px),
+    radial-gradient(circle at 0% 19%, var(--bg) 6px, transparent 7px),
+    radial-gradient(circle at 0% 26%, var(--bg) 6px, transparent 7px),
+    radial-gradient(circle at 0% 33%, var(--bg) 6px, transparent 7px),
+    radial-gradient(circle at 0% 40%, var(--bg) 6px, transparent 7px),
+    radial-gradient(circle at 0% 47%, var(--bg) 6px, transparent 7px),
+    radial-gradient(circle at 0% 54%, var(--bg) 6px, transparent 7px),
+    radial-gradient(circle at 0% 61%, var(--bg) 6px, transparent 7px),
+    radial-gradient(circle at 0% 68%, var(--bg) 6px, transparent 7px),
+    radial-gradient(circle at 0% 75%, var(--bg) 6px, transparent 7px),
+    radial-gradient(circle at 0% 82%, var(--bg) 6px, transparent 7px),
+    radial-gradient(circle at 0% 89%, var(--bg) 6px, transparent 7px),
+    radial-gradient(circle at 0% 96%, var(--bg) 6px, transparent 7px);
+  border-right: 1px dashed var(--amber);
+  background-color: var(--amber);
+}
+.ticket-inner{
+  padding: 24px 24px 20px 34px;
+}
+.ticket-brand{
+  font-family: var(--font-crt);
+  font-size: 32px;
+  color: var(--fg);
+  letter-spacing: 0.04em;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+.ticket-brand span{ color: var(--amber); }
+.ticket-tagline{
+  font-size: 9px; letter-spacing: 0.2em;
+  color: var(--fg-muted); text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.ticket-divider{
+  border: none; border-top: 1px dashed var(--line); margin: 12px 0;
+}
+.ticket-discount{
+  display: flex; align-items: baseline; gap: 10px;
+  margin-bottom: 6px;
+}
+.ticket-pct{
+  font-family: var(--font-crt);
+  font-size: 72px; line-height: 1;
+  color: var(--amber);
+  text-shadow: 0 0 20px rgba(240,184,27,0.4);
+}
+.ticket-label{
+  font-size: 13px; color: var(--fg-dim);
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+}
+.ticket-label b{ color: var(--fg); }
+.ticket-code-row{
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(240,184,27,0.06);
+  border: 1px solid var(--line);
+  padding: 8px 12px;
+  margin: 14px 0 10px;
+}
+.ticket-code{
+  font-family: var(--font-crt);
+  font-size: 22px;
+  color: var(--amber);
+  letter-spacing: 0.12em;
+  flex: 1;
+}
+.ticket-copy-btn{
+  font-size: 9px; padding: 4px 10px;
+  letter-spacing: 0.12em;
+  background: transparent;
+  border: 1px solid var(--fg-muted);
+  color: var(--fg-muted);
+  cursor: pointer;
+}
+.ticket-copy-btn:hover{ color: var(--amber); border-color: var(--amber); background: transparent; }
+.ticket-meta{
+  font-size: 9px; color: var(--fg-muted);
+  letter-spacing: 0.1em; line-height: 1.7;
+}
+.ticket-meta b{ color: var(--fg); }
+/* Marca de agua anti-screenshot */
+.ticket-watermark{
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%) rotate(-30deg);
+  font-family: var(--font-crt);
+  font-size: clamp(11px, 2vw, 16px);
+  color: rgba(240,184,27,0.06);
+  letter-spacing: 0.3em;
+  white-space: nowrap;
+  pointer-events: none;
+  text-transform: uppercase;
+  z-index: 1;
+}
+/* Número de serie visible abajo */
+.ticket-serial{
+  font-size: 9px; color: var(--fg-muted);
+  letter-spacing: 0.1em;
+  border-top: 1px dashed var(--line);
+  padding-top: 8px; margin-top: 10px;
+  display: flex; justify-content: space-between;
+}
+.ticket-serial b{ color: var(--amber); }
+.ticket-close{
+  position: absolute; top: 10px; right: 12px;
+  background: transparent; border: none;
+  color: var(--fg-muted); font-size: 18px; cursor: pointer;
+  z-index: 5;
+}
+.ticket-close:hover{ color: var(--magenta); background: transparent; }
+/* screenshot hint */
+.ticket-hint{
+  text-align: center;
+  font-size: 9px; letter-spacing: 0.12em;
+  color: var(--fg-muted); padding: 8px;
+  border-top: 1px solid var(--line);
+  background: var(--bg-2);
+}
+.ticket-hint b{ color: var(--amber); }
 @media (max-width: 900px){
   .scene-tabs{
     top: 52px;
@@ -1391,9 +1747,9 @@ body.inverted .panel-backdrop{ background: rgba(232,227,211,0.85); }
   .artistas-grid{ padding: 0 30px 80px 30px; gap: 8px 10px; }
   .artist-card .frame{ width: 140px; }
 
-  .tienda-grid{ padding: 16px 40px 100px 40px; gap: 20px 24px; }
-  .product-card{ width: 130px; }
-  .product-card .thumb{ width: 130px; height: 166px; }
+  .tienda-grid{ padding: 0 30px 100px 30px; gap: 14px 16px; top: 16%; }
+  .product-card{ width: 120px; }
+  .product-card .thumb{ width: 120px; height: 152px; }
 }
 
 @media (max-width: 600px){
@@ -1435,13 +1791,13 @@ body.inverted .panel-backdrop{ background: rgba(232,227,211,0.85); }
 
   /* Tienda en mobile */
   .tienda-grid{
-    padding: 10px 14px 80px 14px;
-    gap: 14px 12px;
-    top: 24%;
+    padding: 0 8px 80px 8px;
+    gap: 10px 8px;
+    top: 20%;
   }
-  .product-card{ width: 110px; }
-  .product-card .thumb{ width: 110px; height: 140px; }
-  .product-card .card-name{ font-size: 12px; max-width: 110px; }
+  .product-card{ width: 105px; }
+  .product-card .thumb{ width: 105px; height: 134px; }
+  .product-card .card-name{ font-size: 11px; max-width: 105px; }
 
   /* Panel full screen en mobile */
   .panel{
@@ -1562,17 +1918,19 @@ body.inverted .panel-backdrop{ background: rgba(232,227,211,0.85); }
        |    |
       /|    |\</div>
 
-    <!-- Lámpara de pie -->
-    <div class="ascii-obj lampara">    _____
-   / , , \
-  |       |
-   \_____/
-      |
-      |
-    __|__
-   /     \
-  |  [·]  |
-   \_____/</div>
+    <!-- Lámpara de pie (la del cuarto secreto) -->
+    <div class="ascii-obj lampara" id="lamparaInicio">  (*)
+   / | \
+  /  |  \
+ /   |   \
++----+----+
+     |
+     |
+   __|__
+  /     \
+ |  [·]  |
+  \_____/
+     |||</div>
 
     <!-- Sofá -->
     <div class="ascii-obj sofa">  ___________________________
@@ -1701,8 +2059,8 @@ no, no somos la culminación de nada, sino el principio de algo".</span>
       <div class="hotspot artist-card" data-id="Pameli_Maqueda"><div class="frame"><span class="id-badge">35</span><span class="name">Pameli Maqueda</span><span class="role-tag">—</span></div></div>
     </div>
 
-    <div class="exit exit-left" data-go="manifiesto" data-side="left">
-      <span class="arrow">←</span><span data-i18n="nav.manifiesto">MANIFIESTO</span>
+    <div class="exit exit-left" data-go="jardin" data-side="left">
+      <span class="arrow">←</span><span>JARDÍN</span>
     </div>
     <div class="exit exit-right" data-go="tienda" data-side="right">
       <span data-i18n="nav.tienda">TIENDA</span><span class="arrow">→</span>
@@ -1731,40 +2089,42 @@ no, no somos la culminación de nada, sino el principio de algo".</span>
     <div class="scene-tag" data-i18n="transmisiones.tag">BITÁCORA_PÚBLICA</div>
     <h2 class="scene-title" data-i18n="nav.transmisiones">TRANSMISIONES</h2>
 
-    <div class="hotspot monitor" style="left:22%; top:48%;" data-id="trans_01">
-      <div class="frame">
-        <span class="time">31-05-2026</span>
-        <span class="msg" data-i18n="trans.01"><em>Infinidad</em> terminó su tour en exposiciones, 4 sitios en un mes.</span>
+    <div class="trans-grid">
+      <div class="hotspot monitor" data-id="trans_01">
+        <div class="frame">
+          <span class="time">31-05-2026</span>
+          <span class="msg"><em>INFINIDAD</em> — Tour de exposiciones terminado. 4 sitios.</span>
+        </div>
       </div>
-    </div>
-    <div class="hotspot monitor" style="left:40%; top:48%;" data-id="trans_02">
-      <div class="frame">
-        <span class="time">15-05-2026</span>
-        <span class="msg" data-i18n="trans.02">Nuevo álbum: <em>Me perdí en el metro</em>. Disponible en todas las plataformas.</span>
+      <div class="hotspot monitor" data-id="trans_02">
+        <div class="frame">
+          <span class="time">15-05-2026</span>
+          <span class="msg">Nuevo álbum: <em>ME PERDÍ EN EL METRO</em>.</span>
+        </div>
       </div>
-    </div>
-    <div class="hotspot monitor" style="left:58%; top:48%;" data-id="trans_03">
-      <div class="frame">
-        <span class="time">14·05·2026</span>
-        <span class="msg" data-i18n="trans.03">Pop-up nocturno en <em>la libertad</em>. Solo invitación.</span>
+      <div class="hotspot monitor" data-id="trans_03">
+        <div class="frame">
+          <span class="time">14-05-2026</span>
+          <span class="msg"><em>ESTO NO ES DINAMARCA</em> — Pop-up nocturno.</span>
+        </div>
       </div>
-    </div>
-    <div class="hotspot monitor" style="left:76%; top:48%;" data-id="trans_04">
-      <div class="frame">
-        <span class="time">02-05-2026</span>
-        <span class="msg" data-i18n="trans.04">Colaboración con <em>secret.eyes888</em>. Camiseta estampada.</span>
+      <div class="hotspot monitor" data-id="trans_04">
+        <div class="frame">
+          <span class="time">02-05-2026</span>
+          <span class="msg"><em>SECRET EYES</em> — Colaboración activa.</span>
+        </div>
       </div>
-    </div>
-    <div class="hotspot monitor" style="left:31%; top:78%;" data-id="trans_05">
-      <div class="frame">
-        <span class="time">18-04-2026</span>
-        <span class="msg" data-i18n="trans.05">Plesiosaurus será 4 y 5 de junio.<em>Convocatoria abierta.</em>.</span>
+      <div class="hotspot monitor" data-id="trans_05">
+        <div class="frame">
+          <span class="time">18-04-2026</span>
+          <span class="msg"><em>CONVOCATORIA ABIERTA</em> — Plesiosaurus.</span>
+        </div>
       </div>
-    </div>
-    <div class="hotspot monitor" style="left:67%; top:78%;" data-id="trans_06">
-      <div class="frame">
-        <span class="time">13·04·2026</span>
-        <span class="msg" data-i18n="trans.06">Primera <em>transmisión</em> pública. Estamos en línea.</span>
+      <div class="hotspot monitor" data-id="trans_06">
+        <div class="frame">
+          <span class="time">13-04-2026</span>
+          <span class="msg"><em>TRANSMISIÓN</em> — Primera señal pública.</span>
+        </div>
       </div>
     </div>
 
@@ -1871,8 +2231,23 @@ no, no somos la culminación de nada, sino el principio de algo".</span>
 <div class="secreto-backdrop" id="secretoBackdrop">
   <div class="secreto-stars"></div>
   <button class="secreto-close" onclick="cerrarSecreto()">[ SALIR × ]</button>
+
+  <!-- Lámpara clickeable -->
+  <div class="secreto-lampara on" id="secretoLampara" onclick="toggleLampara()">  (*)
+ / | \
+/  |  \
++--+--+
+   |
+   |
+ __|__
+/     \
+| [·] |
+\_____/
+  |||
+<div class="secreto-lampara-hint">[ click ]</div></div>
+
   <div class="secreto-inner">
-    <div class="secreto-title">otrosdias/∞</div>
+    <div class="secreto-title">otrosdias/randy</div>
     <div class="secreto-subtitle">sala que no debería existir</div>
 
     <div class="secreto-content">
@@ -1907,14 +2282,13 @@ no, no somos la culminación de nada, sino el principio de algo".</span>
         <div class="si-label">[ GLITCH ]</div>
       </div>
 
-      <div class="secreto-item" onclick="window.open('https://www.instagram.com/otrosdias/','_blank')">
-        <div class="si-art">+-------+
-| *   * |
-|  [·]  |
-| *   * |
-+-------+
-  drop?</div>
-        <div class="si-label">próximo drop</div>
+      <div class="secreto-item" onclick="abrirTimoteo()">
+        <div class="si-art">    O
+  (·|·)
+   /W\
+  / | \
+Timoteo</div>
+        <div class="si-label">jugar con Timoteo</div>
       </div>
 
     </div>
@@ -1933,6 +2307,77 @@ no, no somos la culminación de nada, sino el principio de algo".</span>
 |     |  _·_  |  |  | | | |  |  |   |   |                 |
 |     | |   | |  |__|_|_|_|__|  |  _|_  |                 |
 |_____|_|___|_|_________________|_|___|_|_________________|
+    </div>
+  </div>
+</div>
+
+<!-- HABITACIÓN DE TIMOTEO — Ping Pong -->
+<div class="timoteo-backdrop" id="timoteoBackdrop">
+  <div class="timoteo-header">
+    <div class="timoteo-title">PING PONG · TIMOTEO</div>
+    <div class="timoteo-sub">// habitación secreta · nivel 2</div>
+  </div>
+  <button class="timoteo-close" onclick="cerrarTimoteo()">[ ESC ]</button>
+
+  <div class="pong-score">
+    <div class="pong-score-block" id="scoreYouBlock">
+      <div class="ps-name">tú</div>
+      <div class="ps-num" id="scoreYou">0</div>
+    </div>
+    <div class="ps-divider">:</div>
+    <div class="pong-score-block" id="scoreTimBlock">
+      <div class="ps-name">timoteo</div>
+      <div class="ps-num" id="scoreTim">0</div>
+    </div>
+  </div>
+  <div class="pong-wins" id="pongWins">victorias: <b id="winsYou">0</b> · derrotas: <b id="losesYou">0</b></div>
+
+  <canvas id="pongCanvas" width="600" height="360"></canvas>
+
+  <div class="pong-msg" id="pongMsg">presiona ESPACIO para comenzar</div>
+  <div class="pong-controls">
+    <span class="key">W</span><span class="key">S</span> mover &nbsp;·&nbsp;
+    <span class="key">ESPACIO</span> iniciar &nbsp;·&nbsp;
+    móvil: toca la pantalla
+  </div>
+
+  <div class="timoteo-char">    O
+  (·|·)
+   /W\
+  / | \
+  | | |</div>
+</div>
+
+<!-- BOLETO DE DESCUENTO -->
+<div class="ticket-backdrop" id="ticketBackdrop">
+  <div class="ticket" id="ticketEl">
+    <button class="ticket-close" onclick="cerrarTicket()">✕</button>
+    <div class="ticket-watermark" id="ticketWatermark">otrosdias · validar con randy · unico</div>
+    <div class="ticket-inner">
+      <div class="ticket-brand">otrosdias<span>/</span>randy</div>
+      <div class="ticket-tagline">// boleto de descuento · ganaste a timoteo</div>
+      <hr class="ticket-divider">
+      <div class="ticket-discount">
+        <div class="ticket-pct">15%</div>
+        <div class="ticket-label">de descuento<br>en tu <b>próxima compra</b></div>
+      </div>
+      <div class="ticket-code-row">
+        <span class="ticket-code" id="ticketCode">OD-XXXX-XXXX</span>
+        <button class="ticket-copy-btn" onclick="copiarCodigo()">COPIAR</button>
+      </div>
+      <div class="ticket-meta">
+        Presenta este código vía DM a <b>@otrosdias</b>.<br>
+        Válido hasta la siguiente actualización de precios.<br>
+        Un uso por código. No acumulable.
+      </div>
+      <div class="ticket-serial">
+        <span>SERIE: <b id="ticketSerial">---</b></span>
+        <span>FECHA: <b id="ticketDate">--/--/----</b></span>
+        <span>PUNTOS: <b id="ticketScore">7-?</b></span>
+      </div>
+    </div>
+    <div class="ticket-hint">
+      Toma captura de pantalla · el código <b>no se repite</b> · válido solo con número visible
     </div>
   </div>
 </div>
@@ -2218,8 +2663,20 @@ function renderCharacter(){
   const scene = document.querySelector(`.scene[data-scene="${STATE.scene}"]`);
   if(!scene) return;
   const rect = scene.getBoundingClientRect();
+  const scrollOffset = scene.scrollTop || 0;
   const px = rect.left + (STATE.x / 100) * rect.width;
-  const py = rect.top + (STATE.y / 100) * rect.height;
+  // En tienda: la Y es relativa al scroll
+  let py;
+  if(STATE.scene === 'tienda'){
+    const pct = STATE.y / 200;
+    const contentH = scene.scrollHeight;
+    py = rect.top + (pct * (scene.scrollHeight - scene.clientHeight)) - scrollOffset
+       + rect.height * 0.5;
+    // simplificado: pintar a 60% de la pantalla visible siempre
+    py = rect.top + rect.height * 0.60;
+  } else {
+    py = rect.top + (STATE.y / 100) * rect.height;
+  }
   character.style.left = px + 'px';
   character.style.top  = py + 'px';
   character.style.transform = STATE.facing === 'left'
@@ -2243,7 +2700,18 @@ function moveCharacter(dx, dy){
 
   if(nx > 95){ tryExit('right'); nx = 95; }
   else if(nx < 5){ tryExit('left'); nx = 5; }
-  ny = Math.max(35, Math.min(85, ny));
+
+  // En la tienda el personaje puede ir más abajo — hace scroll de la escena
+  if(STATE.scene === 'tienda'){
+    ny = Math.max(10, Math.min(200, ny));
+    const sceneEl = document.querySelector('.scene-tienda');
+    if(sceneEl){
+      const pct = ny / 200;
+      sceneEl.scrollTop = pct * (sceneEl.scrollHeight - sceneEl.clientHeight);
+    }
+  } else {
+    ny = Math.max(35, Math.min(85, ny));
+  }
 
   STATE.x = nx;
   STATE.y = ny;
@@ -2297,13 +2765,21 @@ document.querySelectorAll('.scene-tabs button').forEach(b => {
   b.addEventListener('click', () => goTo(b.dataset.jump));
 });
 
-// EXIT CLICKS — event delegation en #world para que funcionen siempre,
-// incluso cuando la escena tiene scroll o elementos encima
-document.getElementById('world').addEventListener('click', function(e){
+// NAVEGACIÓN — event delegation única en document para máxima compatibilidad
+// Cubre puertas, artistas, monitores de transmisiones
+document.addEventListener('click', function(e){
+  // No procesar si hay un modal abierto
+  if(document.getElementById('panelBackdrop').classList.contains('open')) return;
+  if(document.getElementById('productModalBackdrop').classList.contains('open')) return;
+  if(document.getElementById('secretoBackdrop').classList.contains('open')) return;
+  if(document.getElementById('timoteoBackdrop').classList.contains('open')) return;
+
   const exit = e.target.closest('.exit');
   if(exit){ e.stopPropagation(); goTo(exit.dataset.go); return; }
+
   const hspot = e.target.closest('.hotspot.artist-card');
   if(hspot){ openPanel(hspot.dataset.id); return; }
+
   const monitor = e.target.closest('.hotspot.monitor');
   if(monitor){ openPanel(monitor.dataset.id); return; }
 });
@@ -2366,7 +2842,7 @@ const ARTIST_DATA = {
   essppora: {
     name: 'essppora', role: 'Fotografía · Tatuajes', tag: 'A1',
     link: 'https://www.instagram.com/essppora/',
-    bio: 'Nací y crecí en el estado Puebla, actualmente tengo 25 años y soy egresada de la licenciatura en Filosofía. Comencé a interesarme por la fotografía cuando tenía 17 años, pero fue hasta los 22 cuando me tomé más en serio este pasatiempo, y poco a poco fui desarrollando mi estilo propio hasta llegar a lo que actualmente soy: essppora. Algunas de mis mayores inspiraciones son: Graciela Iturbide, Tina Modotti, Juan Rulfo, Lola y Manuel Álvarez Bravo. He tenido la oportunidad de vender mis fotografías para portadas de álbumes y para coleccionar; este año pude presentar algunas en una exposición visual en el zócalo del centro de Puebla.',
+    bio: 'Fotógrafa independiente originaria del estado de Puebla, 26 años. Mi mirada fotográfica está formada por Graciela Iturbide, Tina Modotti, los Álvarez Bravo y Juan Rulfo. Me interesa lo que otros evitan mirar; postes de luz, rincones con atmósferas lúgubres, y espacios deshabitados donde lo único que aún habita es la memoria.',
     attrs: { 'Nombre real': 'Lizbeth Michel Silva Vázquez', 'Ocupación': 'Sin ocupación por el momento', 'Base': 'Puebla, Pue.', 'Ojos': 'Negros', 'Cabello': 'Cobrizo claro', 'Altura': '1.59 m', 'Peso': '60 kg', 'Inicio': 'Octubre 2022' },
     hechos: { 'Disciplina': 'Fotografía', 'Colectivo': 'otrosdias', 'Status': 'Activa', 'Colaboraciones': 'Serafín tank', 'Estilo': 'Observadora, detallista' }
   },
@@ -2541,12 +3017,12 @@ const PANEL_DATA = {
   lente:      { kind:'product', name:'product.lente.name', author:'product.lente.author', desc:'product.lente.desc', price:'ui.sold', tag:'ARCHIVO · P_03', sold:true },
   sintitulo:  { kind:'product', name:'product.sintitulo.name', author:'product.sintitulo.author', desc:'product.sintitulo.desc', price:'???', tag:'DROP_002 · P_04' },
   // Transmissions
-  trans_01: { kind:'trans', name:'01·06·2026', desc:'trans.full.01', tag:'BITÁCORA_06' },
-  trans_02: { kind:'trans', name:'28·05·2026', desc:'trans.full.02', tag:'BITÁCORA_05' },
-  trans_03: { kind:'trans', name:'14·05·2026', desc:'trans.full.03', tag:'BITÁCORA_04' },
-  trans_04: { kind:'trans', name:'02·05·2026', desc:'trans.full.04', tag:'BITÁCORA_03' },
-  trans_05: { kind:'trans', name:'18·04·2026', desc:'trans.full.05', tag:'BITÁCORA_02' },
-  trans_06: { kind:'trans', name:'13·04·2026', desc:'trans.full.06', tag:'BITÁCORA_01' },
+  trans_01: { kind:'trans', date:'31-05-2026', name:'INFINIDAD',              tag:'BITÁCORA_06', body:'Infinidad terminó su tour en exposiciones, 4 sitios en un mes. La gorra de gamuza bordada recorrió el centro de Puebla.' },
+  trans_02: { kind:'trans', date:'15-05-2026', name:'ME PERDÍ EN EL METRO',  tag:'BITÁCORA_05', body:'Nuevo álbum: Me perdí en el metro. Disponible en todas las plataformas de streaming.' },
+  trans_03: { kind:'trans', date:'14-05-2026', name:'ESTO NO ES DINAMARCA',  tag:'BITÁCORA_04', body:'Pop-up nocturno en La Libertad. Obra de teatro de Pedro Medina, solo invitación. Tres funciones, tres ciudades.' },
+  trans_04: { kind:'trans', date:'02-05-2026', name:'SECRET EYES',           tag:'BITÁCORA_03', body:'Colaboración con secret.eyes888 activa. Camiseta estampada con motivos sagrados y profanos. Serigrafía a una tinta.' },
+  trans_05: { kind:'trans', date:'18-04-2026', name:'CONVOCATORIA ABIERTA',  tag:'BITÁCORA_02', body:'Plesiosaurus será el 4 y 5 de junio. Convocatoria abierta para artistas de la escena local.' },
+  trans_06: { kind:'trans', date:'13-04-2026', name:'TRANSMISIÓN',           tag:'BITÁCORA_01', body:'Primera transmisión pública emitida. Sistema en línea desde entonces sin interrupciones. Estamos contigo.' },
 };
 
 /* ============================================================
@@ -2679,10 +3155,12 @@ function openPanel(id){
     document.querySelectorAll('.panel-tab-content').forEach(c => c.classList.remove('active'));
     document.getElementById('tab-atributos').classList.add('active');
 
-    document.getElementById('panelTag').textContent = d.tag;
-    document.getElementById('panelTitle').textContent = d.name;
+    // Fecha pequeña arriba (reemplaza tag), título grande en amber, cuerpo
+    document.getElementById('panelTag').textContent = d.date || d.tag;
+    document.getElementById('panelTitle').textContent = d.name || '';
+    document.getElementById('panelTitle').style.color = 'var(--amber)';
     document.getElementById('panelSub').textContent = STATE.lang === 'es' ? 'TRANSMISIÓN ARCHIVADA' : 'ARCHIVED BROADCAST';
-    document.getElementById('panelBody').textContent = t(d.desc);
+    document.getElementById('panelBody').textContent = d.body || '';
     document.getElementById('panelMeta').textContent = STATE.lang === 'es' ? 'BITÁCORA PÚBLICA' : 'PUBLIC LOG';
     const cta = document.getElementById('panelCta');
     cta.textContent = STATE.lang === 'es' ? 'CERRAR' : 'CLOSE';
@@ -2767,12 +3245,34 @@ document.querySelectorAll('.dpad button').forEach(b => {
 const SHEET_CSV_URL = 'TU_URL_CSV_AQUI';
 // Ejemplo: 'https://docs.google.com/spreadsheets/d/1s7iIwuhlLtJlNqFI4kOj3jLywaS6mvtR_OYoPfEpB_w/export?format=csv&gid=0'
 
-// Datos demo para cuando no haya Sheet configurado
+// Datos del catálogo — Junio 2026 (fuente: PDF)
 const DEMO_PRODUCTS = [
-  { id:'fragildevociopn', nombre:'FRÁGIL DEVOCIÓN', autor:'POR SECRET.EYES888', descripcion:'Tank Top de algodón de manga corta, estampada con serigrafía. Costo válido hasta la siguiente actualización.', precio:'$180 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'transmision', nombre:'TRANSMISIÓN', autor:'POR otrosdias', descripcion:'Hoodie negro con bordado al pecho. Edición conjunta con bat_grafik. 20 piezas firmadas, numeradas y trazables.', precio:'$320 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'lente', nombre:'LENTE', autor:'POR OTROSDIAS', descripcion:'Gorra de Gamuza con alambre de púas. Edición agotada.', precio:'AGOTADO', estado:'agotado', imagen_frente:'', imagen_reverso:'' },
-  { id:'sintitulo', nombre:'SIN TÍTULO', autor:'POR HENRO', descripcion:'En producción. Información liberada cuando el archivo se abra.', precio:'???', estado:'proximo', imagen_frente:'', imagen_reverso:'' },
+  { id:'fragildevocipn',    nombre:'FRÁGIL DEVOCIÓN',        autor:'POR SECRET.EYES888',       descripcion:'Tank Top de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'fragildevocipn_c',  nombre:'FRÁGIL DEVOCIÓN (camis)', autor:'POR SECRET.EYES888',       descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'cuentos_mente',     nombre:'CUENTOS DE UNA MENTE FRÁGIL', autor:'POR ELLIOT KENDRYEK', descripcion:'Tank Top de algodón de manga corta, estampada con serigrafía. Libro de Elliot Kendryek, miembro del colectivo.', precio:'$280 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'infinidad_gorra',   nombre:'INFINIDAD (gorra)',       autor:'POR OTROSDIAS',            descripcion:'Gorra de gamuza bordada con alambre de púas.', precio:'$500 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'infinidad_play',    nombre:'INFINIDAD (playera)',     autor:'POR OTROSDIAS',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'tarbosaurus',       nombre:'TARBOSAURUS',             autor:'POR JURASSIC SNACK',       descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía, 3 tintas. Puntos de entrega en @otrosdias y @snackjurassic.', precio:'$220 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'promesa',           nombre:'PROMESA',                 autor:'POR OTROSDIAS',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía. Con texto de Carlos Fuentes Macías.', precio:'$180 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'sin_miedo',         nombre:'SIN MIEDO A LA TIERRA',  autor:'POR ESSPPORA',             descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía. Fotografía de agosto 2024, c. constitución de 1917.', precio:'$180 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'perro',             nombre:'PERRO',                   autor:'POR PAPIWABISABI',         descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$200 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'eterna_vida',       nombre:'ETERNA VIDA SIMÉTRICA',  autor:'POR DERWENT',              descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'luz_resurge',       nombre:'LA LUZ RESURGE RÍO ARRIBA', autor:'POR MMICELIO',          descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$200 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'garanon',           nombre:'GARAÑÓN',                 autor:'POR VERTEDERO D.E.',       descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$299 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'abre_cajon',        nombre:'ABRE EL CAJÓN',           autor:'POR ALDO LOPEZ MALO',      descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$220 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'indertidumbre',     nombre:'INDERTIDUMBRE',           autor:'POR OTROSDIAS',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'jardin_play',       nombre:'JARDÍN (playera)',         autor:'POR OTROSDIAS',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'conejo',            nombre:'CONEJO',                  autor:'POR PAPIWABISABI',         descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'futuro',            nombre:'FUTURO',                  autor:'POR OTROSDIAS',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$100 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'saludo',            nombre:'SALUDO',                  autor:'POR OTROSDIAS',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$120 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'spot_artes',        nombre:'SPOT DE ARTES DE LA LIBERTAD', autor:'POR PEDRO MEDINA',   descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$200 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'saliendo_sup',      nombre:'SALIENDO DE LA SUPERFICIE', autor:'POR OTROSDIAS',         descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$150 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'food_can_wait',     nombre:'FOOD CAN WAIT',           autor:'POR GARRAGATO',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía. Puntos de entrega en @otrosdias y @garragato.', precio:'$299 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'walkman',           nombre:'WALKMAN',                 autor:'POR GARRAGATO',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía. Puntos de entrega en @otrosdias y @garragato.', precio:'$275 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'food_vinilbag',     nombre:'FOOD CAN WAIT (vinil bag)', autor:'POR GARRAGATO',          descripcion:'Vinil bag 40 × 50 cm. Puntos de entrega en @otrosdias y @garragato.', precio:'$199 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'walkman_vinilbag',  nombre:'WALKMAN (vinil bag)',      autor:'POR GARRAGATO',            descripcion:'Vinil bag 40 × 50 cm. Puntos de entrega en @otrosdias y @garragato.', precio:'$199 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'transmision',       nombre:'TRANSMISIÓN',             autor:'POR OTROSDIAS',            descripcion:'Hoodie negro con bordado al pecho. Edición conjunta con bat_grafik. 20 piezas firmadas, numeradas y trazables.', precio:'$320 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
+  { id:'proximo',           nombre:'PRÓXIMA PIEZA',           autor:'—',                        descripcion:'En producción. Información liberada cuando el archivo se abra.', precio:'???', estado:'proximo', imagen_frente:'', imagen_reverso:'' },
 ];
 
 function parseCSV(text){
@@ -2987,7 +3487,7 @@ function secretoGlitch(){
   const title = document.querySelector('.secreto-title');
   title.style.animation = 'none';
   const chars = '█▓▒░▄▀■□▪▫◆◇○●'.split('');
-  const original = 'otrosdias/∞';
+  const original = 'otrosdias/randy';
   let i = 0;
   const id = setInterval(() => {
     title.textContent = original.split('').map(c =>
@@ -3048,6 +3548,358 @@ setTimeout(function loop(){
   showTrans();
   setTimeout(loop, 35000 + Math.random()*40000);
 }, 20000);
+
+/* ============================================================
+   LÁMPARA CUARTO SECRETO — toggle encendido/apagado
+============================================================ */
+let luzEncendida = true;
+function toggleLampara(){
+  luzEncendida = !luzEncendida;
+  const lampEl = document.getElementById('secretoLampara');
+  const bg = document.getElementById('secretoBackdrop');
+  if(luzEncendida){
+    lampEl.classList.replace('off','on');
+    bg.classList.remove('luz-apagada');
+  } else {
+    lampEl.classList.replace('on','off');
+    bg.classList.add('luz-apagada');
+  }
+}
+window.toggleLampara = toggleLampara;
+
+/* ============================================================
+   HABITACIÓN DE TIMOTEO — PING PONG
+============================================================ */
+const timoteoBackdrop = document.getElementById('timoteoBackdrop');
+const pongCanvas = document.getElementById('pongCanvas');
+const pctx = pongCanvas.getContext('2d');
+
+// Guardar victorias en localStorage
+let pongWins   = parseInt(localStorage.getItem('od_pong_wins')   || '0');
+let pongLoses  = parseInt(localStorage.getItem('od_pong_loses')  || '0');
+
+const PONG = {
+  running: false,
+  waiting: true,   // esperando SPACE/tap para arrancar
+  W: 600, H: 360,
+  ball: { x:300, y:180, vx:3.5, vy:2.5, r:7 },
+  player: { y:150, h:70, w:12, score:0 },
+  tim:    { y:150, h:70, w:12, score:0, speed:2.8 },
+  maxScore: 7,
+  // para mobile touch
+  touchY: null,
+};
+
+function resetBall(dir){
+  PONG.ball.x = PONG.W/2; PONG.ball.y = PONG.H/2;
+  const angle = (Math.random()*0.6 - 0.3);
+  PONG.ball.vx = (dir||1) * (3.5 + Math.random()*1.5) * Math.cos(angle);
+  PONG.ball.vy = (3.5 + Math.random()*1.5) * Math.sin(angle) * (Math.random()<0.5?1:-1);
+}
+
+function pongUpdate(){
+  if(!PONG.running) return;
+  const b = PONG.ball, p = PONG.player, t = PONG.tim;
+  const cW = pongCanvas.width, cH = pongCanvas.height;
+
+  // Move ball
+  b.x += b.vx; b.y += b.vy;
+
+  // Top/bottom bounce
+  if(b.y - b.r < 0){ b.y = b.r; b.vy *= -1; }
+  if(b.y + b.r > cH){ b.y = cH - b.r; b.vy *= -1; }
+
+  // Player paddle collision (left, x=20)
+  if(b.x - b.r < 20 + p.w && b.x - b.r > 20 && b.y > p.y && b.y < p.y + p.h){
+    b.x = 20 + p.w + b.r;
+    b.vx = Math.abs(b.vx) * 1.05;
+    b.vy += (b.y - (p.y + p.h/2)) * 0.08;
+  }
+  // Timoteo paddle collision (right, x=cW-20-t.w)
+  const tx = cW - 20 - t.w;
+  if(b.x + b.r > tx && b.x + b.r < tx + t.w + 4 && b.y > t.y && b.y < t.y + t.h){
+    b.x = tx - b.r;
+    b.vx = -Math.abs(b.vx) * 1.03;
+    b.vy += (b.y - (t.y + t.h/2)) * 0.06;
+  }
+
+  // Score
+  if(b.x + b.r < 0){
+    t.score++;
+    document.getElementById('scoreTim').textContent = t.score;
+    if(t.score >= PONG.maxScore){ endPong('timoteo'); return; }
+    resetBall(1); PONG.running = false; PONG.waiting = true;
+    document.getElementById('pongMsg').textContent = '¡Timoteo anotó! — ESPACIO para continuar';
+  }
+  if(b.x - b.r > cW){
+    p.score++;
+    document.getElementById('scoreYou').textContent = p.score;
+    if(p.score >= PONG.maxScore){ endPong('player'); return; }
+    resetBall(-1); PONG.running = false; PONG.waiting = true;
+    document.getElementById('pongMsg').textContent = '¡Anotaste! — ESPACIO para continuar';
+  }
+
+  // AI Timoteo — sigue la pelota con un poco de retraso y errores
+  const timCenter = t.y + t.h/2;
+  const diff = b.y - timCenter;
+  const speed = t.speed + (p.score > t.score ? 0.3 : 0); // se pone mejor si va perdiendo
+  if(Math.abs(diff) > 4){
+    t.y += diff > 0 ? Math.min(diff, speed) : Math.max(diff, -speed);
+  }
+  t.y = Math.max(0, Math.min(cH - t.h, t.y));
+
+  // Player keyboard
+  if(pongKeys['w'] || pongKeys['W'] || pongKeys['ArrowUp']){
+    p.y = Math.max(0, p.y - 5);
+  }
+  if(pongKeys['s'] || pongKeys['S'] || pongKeys['ArrowDown']){
+    p.y = Math.min(cH - p.h, p.y + 5);
+  }
+  // Mobile touch
+  if(PONG.touchY !== null){
+    const target = PONG.touchY - p.h/2;
+    const dy = target - p.y;
+    p.y = Math.max(0, Math.min(cH - p.h, p.y + dy * 0.18));
+  }
+
+  // Speed cap
+  const maxV = 12;
+  if(Math.abs(b.vx) > maxV) b.vx = Math.sign(b.vx)*maxV;
+  if(Math.abs(b.vy) > maxV) b.vy = Math.sign(b.vy)*maxV;
+}
+
+function pongDraw(){
+  const b = PONG.ball, p = PONG.player, t = PONG.tim;
+  const cW = pongCanvas.width, cH = pongCanvas.height;
+
+  // BG
+  pctx.fillStyle = '#000';
+  pctx.fillRect(0,0,cW,cH);
+
+  // Centre line
+  pctx.setLineDash([6,8]);
+  pctx.strokeStyle = '#1f1f1f';
+  pctx.lineWidth = 1;
+  pctx.beginPath(); pctx.moveTo(cW/2,0); pctx.lineTo(cW/2,cH); pctx.stroke();
+  pctx.setLineDash([]);
+
+  // Draw ASCII-style racket for player (left)
+  pctx.fillStyle = '#e8e3d3';
+  pctx.font = 'bold 11px JetBrains Mono, monospace';
+  pctx.textAlign = 'left';
+  const racketLines = ['(o)', '| |', '| |', '| |', '| |', '\_/'];
+  const lh = p.h / racketLines.length;
+  racketLines.forEach((ln, i) => {
+    pctx.fillText(ln, 14, p.y + i * lh + lh * 0.8);
+  });
+
+  // ASCII racket for Timoteo (right, mirrored)
+  pctx.fillStyle = '#ff2d6f';
+  pctx.textAlign = 'right';
+  const timLines = ['(o)', '| |', '| |', '| |', '| |', '\\_/'];
+  timLines.forEach((ln, i) => {
+    pctx.fillText(ln, cW - 14, t.y + i * lh + lh * 0.8);
+  });
+
+  // ASCII character above player
+  pctx.fillStyle = '#e8e3d388';
+  pctx.font = '9px JetBrains Mono, monospace';
+  pctx.textAlign = 'center';
+  pctx.fillText('O', 22, p.y - 18);
+  pctx.fillText('W', 22, p.y - 8);
+
+  // ASCII Timoteo label above
+  pctx.fillStyle = '#ff2d6f88';
+  pctx.fillText('O', cW - 22, t.y - 18);
+  pctx.fillText('W', cW - 22, t.y - 8);
+
+  // Ball — ORANGE
+  pctx.fillStyle = '#ff6b1a';
+  pctx.shadowColor = 'rgba(255,107,26,0.5)';
+  pctx.shadowBlur = 8;
+  pctx.beginPath();
+  pctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
+  pctx.fill();
+  pctx.shadowBlur = 0;
+
+  // waiting overlay
+  if(PONG.waiting){
+    pctx.fillStyle = 'rgba(0,0,0,0.55)';
+    pctx.fillRect(0,0,cW,cH);
+    pctx.fillStyle = '#f0b81b';
+    pctx.font = 'bold 16px VT323, monospace';
+    pctx.textAlign = 'center';
+    pctx.fillText('— ESPACIO / TAP —', cW/2, cH/2);
+  }
+}
+
+function endPong(winner){
+  PONG.running = false; PONG.waiting = false;
+  if(winner === 'player'){
+    pongWins++; localStorage.setItem('od_pong_wins', pongWins);
+    document.getElementById('pongMsg').textContent = '¡Ganaste! 🎟 Mira tu boleto de descuento — ESPACIO para revancha';
+    document.getElementById('scoreYouBlock').classList.add('winner');
+    document.getElementById('scoreTimBlock').classList.remove('winner');
+    // Mostrar boleto después de 1.2s
+    setTimeout(mostrarTicket, 1200);
+  } else {
+    pongLoses++; localStorage.setItem('od_pong_loses', pongLoses);
+    document.getElementById('pongMsg').textContent = 'Timoteo gana. "Eso fue fácil." — ESPACIO para revancha';
+    document.getElementById('scoreTimBlock').classList.add('winner');
+    document.getElementById('scoreYouBlock').classList.remove('winner');
+  }
+  document.getElementById('winsYou').textContent  = pongWins;
+  document.getElementById('losesYou').textContent = pongLoses;
+}
+
+function resetPong(){
+  PONG.player.score = 0; PONG.tim.score = 0;
+  PONG.player.y = PONG.H/2 - 35; PONG.tim.y = PONG.H/2 - 35;
+  document.getElementById('scoreYou').textContent = '0';
+  document.getElementById('scoreTim').textContent = '0';
+  document.getElementById('scoreYouBlock').classList.remove('winner');
+  document.getElementById('scoreTimBlock').classList.remove('winner');
+  resetBall(1);
+  PONG.waiting = true; PONG.running = false;
+  document.getElementById('pongMsg').textContent = 'presiona ESPACIO para comenzar';
+}
+
+const pongKeys = {};
+let pongAnimId = null;
+function pongLoop(){
+  pongUpdate(); pongDraw();
+  pongAnimId = requestAnimationFrame(pongLoop);
+}
+
+function abrirTimoteo(){
+  // Update wins display
+  document.getElementById('winsYou').textContent  = pongWins;
+  document.getElementById('losesYou').textContent = pongLoses;
+  resetPong();
+  timoteoBackdrop.classList.add('open');
+  if(!pongAnimId) pongLoop();
+}
+window.abrirTimoteo = abrirTimoteo;
+
+function cerrarTimoteo(){
+  timoteoBackdrop.classList.remove('open');
+  if(pongAnimId){ cancelAnimationFrame(pongAnimId); pongAnimId = null; }
+  PONG.running = false;
+}
+window.cerrarTimoteo = cerrarTimoteo;
+
+// Keyboard for pong
+document.addEventListener('keydown', e => {
+  if(!timoteoBackdrop.classList.contains('open')) return;
+  pongKeys[e.key] = true;
+  if(e.key === ' ' || e.key === 'Enter'){
+    e.preventDefault();
+    if(PONG.waiting){ PONG.waiting = false; PONG.running = true;
+      document.getElementById('pongMsg').textContent = '';
+    } else if(!PONG.running){
+      resetPong();
+    }
+  }
+  if(e.key === 'Escape'){ cerrarTimoteo(); }
+});
+document.addEventListener('keyup', e => { pongKeys[e.key] = false; });
+
+// Touch for pong (move player paddle)
+pongCanvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  const rect = pongCanvas.getBoundingClientRect();
+  const scaleY = pongCanvas.height / rect.height;
+  PONG.touchY = (e.touches[0].clientY - rect.top) * scaleY;
+}, { passive: false });
+pongCanvas.addEventListener('touchstart', e => {
+  const rect = pongCanvas.getBoundingClientRect();
+  const scaleY = pongCanvas.height / rect.height;
+  PONG.touchY = (e.touches[0].clientY - rect.top) * scaleY;
+  if(PONG.waiting){ PONG.waiting = false; PONG.running = true;
+    document.getElementById('pongMsg').textContent = '';
+  } else if(!PONG.running){ resetPong(); }
+}, { passive: true });
+pongCanvas.addEventListener('touchend', () => { PONG.touchY = null; });
+
+/* ============================================================
+   BOLETO DE DESCUENTO — generación con código único verificable
+   ─────────────────────────────────────────────────────────────
+   Formato del código:  OD-[BASE36-4]-[BASE36-4]
+   El "número único" que ves es el SERIAL que incluye:
+   - Fecha (AAAA-MM-DD)
+   - Marcador de hora (HHmm)
+   - Puntuación del partido (tu_score-tim_score)
+   - Número de victoria acumulada
+   Así puedes validar que la captura sea auténtica comparando
+   el código con el serial mostrado en el boleto.
+============================================================ */
+const ticketBackdrop = document.getElementById('ticketBackdrop');
+
+function generarCodigo(){
+  // Base: timestamp + wins + random
+  const ts = Date.now();
+  const rand = Math.floor(Math.random() * 0xFFFF);
+  // Código corto amigable: OD-XXXX-XXXX en base 36
+  const part1 = ((ts & 0xFFFF) ^ rand).toString(36).toUpperCase().padStart(4,'0').slice(0,4);
+  const part2 = (PONG.player.score * 1000 + pongWins * 100 + rand % 0xFF).toString(36).toUpperCase().padStart(4,'0').slice(0,4);
+  return `OD-${part1}-${part2}`;
+}
+
+function generarSerial(){
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  const fecha = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}`;
+  const hora  = `${pad(now.getHours())}${pad(now.getMinutes())}`;
+  const puntos = `${PONG.player.score}v${PONG.tim.score}`;
+  const wins  = String(pongWins).padStart(3,'0');
+  return `${fecha}-${hora}-${puntos}-V${wins}`;
+}
+
+function mostrarTicket(){
+  const codigo = generarCodigo();
+  const serial = generarSerial();
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  const fechaLeg = `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()}`;
+
+  document.getElementById('ticketCode').textContent = codigo;
+  document.getElementById('ticketSerial').textContent = serial;
+  document.getElementById('ticketDate').textContent = fechaLeg;
+  document.getElementById('ticketScore').textContent = `${PONG.player.score}-${PONG.tim.score}`;
+
+  // Watermark con código para detectar capturas editadas
+  document.getElementById('ticketWatermark').textContent =
+    `otrosdias · ${codigo} · ${serial} · validar @otrosdias`;
+
+  ticketBackdrop.classList.add('open');
+}
+window.mostrarTicket = mostrarTicket;
+
+function cerrarTicket(){
+  ticketBackdrop.classList.remove('open');
+}
+window.cerrarTicket = cerrarTicket;
+
+function copiarCodigo(){
+  const code = document.getElementById('ticketCode').textContent;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(code).then(() => {
+      const btn = document.querySelector('.ticket-copy-btn');
+      const orig = btn.textContent;
+      btn.textContent = '✓ COPIADO';
+      setTimeout(() => btn.textContent = orig, 2000);
+    });
+  }
+}
+window.copiarCodigo = copiarCodigo;
+
+// Cerrar con clic afuera o ESC
+ticketBackdrop.addEventListener('click', e => {
+  if(e.target === ticketBackdrop) cerrarTicket();
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && ticketBackdrop.classList.contains('open')) cerrarTicket();
+});
 
 /* ============================================================
    INIT
