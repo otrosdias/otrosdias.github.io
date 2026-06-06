@@ -3518,7 +3518,7 @@ const MENSAJES_NORMALES = [
 const MSG_SECRETO = '◉ señal no identificada detectada';
 
 function showTrans(forceSecreto = false){
-  const esSecreto = forceSecreto || Math.random() < 0.99;
+  const esSecreto = forceSecreto || Math.random() <0.04;
 
   if(esSecreto){
     transMsg.textContent = MSG_SECRETO;
