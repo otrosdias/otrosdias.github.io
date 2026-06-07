@@ -2497,27 +2497,13 @@ Timoteo</div>
 |_____|_|___|_|_________________|_|___|_|_________________|
     </div>
 
-    <!-- Konami hint (aparece después de 8s dentro del cuarto) -->
-    <div class="konami-hint" id="konamiHint">
-      hay algo más aquí
-      <span class="kh-seq" id="konamiSeq">↑ ↑ ↓ ↓ ← → ← → B A</span>
-    </div>
-
-    <!-- Barra de progreso konami -->
-    <div class="konami-bar" id="konamiBar"></div>
-
-    <!-- Botón mobile para ejecutar konami en celular -->
-    <button class="konami-mobile-btn" id="konamiMobileBtn" onclick="mostrarInstruccionesKonami()">
-      [ acceso nivel 3 ]
-    </button>
-
   </div>
 </div>
 
 <!-- HABITACIÓN ZOMBIES — nivel 3 -->
 <div class="zombie-backdrop" id="zombieBackdrop">
   <div class="zombie-header">
-    <div class="zombie-title">OTROSDIAS/MUERTOS</div>
+    <div class="zombie-title">OTROSDIAS/GLITCH</div>
     <div class="zombie-hud">
       <span>VIDAS: <b id="zLives">3</b></span>
       <span>OLEADA: <b id="zWave">1</b></span>
@@ -2558,28 +2544,6 @@ Timoteo</div>
   </div>
 </div>
 
-<!-- Modal instrucciones Konami para móvil -->
-<div style="position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:960;display:none;align-items:center;justify-content:center;padding:20px;" id="konamiMobileModal">
-  <div style="background:#0a0a0a;border:1px solid var(--magenta);max-width:360px;width:100%;padding:24px;font-family:var(--font-mono);color:var(--fg);">
-    <div style="font-family:var(--font-crt);font-size:28px;color:var(--magenta);margin-bottom:10px;">ACCESO / NIVEL 3</div>
-    <div style="font-size:10px;letter-spacing:0.15em;color:var(--fg-dim);margin-bottom:18px;">// INSTRUCCIONES PARA MÓVIL</div>
-    <div style="font-size:12px;line-height:1.9;color:var(--fg-dim);">
-      El código Konami en computadora es:<br>
-      <span style="color:var(--magenta);font-size:14px;letter-spacing:0.2em;">↑ ↑ ↓ ↓ ← → ← → B A</span><br><br>
-      En tu celular, toca los botones del D-pad en este orden <b>exacto</b> mientras estás en el cuarto secreto:<br><br>
-      <span style="color:var(--amber);">
-        ARRIBA · ARRIBA · ABAJO · ABAJO<br>
-        IZQ · DER · IZQ · DER<br>
-        B · A
-      </span><br><br>
-      <span style="color:var(--fg-muted);font-size:10px;">
-        Los botones B y A aparecerán en pantalla<br>
-        una vez que completes las direcciones.
-      </span>
-    </div>
-    <button onclick="document.getElementById('konamiMobileModal').style.display='none'" style="margin-top:20px;width:100%;background:var(--magenta);border:none;color:#fff;font-family:var(--font-mono);font-size:11px;letter-spacing:0.15em;padding:12px;cursor:pointer;">[ ENTENDIDO ]</button>
-  </div>
-</div>
 
 <!-- HABITACIÓN DE TIMOTEO — Ping Pong -->
 <div class="timoteo-backdrop" id="timoteoBackdrop">
@@ -3741,30 +3705,10 @@ function rotateMsg(){
 function cerrarSecreto(){
   secretoBackdrop.classList.remove('open');
   secretoAbierto = false;
-  if(konamiHintTimer) clearTimeout(konamiHintTimer);
-  document.getElementById('konamiHint').classList.remove('visible');
+  glitchClickCount = 0; // reset contador al salir
 }
 window.cerrarSecreto = cerrarSecreto;
 
-function secretoGlitch(){
-  const title = document.querySelector('.secreto-title');
-  title.style.animation = 'none';
-  const chars = '█▓▒░▄▀■□▪▫◆◇○●'.split('');
-  const original = 'otrosdias/randy';
-  let i = 0;
-  const id = setInterval(() => {
-    title.textContent = original.split('').map(c =>
-      Math.random() > 0.5 ? chars[Math.floor(Math.random()*chars.length)] : c
-    ).join('');
-    if(++i > 12){ clearInterval(id); title.textContent = original; title.style.animation = ''; }
-  }, 60);
-}
-window.secretoGlitch = secretoGlitch;
-
-// Cerrar con ESC
-document.addEventListener('keydown', e => {
-  if(e.key === 'Escape' && secretoAbierto) cerrarSecreto();
-});
 
 /* ============================================================
    RANDOM TRANSMISSIONS — con posibilidad de cuarto secreto
@@ -3781,7 +3725,7 @@ const MENSAJES_NORMALES = [
 const MSG_SECRETO = '◉ señal no identificada detectada';
 
 function showTrans(forceSecreto = false){
-  const esSecreto = forceSecreto || Math.random() < 0.50;
+  const esSecreto = forceSecreto || Math.random() < 0.04;
 
   if(esSecreto){
     transMsg.textContent = MSG_SECRETO;
@@ -4177,144 +4121,164 @@ document.addEventListener('keydown', e => {
 });
 
 /* ============================================================
-   KONAMI CODE — detector dentro del cuarto secreto
-   Secuencia: ↑ ↑ ↓ ↓ ← → ← → B A
+   GLITCH COUNTER — 22 clics en el botón GLITCH abre zombies
+   Sin pistas. Sin UI. Sin rastro.
 ============================================================ */
-const KONAMI_SEQ = [
-  'ArrowUp','ArrowUp','ArrowDown','ArrowDown',
-  'ArrowLeft','ArrowRight','ArrowLeft','ArrowRight',
-  'b','a'
-];
-// Mobile pips map (tap orden en d-pad)
-const KONAMI_MOBILE_MAP = ['up','up','down','down','left','right','left','right','b','a'];
-let konamiIdx = 0;
-let konamiHintTimer = null;
+let glitchClickCount = 0;
+let glitchResetTimer = null;
 
-function buildKonamiBar(){
-  const bar = document.getElementById('konamiBar');
-  bar.innerHTML = '';
-  KONAMI_SEQ.forEach((_,i) => {
-    const pip = document.createElement('div');
-    pip.className = 'konami-pip';
-    pip.id = `kpip-${i}`;
-    bar.appendChild(pip);
-  });
-}
+function secretoGlitch(){
+  const title = document.querySelector('.secreto-title');
+  const chars = '█▓▒░▄▀■□▪▫◆◇○●'.split('');
+  const original = 'otrosdias/randy';
+  let i = 0;
+  title.style.animation = 'none';
+  const id = setInterval(() => {
+    title.textContent = original.split('').map(c =>
+      Math.random() > 0.5 ? chars[Math.floor(Math.random()*chars.length)] : c
+    ).join('');
+    if(++i > 12){ clearInterval(id); title.textContent = original; title.style.animation = ''; }
+  }, 60);
 
-function konamiAdvance(key){
-  if(!document.getElementById('secretoBackdrop').classList.contains('open')) return;
-  const expected = KONAMI_SEQ[konamiIdx];
-  if(key.toLowerCase() === expected.toLowerCase()){
-    document.getElementById(`kpip-${konamiIdx}`)?.classList.add('done');
-    konamiIdx++;
-    if(konamiIdx >= KONAMI_SEQ.length){
-      konamiIdx = 0;
-      buildKonamiBar(); // reset pips
-      setTimeout(abrirZombies, 300);
-    }
-  } else {
-    // reset pero mantener progreso si solo fue una tecla equivocada al principio
-    if(konamiIdx > 0){
-      konamiIdx = 0;
-      buildKonamiBar();
-    }
+  // Contar clics silenciosamente
+  glitchClickCount++;
+  if(glitchResetTimer) clearTimeout(glitchResetTimer);
+  // Si pasan 8s sin clic, resetear contador
+  glitchResetTimer = setTimeout(() => { glitchClickCount = 0; }, 8000);
+
+  if(glitchClickCount >= 22){
+    glitchClickCount = 0;
+    clearTimeout(glitchResetTimer);
+    // Breve glitch total antes de abrir
+    setTimeout(abrirZombies, 400);
   }
 }
+window.secretoGlitch = secretoGlitch;
 
-// Keyboard konami (solo dentro del cuarto secreto)
+// Cerrar cuarto con ESC
 document.addEventListener('keydown', e => {
-  if(!document.getElementById('secretoBackdrop').classList.contains('open')) return;
-  konamiAdvance(e.key);
+  if(e.key === 'Escape' && secretoAbierto) cerrarSecreto();
 });
 
-// Mobile konami — botones virtuales en el cuarto secreto
-// Los botones del hint móvil llaman konamiMobileTap(dir)
-function konamiMobileTap(dir){
-  konamiAdvance(
-    dir === 'up'    ? 'ArrowUp'    :
-    dir === 'down'  ? 'ArrowDown'  :
-    dir === 'left'  ? 'ArrowLeft'  :
-    dir === 'right' ? 'ArrowRight' : dir
-  );
-}
-window.konamiMobileTap = konamiMobileTap;
-
-function mostrarInstruccionesKonami(){
-  document.getElementById('konamiMobileModal').style.display = 'flex';
-}
-window.mostrarInstruccionesKonami = mostrarInstruccionesKonami;
-
-// Mostrar hint 8s después de abrir el cuarto secreto
-const _origAbrirSecreto = window.abrirSecreto || function(){};
-function abrirSecreto(){
-  secretoAbierto = true;
-  secretoBackdrop.classList.add('open');
-  document.getElementById('secreto-msg-item').querySelector('.si-art').textContent =
-    MENSAJES_CIFRADOS[msgIdx % MENSAJES_CIFRADOS.length];
-  msgIdx++;
-  document.getElementById('secreto-msg-item').addEventListener('click', rotateMsg);
-  buildKonamiBar();
-  konamiIdx = 0;
-  // Hint aparece a los 8s
-  if(konamiHintTimer) clearTimeout(konamiHintTimer);
-  konamiHintTimer = setTimeout(() => {
-    document.getElementById('konamiHint').classList.add('visible');
-  }, 8000);
-}
-
 /* ============================================================
-   JUEGO DE ZOMBIES — nivel 3
-   Canvas ASCII, oleadas, disparo, top-down shooter
+   JUEGO DE ZOMBIES — OTROSDIAS/GLITCH
+   4 ventanas fijas · cursor aiming · armas por oleada
+   Diseños elaborados de personaje y zombies en canvas
 ============================================================ */
 const zCanvas = document.getElementById('zombieCanvas');
 const zCtx = zCanvas.getContext('2d');
 const zombieBackdrop = document.getElementById('zombieBackdrop');
 
 const ZC = { W: 600, H: 400 };
-const TILE = 16;
-const GREEN = '#4dff6e';
-const RED   = '#ff2d6f';
-const AMBER = '#f0b81b';
-const ZDARK = '#020802';
+const TILE = 20;
+const GREEN  = '#4dff6e';
+const RED    = '#ff2d6f';
+const AMBER  = '#f0b81b';
+const ZDARK  = '#020802';
+const ZWALL  = '#0a2010';
+const ZLIGHT = '#1a4020';
 
-let zState = 'waiting'; // waiting | playing | dead | waveclear
+let zState = 'waiting';
 let zScore = 0, zWave = 1, zLives = 3;
 let zAnimId = null, zLastTime = 0;
 const Z_STEP = 1000 / 60;
 
-// Player
-const zPlayer = { x: ZC.W/2, y: ZC.H/2, w: 14, h: 14, speed: 2.2, dir: 0 };
-// Bullets
+// ── ARMAS por oleada ──────────────────────────────────────────
+const WEAPONS = [
+  { name:'PISTOLA',    dmg:1, cd:14, spd:5,  spread:0,    bullets:1, color:AMBER   }, // oleada 1-2
+  { name:'ESCOPETA',   dmg:1, cd:22, spd:4.5,spread:0.3,  bullets:3, color:'#ff9940' }, // oleada 3-4
+  { name:'UZI',        dmg:1, cd:5,  spd:6,  spread:0.08, bullets:1, color:'#ffe066' }, // oleada 5-6
+  { name:'SNIPER',     dmg:3, cd:28, spd:10, spread:0,    bullets:1, color:'#00eaff' }, // oleada 7-8
+  { name:'LANZACOHETES',dmg:5,cd:40, spd:4,  spread:0,    bullets:1, color:'#ff4400',rocket:true }, // 9+
+];
+function getWeapon(wave){ return WEAPONS[Math.min(Math.floor((wave-1)/2), WEAPONS.length-1)]; }
+
+// ── 4 VENTANAS fijas (puntos de spawn) ───────────────────────
+const WINDOWS = [
+  { x:0,   y:80  }, // izquierda-arriba
+  { x:0,   y:280 }, // izquierda-abajo
+  { x:570, y:80  }, // derecha-arriba
+  { x:570, y:280 }, // derecha-abajo
+];
+
+// ── Player ────────────────────────────────────────────────────
+const zPlayer = {
+  x: ZC.W/2, y: ZC.H/2, w: 18, h: 18, speed: 2.4,
+  dir: 0,  // apunta hacia cursor
+  invFrames: 0,
+};
+
 let zBullets = [];
 let zBulletCooldown = 0;
-// Zombies
 let zZombies = [];
-// Keys
 const zKeys = {};
-// Touch state
 const zTouch = { up:false, down:false, left:false, right:false, fire:false };
-// Particles
 let zParticles = [];
+let zBloodDecals = []; // manchas de sangre persistentes
+
+// Cursor position (para aim)
+let zMouseX = ZC.W/2, zMouseY = ZC.H/2;
+zCanvas.addEventListener('mousemove', e => {
+  const r = zCanvas.getBoundingClientRect();
+  const sx = zCanvas.width / r.width;
+  const sy = zCanvas.height / r.height;
+  zMouseX = (e.clientX - r.left) * sx;
+  zMouseY = (e.clientY - r.top) * sy;
+});
+zCanvas.addEventListener('click', e => {
+  if(zState === 'playing') zShoot();
+  if(zState === 'waiting'){ zState='playing'; document.getElementById('zombieMsg').textContent=''; }
+});
+
+function zShoot(){
+  const w = getWeapon(zWave);
+  if(zBulletCooldown > 0) return;
+  for(let bi=0; bi<w.bullets; bi++){
+    const spread = (Math.random()-0.5) * w.spread;
+    const dir = zPlayer.dir + spread;
+    zBullets.push({
+      x: zPlayer.x, y: zPlayer.y,
+      vx: Math.cos(dir)*w.spd, vy: Math.sin(dir)*w.spd,
+      life: 80, dmg: w.dmg,
+      color: w.color,
+      rocket: w.rocket || false,
+      r: w.rocket ? 4 : 2.5,
+    });
+  }
+  zBulletCooldown = w.cd;
+}
 
 function spawnWave(wave){
   zZombies = [];
-  const count = 4 + wave * 2;
+  zBloodDecals = [];
+  const count = 4 + wave * 3;
   for(let i = 0; i < count; i++){
-    // Spawnear en los bordes
-    const side = Math.floor(Math.random()*4);
-    let x, y;
-    if(side===0){ x=Math.random()*ZC.W; y=-16; }
-    else if(side===1){ x=ZC.W+16; y=Math.random()*ZC.H; }
-    else if(side===2){ x=Math.random()*ZC.W; y=ZC.H+16; }
-    else{ x=-16; y=Math.random()*ZC.H; }
-    const speed = 0.5 + Math.random()*0.4 + wave*0.1;
-    const hp = 1 + Math.floor(wave/3);
-    zZombies.push({ x, y, w:12, h:12, speed, hp, maxHp:hp, flash:0 });
+    // Spawn desde ventanas aleatorias
+    const win = WINDOWS[Math.floor(Math.random()*WINDOWS.length)];
+    const x = win.x + (Math.random()-0.5)*20;
+    const y = win.y + (Math.random()-0.5)*20;
+    const type = wave >= 5 && Math.random()<0.3 ? 'runner' :
+                 wave >= 3 && Math.random()<0.2 ? 'tank'   : 'normal';
+    const configs = {
+      normal: { speed:0.6+wave*0.08, hp:1+Math.floor(wave/3),  w:14, color:RED,      score:10 },
+      runner: { speed:1.4+wave*0.1,  hp:1,                      w:11, color:'#ff8040', score:20 },
+      tank:   { speed:0.35+wave*0.05,hp:4+Math.floor(wave/2),   w:18, color:'#aa0030', score:50 },
+    };
+    const cfg = configs[type];
+    zZombies.push({
+      x, y, w:cfg.w, h:cfg.w,
+      speed:cfg.speed, hp:cfg.hp, maxHp:cfg.hp,
+      type, color:cfg.color, score:cfg.score,
+      flash:0, walkPhase:Math.random()*Math.PI*2,
+    });
   }
 }
 
 function zUpdate(){
   if(zState !== 'playing') return;
+
+  // Update cursor aim
+  zPlayer.dir = Math.atan2(zMouseY - zPlayer.y, zMouseX - zPlayer.x);
 
   // Player movement
   let dx=0, dy=0;
@@ -4323,59 +4287,54 @@ function zUpdate(){
   if(zKeys['a']||zKeys['A']||zKeys['ArrowLeft'] ||zTouch.left)  dx=-zPlayer.speed;
   if(zKeys['d']||zKeys['D']||zKeys['ArrowRight']||zTouch.right) dx= zPlayer.speed;
   if(dx && dy){ dx*=0.707; dy*=0.707; }
-  zPlayer.x = Math.max(0, Math.min(ZC.W - zPlayer.w, zPlayer.x + dx));
-  zPlayer.y = Math.max(0, Math.min(ZC.H - zPlayer.h, zPlayer.y + dy));
+  zPlayer.x = Math.max(8, Math.min(ZC.W-8, zPlayer.x + dx));
+  zPlayer.y = Math.max(8, Math.min(ZC.H-8, zPlayer.y + dy));
+  if(zPlayer.invFrames > 0) zPlayer.invFrames--;
 
-  // Auto-aim: face nearest zombie
-  if(zZombies.length){
-    const nearest = zZombies.reduce((a,b) =>
-      Math.hypot(b.x-zPlayer.x,b.y-zPlayer.y) < Math.hypot(a.x-zPlayer.x,a.y-zPlayer.y) ? b : a);
-    zPlayer.dir = Math.atan2(nearest.y - zPlayer.y, nearest.x - zPlayer.x);
-  }
-
-  // Shoot
-  const firing = zKeys[' '] || zKeys['Enter'] || zTouch.fire;
-  if(firing && zBulletCooldown <= 0){
-    const bspeed = 5;
-    zBullets.push({
-      x: zPlayer.x + zPlayer.w/2,
-      y: zPlayer.y + zPlayer.h/2,
-      vx: Math.cos(zPlayer.dir)*bspeed,
-      vy: Math.sin(zPlayer.dir)*bspeed,
-      life: 60
-    });
-    zBulletCooldown = 12;
-  }
+  // Auto-fire with space/enter (still available alongside click)
+  const autoFire = zKeys[' '] || zTouch.fire;
+  if(autoFire) zShoot();
   if(zBulletCooldown > 0) zBulletCooldown--;
 
   // Update bullets
   zBullets.forEach(b => { b.x += b.vx; b.y += b.vy; b.life--; });
-  zBullets = zBullets.filter(b => b.life > 0 && b.x > -5 && b.x < ZC.W+5 && b.y > -5 && b.y < ZC.H+5);
-
-  // Update zombies
-  zZombies.forEach(z => {
-    const ang = Math.atan2(zPlayer.y - z.y, zPlayer.x - z.x);
-    z.x += Math.cos(ang) * z.speed;
-    z.y += Math.sin(ang) * z.speed;
-    if(z.flash > 0) z.flash--;
-  });
 
   // Bullet–zombie collisions
   zBullets = zBullets.filter(b => {
+    if(b.life <= 0 || b.x<-10||b.x>ZC.W+10||b.y<-10||b.y>ZC.H+10) return false;
     let hit = false;
     zZombies.forEach(z => {
-      if(!hit && b.x > z.x && b.x < z.x+z.w && b.y > z.y && b.y < z.y+z.h){
-        z.hp--;
-        z.flash = 4;
+      if(hit && !b.rocket) return;
+      const dx = b.x - (z.x+z.w/2), dy = b.y - (z.y+z.h/2);
+      if(Math.hypot(dx,dy) < z.w/2 + b.r){
+        z.hp -= b.dmg;
+        z.flash = 5;
         hit = true;
         if(z.hp <= 0){
-          zScore += 10 * zWave;
-          // partículas de muerte
-          for(let i=0;i<6;i++) zParticles.push({
+          zScore += z.score * zWave;
+          for(let i=0;i<8;i++) zParticles.push({
             x:z.x+z.w/2, y:z.y+z.h/2,
-            vx:(Math.random()-0.5)*3, vy:(Math.random()-0.5)*3,
-            life:20, c:RED
+            vx:(Math.random()-0.5)*4, vy:(Math.random()-0.5)*4,
+            life:28+Math.random()*12, c:z.color, r:2,
           });
+          zBloodDecals.push({ x:z.x+z.w/2, y:z.y+z.h/2, r:4+Math.random()*5 });
+          document.getElementById('zScore').textContent = zScore;
+        }
+        if(b.rocket){
+          // Explosión en área
+          zParticles.push(...Array.from({length:16},()=>({
+            x:b.x, y:b.y,
+            vx:(Math.random()-0.5)*8, vy:(Math.random()-0.5)*8,
+            life:30, c:'#ff6600', r:3,
+          })));
+          // Daño splash
+          zZombies.forEach(z2 => {
+            if(Math.hypot(b.x-z2.x-z2.w/2, b.y-z2.y-z2.h/2) < 50){
+              z2.hp -= b.dmg * 0.5;
+              z2.flash = 8;
+            }
+          });
+          return false; // rocket siempre muere al impactar
         }
       }
     });
@@ -4383,108 +4342,334 @@ function zUpdate(){
   });
   zZombies = zZombies.filter(z => z.hp > 0);
 
-  // Player–zombie collisions
+  // Update zombies
   zZombies.forEach(z => {
-    if(zPlayer.x < z.x+z.w && zPlayer.x+zPlayer.w > z.x &&
-       zPlayer.y < z.y+z.h && zPlayer.y+zPlayer.h > z.y){
-      zLives--;
-      // knock player back
-      const ang = Math.atan2(zPlayer.y-z.y, zPlayer.x-z.x);
-      zPlayer.x += Math.cos(ang)*30;
-      zPlayer.y += Math.sin(ang)*30;
-      // flash
-      for(let i=0;i<8;i++) zParticles.push({
-        x:zPlayer.x+7, y:zPlayer.y+7,
-        vx:(Math.random()-0.5)*4, vy:(Math.random()-0.5)*4,
-        life:25, c:AMBER
-      });
-      document.getElementById('zLives').textContent = zLives;
-      if(zLives <= 0){
-        zState = 'dead';
-        showZombieOverlay('dead');
-        return;
+    const ang = Math.atan2(zPlayer.y - z.y, zPlayer.x - z.x);
+    z.x += Math.cos(ang) * z.speed;
+    z.y += Math.sin(ang) * z.speed;
+    if(z.flash > 0) z.flash--;
+    z.walkPhase += 0.12;
+
+    // Player collision
+    if(zPlayer.invFrames <= 0){
+      const dx = (zPlayer.x) - (z.x+z.w/2);
+      const dy = (zPlayer.y) - (z.y+z.h/2);
+      if(Math.hypot(dx,dy) < z.w/2 + 9){
+        zLives--;
+        zPlayer.invFrames = 90; // 1.5s invincible
+        const ang2 = Math.atan2(dy,dx);
+        zPlayer.x += Math.cos(ang2)*28;
+        zPlayer.y += Math.sin(ang2)*28;
+        for(let i=0;i<10;i++) zParticles.push({
+          x:zPlayer.x, y:zPlayer.y,
+          vx:(Math.random()-0.5)*5, vy:(Math.random()-0.5)*5,
+          life:30, c:AMBER, r:2,
+        });
+        document.getElementById('zLives').textContent = Math.max(0,zLives);
+        if(zLives <= 0){ zState='dead'; showZombieOverlay('dead'); }
       }
     }
   });
 
   // Particles
-  zParticles.forEach(p => { p.x+=p.vx; p.y+=p.vy; p.life--; });
+  zParticles.forEach(p => { p.x+=p.vx; p.y+=p.vy; p.life--; p.vx*=0.93; p.vy*=0.93; });
   zParticles = zParticles.filter(p => p.life > 0);
 
   // Wave clear
-  if(zZombies.length === 0){
+  if(zZombies.length === 0 && zState === 'playing'){
     zState = 'waveclear';
     zWave++;
     document.getElementById('zWave').textContent = zWave;
     showZombieOverlay('waveclear');
   }
+}
 
-  document.getElementById('zScore').textContent = zScore;
+/* ── Funciones de dibujo elaboradas ── */
+function drawFloor(ctx){
+  // Tablones de madera oscuros
+  ctx.fillStyle = ZDARK;
+  ctx.fillRect(0,0,ZC.W,ZC.H);
+  for(let y=0; y<ZC.H; y+=TILE){
+    ctx.strokeStyle = '#0a1608';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(ZC.W,y); ctx.stroke();
+  }
+  for(let x=0; x<ZC.W; x+=TILE*2){
+    ctx.strokeStyle = '#0a1608';
+    ctx.lineWidth = 0.3;
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,ZC.H); ctx.stroke();
+  }
+}
+
+function drawWalls(ctx){
+  // 4 ventanas — marcos elaborados con luz de luna
+  const wins = [
+    {x:0, y:60, w:18, h:80},
+    {x:0, y:260, w:18, h:80},
+    {x:ZC.W-18, y:60, w:18, h:80},
+    {x:ZC.W-18, y:260, w:18, h:80},
+  ];
+  // Paredes laterales
+  ctx.fillStyle = '#050f08';
+  ctx.fillRect(0, 0, 18, ZC.H);
+  ctx.fillRect(ZC.W-18, 0, 18, ZC.H);
+  ctx.fillRect(0, 0, ZC.W, 14);
+  ctx.fillRect(0, ZC.H-14, ZC.W, 14);
+
+  wins.forEach(w => {
+    // Marco de ventana
+    ctx.fillStyle = '#102818';
+    ctx.fillRect(w.x, w.y, w.w, w.h);
+    // luz de luna azulada
+    const grad = ctx.createLinearGradient(w.x, w.y, w.x+w.w, w.y+w.h);
+    grad.addColorStop(0,'rgba(100,180,255,0.08)');
+    grad.addColorStop(1,'rgba(100,180,255,0.02)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(w.x+2, w.y+2, w.w-4, w.h-4);
+    // rejas
+    ctx.strokeStyle = '#1a3a20';
+    ctx.lineWidth = 1.5;
+    for(let i=1;i<4;i++){
+      ctx.beginPath();
+      ctx.moveTo(w.x + w.w/4*i, w.y);
+      ctx.lineTo(w.x + w.w/4*i, w.y+w.h);
+      ctx.stroke();
+    }
+    ctx.beginPath();
+    ctx.moveTo(w.x, w.y + w.h/2);
+    ctx.lineTo(w.x+w.w, w.y + w.h/2);
+    ctx.stroke();
+    // borde iluminado
+    ctx.strokeStyle = 'rgba(100,200,255,0.15)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(w.x, w.y, w.w, w.h);
+  });
+}
+
+function drawBloodDecals(ctx){
+  ctx.globalAlpha = 0.4;
+  zBloodDecals.forEach(d => {
+    ctx.fillStyle = '#550010';
+    ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI*2); ctx.fill();
+    // splatter
+    ctx.fillStyle = '#330008';
+    ctx.beginPath(); ctx.arc(d.x+d.r*0.5, d.y-d.r*0.3, d.r*0.5, 0, Math.PI*2); ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+}
+
+function drawZombie(ctx, z, t){
+  const cx = z.x + z.w/2, cy = z.y + z.h/2;
+  const col = z.flash > 0 ? '#ffffff' : z.color;
+  const bob = Math.sin(z.walkPhase) * 1.5;
+  ctx.save(); ctx.translate(cx, cy + bob);
+
+  if(z.type === 'tank'){
+    // Zombie tanque: más gordo, cabeza cuadrada
+    ctx.fillStyle = col;
+    // cuerpo
+    ctx.fillRect(-7, -4, 14, 10);
+    // cabeza
+    ctx.fillRect(-5, -12, 10, 9);
+    // ojos
+    ctx.fillStyle = z.flash>0?'#f00':'#ff0000';
+    ctx.fillRect(-3,-9,2,2); ctx.fillRect(2,-9,2,2);
+    // brazos
+    ctx.fillStyle = col;
+    ctx.fillRect(-10,-3,3,7); ctx.fillRect(7,-3,3,7);
+    // piernas
+    const lk = Math.sin(z.walkPhase)*3;
+    ctx.fillRect(-5,6,3,5+lk); ctx.fillRect(2,6,3,5-lk);
+    // hp text
+    if(z.maxHp > 2){
+      ctx.fillStyle='#fff'; ctx.font='7px monospace'; ctx.textAlign='center';
+      ctx.fillText(`${z.hp}/${z.maxHp}`, 0, -14);
+    }
+  } else if(z.type === 'runner'){
+    // Runner: delgado, estirado
+    ctx.fillStyle = col;
+    ctx.fillRect(-3,-10,6,8);  // cuerpo
+    ctx.beginPath(); ctx.arc(0,-13,4,0,Math.PI*2); ctx.fill(); // cabeza pequeña
+    ctx.fillStyle = z.flash>0?'#f00':'#ffaa00';
+    ctx.fillRect(-2,-14,1,1); ctx.fillRect(1,-14,1,1); // ojos
+    // piernas muy rápidas
+    const lk2 = Math.sin(z.walkPhase*1.8)*5;
+    ctx.fillStyle = col;
+    ctx.fillRect(-3,-2,2,6+lk2); ctx.fillRect(1,-2,2,6-lk2);
+    ctx.fillRect(-5,-8,1,5); ctx.fillRect(4,-8,1,5);
+  } else {
+    // Normal zombie: cabeza redonda, cuerpo humanoide
+    ctx.fillStyle = col;
+    ctx.fillRect(-4,-3,8,8);   // cuerpo
+    ctx.beginPath(); ctx.arc(0,-6,5,0,Math.PI*2); ctx.fill(); // cabeza
+    ctx.fillStyle = z.flash>0?'#f00':'#ffcc00';
+    ctx.fillRect(-2,-8,2,2); ctx.fillRect(1,-8,2,2); // ojos X
+    ctx.fillStyle = col;
+    // boca abierta
+    ctx.fillStyle='#000'; ctx.fillRect(-2,-5,4,2);
+    // brazos extendidos
+    const arm = Math.sin(z.walkPhase*0.5)*4;
+    ctx.fillStyle = col;
+    ctx.fillRect(-8,-2,4,2+arm); ctx.fillRect(4,-2,4,2-arm);
+    // piernas
+    const lk = Math.sin(z.walkPhase)*4;
+    ctx.fillRect(-3,5,2,5+lk); ctx.fillRect(1,5,2,5-lk);
+    // sangre
+    ctx.fillStyle='#990020';
+    ctx.fillRect(-1,-3,1,4);
+  }
+
+  // Barra de vida
+  if(z.maxHp > 1){
+    ctx.fillStyle='#0a0a0a'; ctx.fillRect(-z.w/2,-z.h/2-7,z.w,4);
+    const pct = Math.max(0,z.hp/z.maxHp);
+    ctx.fillStyle = pct > 0.5 ? '#4dff6e' : pct > 0.25 ? AMBER : RED;
+    ctx.fillRect(-z.w/2,-z.h/2-7,z.w*pct,4);
+  }
+  ctx.restore();
+}
+
+function drawPlayer(ctx, p, t){
+  if(p.invFrames > 0 && Math.floor(t/80)%2===0) return; // parpadeo al ser dañado
+  const cx = p.x, cy = p.y;
+  const bob = Math.sin(t*0.01)*0.8;
+  ctx.save(); ctx.translate(cx, cy + bob);
+
+  // Sombra bajo el personaje
+  ctx.fillStyle='rgba(0,0,0,0.3)';
+  ctx.beginPath(); ctx.ellipse(0,10,8,3,0,0,Math.PI*2); ctx.fill();
+
+  // Cuerpo con abrigo
+  ctx.fillStyle='#2a5030';
+  ctx.fillRect(-5,-4,10,10);
+  // Cabeza
+  ctx.fillStyle='#e8d0a0';
+  ctx.beginPath(); ctx.arc(0,-8,6,0,Math.PI*2); ctx.fill();
+  // Ojos
+  ctx.fillStyle='#000';
+  ctx.fillRect(-3,-10,2,2); ctx.fillRect(1,-10,2,2);
+  // Boca recta
+  ctx.fillRect(-2,-6,4,1);
+  // Cabello
+  ctx.fillStyle='#3a2010';
+  ctx.fillRect(-5,-14,10,5);
+  ctx.beginPath(); ctx.arc(-5,-11,2,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(5,-11,2,0,Math.PI*2); ctx.fill();
+
+  // Arma en dirección del cursor
+  const w = getWeapon(zWave);
+  ctx.save();
+  ctx.rotate(p.dir);
+  if(w.rocket){
+    // Lanzacohetes
+    ctx.fillStyle='#607080'; ctx.fillRect(4,-2,16,4);
+    ctx.fillStyle='#ff4400'; ctx.beginPath(); ctx.arc(20,0,3,0,Math.PI*2); ctx.fill();
+  } else if(w.name==='SNIPER'){
+    // Rifle largo
+    ctx.fillStyle='#4a4a4a'; ctx.fillRect(4,-1.5,22,3);
+    ctx.fillStyle='#222'; ctx.fillRect(8,-1,4,1);
+    ctx.fillStyle='#888'; ctx.beginPath(); ctx.arc(26,0,1.5,0,Math.PI*2); ctx.fill();
+  } else if(w.name==='ESCOPETA'){
+    ctx.fillStyle='#6a4020'; ctx.fillRect(4,-2,14,4);
+    ctx.fillStyle='#333'; ctx.fillRect(4,-2,5,4);
+    ctx.fillStyle='#aaa'; ctx.fillRect(17,-1,2,2);
+  } else {
+    // Pistola / UZI
+    ctx.fillStyle='#333'; ctx.fillRect(4,-2,10,5);
+    ctx.fillStyle='#888'; ctx.fillRect(13,-2,3,4);
+    ctx.fillStyle='#555'; ctx.fillRect(6,-4,4,2);
+  }
+  ctx.restore();
+  ctx.restore();
+}
+
+function drawBullet(ctx, b){
+  ctx.save();
+  if(b.rocket){
+    ctx.translate(b.x, b.y);
+    ctx.rotate(Math.atan2(b.vy, b.vx));
+    ctx.fillStyle='#ff4400';
+    ctx.fillRect(-5,-2,10,4);
+    ctx.fillStyle='#ffaa00';
+    ctx.fillRect(-9,-1,4,2);
+  } else {
+    ctx.fillStyle = b.color;
+    ctx.shadowColor = b.color;
+    ctx.shadowBlur = 6;
+    ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+  ctx.restore();
+}
+
+function drawHUDWeapon(ctx, wave){
+  const w = getWeapon(wave);
+  ctx.fillStyle = 'rgba(2,8,2,0.6)';
+  ctx.fillRect(ZC.W-130, ZC.H-32, 128, 28);
+  ctx.strokeStyle = ZLIGHT; ctx.lineWidth=1;
+  ctx.strokeRect(ZC.W-130, ZC.H-32, 128, 28);
+  ctx.fillStyle = w.color;
+  ctx.font = 'bold 11px JetBrains Mono, monospace';
+  ctx.textAlign = 'right';
+  ctx.fillText('⚡ ' + w.name, ZC.W-8, ZC.H-14);
+  // cooldown bar
+  const cdPct = 1 - zBulletCooldown/w.cd;
+  ctx.fillStyle='#1a3020'; ctx.fillRect(ZC.W-128, ZC.H-10, 120, 4);
+  ctx.fillStyle=w.color; ctx.fillRect(ZC.W-128, ZC.H-10, 120*cdPct, 4);
 }
 
 function zDraw(){
-  zCtx.fillStyle = ZDARK;
-  zCtx.fillRect(0, 0, ZC.W, ZC.H);
-
-  // Grid de puntos sutil
-  zCtx.fillStyle = '#0a1a0a';
-  for(let x=0; x<ZC.W; x+=TILE) for(let y=0; y<ZC.H; y+=TILE){
-    zCtx.fillRect(x, y, 1, 1);
-  }
+  const t = Date.now();
+  drawFloor(zCtx);
+  drawBloodDecals(zCtx);
+  drawWalls(zCtx);
 
   // Partículas
   zParticles.forEach(p => {
-    zCtx.globalAlpha = p.life / 25;
+    zCtx.globalAlpha = Math.max(0, p.life/28);
     zCtx.fillStyle = p.c;
-    zCtx.fillRect(p.x-2, p.y-2, 4, 4);
+    zCtx.beginPath(); zCtx.arc(p.x, p.y, p.r||2, 0, Math.PI*2); zCtx.fill();
   });
   zCtx.globalAlpha = 1;
 
   // Zombies
-  zZombies.forEach(z => {
-    zCtx.fillStyle = z.flash > 0 ? '#fff' : RED;
-    zCtx.font = `${z.w}px JetBrains Mono, monospace`;
-    zCtx.textAlign = 'center';
-    zCtx.fillText('Z', z.x + z.w/2, z.y + z.h);
-    // barra de vida si tiene más de 1 hp
-    if(z.maxHp > 1){
-      zCtx.fillStyle = '#1a0a0a';
-      zCtx.fillRect(z.x, z.y-5, z.w, 3);
-      zCtx.fillStyle = RED;
-      zCtx.fillRect(z.x, z.y-5, z.w * (z.hp/z.maxHp), 3);
-    }
-  });
+  zZombies.forEach(z => drawZombie(zCtx, z, t));
 
   // Balas
-  zCtx.fillStyle = AMBER;
-  zBullets.forEach(b => {
-    zCtx.beginPath();
-    zCtx.arc(b.x, b.y, 3, 0, Math.PI*2);
-    zCtx.fill();
-  });
+  zBullets.forEach(b => drawBullet(zCtx, b));
 
-  // Player — ASCII (lol) apuntando
-  zCtx.fillStyle = GREEN;
-  zCtx.font = '11px JetBrains Mono, monospace';
-  zCtx.textAlign = 'center';
-  const px = zPlayer.x + zPlayer.w/2;
-  const py = zPlayer.y + zPlayer.h/2;
-  zCtx.fillText('(lol)', px, py - 4);
-  // dirección de disparo
-  const tipX = px + Math.cos(zPlayer.dir) * 12;
-  const tipY = py + Math.sin(zPlayer.dir) * 12;
-  zCtx.strokeStyle = '#4dff6e66';
-  zCtx.lineWidth = 1;
-  zCtx.beginPath(); zCtx.moveTo(px, py); zCtx.lineTo(tipX, tipY); zCtx.stroke();
+  // Player
+  drawPlayer(zCtx, zPlayer, t);
+
+  // Crosshair en cursor
+  if(zState === 'playing'){
+    zCtx.strokeStyle='rgba(77,255,110,0.6)'; zCtx.lineWidth=1;
+    const cx=zMouseX, cy=zMouseY, s=8;
+    zCtx.beginPath(); zCtx.moveTo(cx-s,cy); zCtx.lineTo(cx+s,cy); zCtx.stroke();
+    zCtx.beginPath(); zCtx.moveTo(cx,cy-s); zCtx.lineTo(cx,cy+s); zCtx.stroke();
+    zCtx.beginPath(); zCtx.arc(cx,cy,4,0,Math.PI*2); zCtx.stroke();
+    // linea hacia cursor
+    const tipX = zPlayer.x + Math.cos(zPlayer.dir)*14;
+    const tipY = zPlayer.y + Math.sin(zPlayer.dir)*14;
+    zCtx.strokeStyle='rgba(77,255,110,0.2)'; zCtx.lineWidth=1;
+    zCtx.setLineDash([3,6]);
+    zCtx.beginPath(); zCtx.moveTo(tipX,tipY); zCtx.lineTo(cx,cy); zCtx.stroke();
+    zCtx.setLineDash([]);
+  }
+
+  // HUD arma
+  drawHUDWeapon(zCtx, zWave);
 
   // Waiting overlay
   if(zState === 'waiting'){
-    zCtx.fillStyle = 'rgba(2,8,2,0.7)';
+    zCtx.fillStyle = 'rgba(2,8,2,0.75)';
     zCtx.fillRect(0,0,ZC.W,ZC.H);
     zCtx.fillStyle = GREEN;
-    zCtx.font = 'bold 18px VT323, monospace';
+    zCtx.font = 'bold 22px VT323, monospace';
     zCtx.textAlign = 'center';
-    zCtx.fillText('ESPACIO / FUEGO para comenzar', ZC.W/2, ZC.H/2);
+    zCtx.fillText('CLICK / ESPACIO para comenzar', ZC.W/2, ZC.H/2);
+    zCtx.font='12px JetBrains Mono,monospace'; zCtx.fillStyle='#1a4020';
+    zCtx.fillText('WASD mover · click apuntar · espacio disparar', ZC.W/2, ZC.H/2+22);
   }
 }
 
@@ -4500,52 +4685,48 @@ function zombieLoop(ts){
 
 function showZombieOverlay(type){
   const ov = document.getElementById('zombieOverlay');
-  const t = document.getElementById('zoTitle');
-  const s = document.getElementById('zoSub');
-  const b = document.getElementById('zoBtn');
+  const t  = document.getElementById('zoTitle');
+  const s  = document.getElementById('zoSub');
+  const b  = document.getElementById('zoBtn');
   ov.classList.add('show');
   if(type==='dead'){
-    t.textContent = 'GAME OVER'; t.className='zo-title dead';
-    s.textContent = `Puntos: ${zScore} · Oleada: ${zWave}`;
-    b.textContent = '[ REINTENTAR ]';
-    b.onclick = reiniciarZombies;
+    t.textContent='GAME OVER'; t.className='zo-title dead';
+    s.textContent=`Puntos: ${zScore} · Oleada: ${zWave}`;
+    b.textContent='[ REINTENTAR ]'; b.onclick=reiniciarZombies;
   } else {
-    t.textContent = `OLEADA ${zWave-1} SUPERADA`; t.className='zo-title win';
-    s.textContent = `Puntos: ${zScore}`;
-    b.textContent = '[ SIGUIENTE OLEADA ]';
-    b.onclick = () => { ov.classList.remove('show'); zState='playing'; spawnWave(zWave); };
+    const next = getWeapon(zWave);
+    t.textContent=`OLEADA ${zWave-1} SUPERADA`; t.className='zo-title win';
+    s.textContent=`Puntos: ${zScore} · Próxima arma: ${next.name}`;
+    b.textContent='[ SIGUIENTE OLEADA ]';
+    b.onclick=()=>{ ov.classList.remove('show'); zState='playing'; spawnWave(zWave); };
   }
 }
 
 function reiniciarZombies(){
-  zScore=0; zWave=1; zLives=3; zBullets=[]; zParticles=[]; zZombies=[];
-  zPlayer.x=ZC.W/2; zPlayer.y=ZC.H/2;
+  zScore=0; zWave=1; zLives=3;
+  zBullets=[]; zParticles=[]; zZombies=[]; zBloodDecals=[];
+  zPlayer.x=ZC.W/2; zPlayer.y=ZC.H/2; zPlayer.invFrames=0;
   document.getElementById('zLives').textContent=3;
   document.getElementById('zWave').textContent=1;
   document.getElementById('zScore').textContent=0;
   document.getElementById('zombieOverlay').classList.remove('show');
-  spawnWave(1);
-  zState='playing';
+  spawnWave(1); zState='playing';
 }
 window.reiniciarZombies = reiniciarZombies;
 
 function abrirZombies(){
-  // Cerrar cuarto secreto primero (fade)
   cerrarSecreto();
   setTimeout(() => {
     zombieBackdrop.classList.add('open');
-    zState='waiting';
-    zScore=0; zWave=1; zLives=3; zBullets=[]; zParticles=[]; zZombies=[];
-    zPlayer.x=ZC.W/2; zPlayer.y=ZC.H/2;
+    zScore=0; zWave=1; zLives=3;
+    zBullets=[]; zParticles=[]; zZombies=[]; zBloodDecals=[];
+    zPlayer.x=ZC.W/2; zPlayer.y=ZC.H/2; zPlayer.invFrames=0;
     document.getElementById('zLives').textContent=3;
     document.getElementById('zWave').textContent=1;
     document.getElementById('zScore').textContent=0;
     document.getElementById('zombieOverlay').classList.remove('show');
-    spawnWave(1);
-    if(!zAnimId){
-      zLastTime = performance.now();
-      zAnimId = requestAnimationFrame(zombieLoop);
-    }
+    zState='waiting'; spawnWave(1);
+    if(!zAnimId){ zLastTime=performance.now(); zAnimId=requestAnimationFrame(zombieLoop); }
   }, 500);
 }
 window.abrirZombies = abrirZombies;
@@ -4557,7 +4738,7 @@ function cerrarZombies(){
 }
 window.cerrarZombies = cerrarZombies;
 
-// Keyboard for zombies
+// Keyboard
 document.addEventListener('keydown', e => {
   zKeys[e.key]=true;
   if(zombieBackdrop.classList.contains('open')){
@@ -4565,26 +4746,25 @@ document.addEventListener('keydown', e => {
     if((e.key===' '||e.key==='Enter') && zState==='waiting'){
       zState='playing'; document.getElementById('zombieMsg').textContent='';
     }
-    e.key===' ' && e.preventDefault();
+    if(e.key===' ') e.preventDefault();
   }
 });
 document.addEventListener('keyup', e => { zKeys[e.key]=false; });
 
-// Touch D-pad for zombies
+// Touch D-pad
 ['zBtnUp','zBtnDown','zBtnLeft','zBtnRight','zBtnFire'].forEach(id => {
   const el = document.getElementById(id);
   if(!el) return;
   const dir = id.replace('zBtn','').toLowerCase();
   el.addEventListener('touchstart', e => {
-    e.preventDefault();
-    zTouch[dir]=true;
+    e.preventDefault(); zTouch[dir]=true;
     if(dir==='fire' && zState==='waiting'){
       zState='playing'; document.getElementById('zombieMsg').textContent='';
     }
   }, {passive:false});
   el.addEventListener('touchend', () => { zTouch[dir]=false; });
   el.addEventListener('mousedown', () => { zTouch[dir]=true; });
-  el.addEventListener('mouseup', () => { zTouch[dir]=false; });
+  el.addEventListener('mouseup',   () => { zTouch[dir]=false; });
 });
 
 /* ============================================================
@@ -4598,8 +4778,3 @@ loadTiendaFromSheet();
 </script>
 </body>
 </html>
-
-
-
-
-
