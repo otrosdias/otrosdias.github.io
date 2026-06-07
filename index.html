@@ -656,6 +656,194 @@ body.inverted .crt-overlay{ mix-blend-mode: screen; opacity: 0.3; }
 .secreto-backdrop.luz-apagada{ background: #000; }
 
 /* ============================================
+   KONAMI HINT — aparece dentro del cuarto secreto
+============================================ */
+.konami-hint{
+  position: absolute;
+  bottom: 5%; left: 50%; transform: translateX(-50%);
+  font-size: 9px; letter-spacing: 0.16em;
+  color: var(--fg-muted); opacity: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: opacity 0.6s;
+  pointer-events: none;
+  z-index: 4;
+}
+.konami-hint.visible{ opacity: 1; }
+.konami-hint .kh-seq{
+  color: var(--magenta);
+  display: block;
+  text-align: center;
+  margin-top: 3px;
+  letter-spacing: 0.22em;
+}
+/* barra de progreso del konami */
+.konami-bar{
+  position: absolute;
+  bottom: 3.5%; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 5px;
+  z-index: 5; pointer-events: none;
+}
+.konami-pip{
+  width: 8px; height: 8px;
+  border: 1px solid var(--fg-muted);
+  transition: background 0.15s, border-color 0.15s;
+}
+.konami-pip.done{ background: var(--magenta); border-color: var(--magenta); }
+
+/* mobile konami button */
+.konami-mobile-btn{
+  position: absolute;
+  bottom: 6%; left: 20px;
+  font-size: 9px; letter-spacing: 0.12em;
+  color: var(--fg-muted);
+  background: transparent;
+  border: 1px dashed var(--line);
+  padding: 5px 10px;
+  cursor: pointer;
+  z-index: 6;
+  display: none;
+  transition: all 0.2s;
+}
+.konami-mobile-btn:hover{ color: var(--amber); border-color: var(--amber); background: transparent; }
+@media(max-width:700px){ .konami-mobile-btn{ display: block; } }
+
+/* ============================================
+   HABITACIÓN ZOMBIES — nivel 3
+============================================ */
+.zombie-backdrop{
+  position: fixed; inset: 0;
+  background: #020802;
+  z-index: 950;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.5s, visibility 0.5s;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.zombie-backdrop.open{ opacity: 1; visibility: visible; }
+
+.zombie-header{
+  position: absolute; top: 0; left: 0; right: 0;
+  padding: 12px 20px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid #0f2010;
+  z-index: 10;
+}
+.zombie-title{
+  font-family: var(--font-crt);
+  font-size: clamp(18px, 3vw, 32px);
+  color: #4dff6e;
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 10px rgba(77,255,110,0.4);
+}
+.zombie-hud{
+  display: flex; gap: 20px; align-items: center;
+  font-size: 11px; letter-spacing: 0.12em; color: #4dff6e;
+}
+.zombie-hud span b{ color: #fff; }
+.zombie-close-btn{
+  background: transparent; border: 1px solid #1a3020;
+  color: #4dff6e; font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.12em;
+  padding: 4px 10px; cursor: pointer;
+  transition: all 0.15s;
+}
+.zombie-close-btn:hover{ border-color: #4dff6e; background: transparent; }
+
+#zombieCanvas{
+  display: block;
+  background: #020802;
+  image-rendering: pixelated;
+  border: 1px solid #0f2010;
+  max-width: min(90vw, 600px);
+  max-height: min(70vh, 400px);
+  width: 100%;
+  height: auto;
+  cursor: none;
+}
+
+/* touch controls mobile */
+.zombie-touch{
+  display: none;
+  position: absolute;
+  bottom: 20px; left: 0; right: 0;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 10;
+}
+@media(max-width:700px){ .zombie-touch{ display: flex; } }
+.z-dpad{
+  display: grid;
+  grid-template-columns: repeat(3, 44px);
+  grid-template-rows: repeat(3, 44px);
+  gap: 3px;
+}
+.z-dpad button{
+  background: rgba(77,255,110,0.08);
+  border: 1px solid #1a3020;
+  color: #4dff6e; font-size: 16px;
+  cursor: pointer; border-radius: 0;
+  font-family: var(--font-mono);
+  touch-action: none;
+}
+.z-dpad button:active{ background: rgba(77,255,110,0.25); }
+.z-fire-btn{
+  width: 90px; height: 90px; align-self: center;
+  background: rgba(255,45,111,0.12);
+  border: 2px solid #ff2d6f;
+  color: #ff2d6f; font-size: 28px;
+  cursor: pointer; border-radius: 50%;
+  font-family: var(--font-mono);
+  display: flex; align-items: center; justify-content: center;
+  touch-action: none;
+}
+.z-fire-btn:active{ background: rgba(255,45,111,0.3); }
+
+.zombie-msg{
+  font-size: 10px; letter-spacing: 0.15em;
+  color: #4dff6e; margin-top: 8px;
+  min-height: 16px; text-align: center;
+}
+.zombie-controls{
+  font-size: 9px; letter-spacing: 0.12em;
+  color: #1a4020; text-align: center;
+  margin-top: 4px;
+}
+.zombie-controls .key{
+  border: 1px solid #1a4020; padding: 1px 5px; margin: 0 2px;
+}
+/* game over / level up overlay */
+.zombie-overlay{
+  position: absolute; inset: 0;
+  background: rgba(2,8,2,0.88);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.4s;
+  z-index: 8;
+  pointer-events: none;
+}
+.zombie-overlay.show{ opacity: 1; visibility: visible; pointer-events: auto; }
+.zo-title{
+  font-family: var(--font-crt);
+  font-size: clamp(32px, 6vw, 64px);
+  letter-spacing: 0.06em; text-align: center;
+  margin-bottom: 10px;
+}
+.zo-title.dead{ color: #ff2d6f; text-shadow: 0 0 20px rgba(255,45,111,0.5); }
+.zo-title.win{ color: #4dff6e; text-shadow: 0 0 20px rgba(77,255,110,0.5); }
+.zo-sub{ font-size: 11px; letter-spacing: 0.2em; color: #4dff6e; margin-bottom: 24px; }
+.zo-btn{
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.15em; padding: 10px 24px;
+  background: transparent; border: 1px solid #4dff6e;
+  color: #4dff6e; cursor: pointer;
+  transition: all 0.15s;
+}
+.zo-btn:hover{ background: #4dff6e; color: #020802; }
+
+/* ============================================
    HABITACIÓN DE TIMOTEO — Ping Pong
 ============================================ */
 .timoteo-backdrop{
@@ -2308,6 +2496,88 @@ Timoteo</div>
 |     | |   | |  |__|_|_|_|__|  |  _|_  |                 |
 |_____|_|___|_|_________________|_|___|_|_________________|
     </div>
+
+    <!-- Konami hint (aparece después de 8s dentro del cuarto) -->
+    <div class="konami-hint" id="konamiHint">
+      hay algo más aquí
+      <span class="kh-seq" id="konamiSeq">↑ ↑ ↓ ↓ ← → ← → B A</span>
+    </div>
+
+    <!-- Barra de progreso konami -->
+    <div class="konami-bar" id="konamiBar"></div>
+
+    <!-- Botón mobile para ejecutar konami en celular -->
+    <button class="konami-mobile-btn" id="konamiMobileBtn" onclick="mostrarInstruccionesKonami()">
+      [ acceso nivel 3 ]
+    </button>
+
+  </div>
+</div>
+
+<!-- HABITACIÓN ZOMBIES — nivel 3 -->
+<div class="zombie-backdrop" id="zombieBackdrop">
+  <div class="zombie-header">
+    <div class="zombie-title">OTROSDIAS/MUERTOS</div>
+    <div class="zombie-hud">
+      <span>VIDAS: <b id="zLives">3</b></span>
+      <span>OLEADA: <b id="zWave">1</b></span>
+      <span>PUNTOS: <b id="zScore">0</b></span>
+    </div>
+    <button class="zombie-close-btn" onclick="cerrarZombies()">[ ESC ]</button>
+  </div>
+
+  <canvas id="zombieCanvas" width="600" height="400"></canvas>
+  <div class="zombie-msg" id="zombieMsg">presiona ESPACIO o toca FUEGO para comenzar</div>
+  <div class="zombie-controls">
+    <span class="key">WASD</span> mover &nbsp;·&nbsp;
+    <span class="key">ESPACIO</span> disparar &nbsp;·&nbsp;
+    móvil: D-pad + botón rojo
+  </div>
+
+  <!-- Touch controls para móvil -->
+  <div class="zombie-touch">
+    <div class="z-dpad">
+      <div></div>
+      <button id="zBtnUp" style="grid-column:2;grid-row:1">↑</button>
+      <div></div>
+      <button id="zBtnLeft" style="grid-column:1;grid-row:2">←</button>
+      <div></div>
+      <button id="zBtnRight" style="grid-column:3;grid-row:2">→</button>
+      <div></div>
+      <button id="zBtnDown" style="grid-column:2;grid-row:3">↓</button>
+      <div></div>
+    </div>
+    <button class="z-fire-btn" id="zBtnFire">◉</button>
+  </div>
+
+  <!-- Overlay game over / wave clear -->
+  <div class="zombie-overlay" id="zombieOverlay">
+    <div class="zo-title" id="zoTitle">GAME OVER</div>
+    <div class="zo-sub" id="zoSub">— — —</div>
+    <button class="zo-btn" id="zoBtn" onclick="reiniciarZombies()">[ REINTENTAR ]</button>
+  </div>
+</div>
+
+<!-- Modal instrucciones Konami para móvil -->
+<div style="position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:960;display:none;align-items:center;justify-content:center;padding:20px;" id="konamiMobileModal">
+  <div style="background:#0a0a0a;border:1px solid var(--magenta);max-width:360px;width:100%;padding:24px;font-family:var(--font-mono);color:var(--fg);">
+    <div style="font-family:var(--font-crt);font-size:28px;color:var(--magenta);margin-bottom:10px;">ACCESO / NIVEL 3</div>
+    <div style="font-size:10px;letter-spacing:0.15em;color:var(--fg-dim);margin-bottom:18px;">// INSTRUCCIONES PARA MÓVIL</div>
+    <div style="font-size:12px;line-height:1.9;color:var(--fg-dim);">
+      El código Konami en computadora es:<br>
+      <span style="color:var(--magenta);font-size:14px;letter-spacing:0.2em;">↑ ↑ ↓ ↓ ← → ← → B A</span><br><br>
+      En tu celular, toca los botones del D-pad en este orden <b>exacto</b> mientras estás en el cuarto secreto:<br><br>
+      <span style="color:var(--amber);">
+        ARRIBA · ARRIBA · ABAJO · ABAJO<br>
+        IZQ · DER · IZQ · DER<br>
+        B · A
+      </span><br><br>
+      <span style="color:var(--fg-muted);font-size:10px;">
+        Los botones B y A aparecerán en pantalla<br>
+        una vez que completes las direcciones.
+      </span>
+    </div>
+    <button onclick="document.getElementById('konamiMobileModal').style.display='none'" style="margin-top:20px;width:100%;background:var(--magenta);border:none;color:#fff;font-family:var(--font-mono);font-size:11px;letter-spacing:0.15em;padding:12px;cursor:pointer;">[ ENTENDIDO ]</button>
   </div>
 </div>
 
@@ -3457,15 +3727,6 @@ const MENSAJES_CIFRADOS = [
 ];
 let msgIdx = 0;
 
-function abrirSecreto(){
-  secretoAbierto = true;
-  secretoBackdrop.classList.add('open');
-  document.getElementById('secreto-msg-item').querySelector('.si-art').textContent =
-    MENSAJES_CIFRADOS[msgIdx % MENSAJES_CIFRADOS.length];
-  msgIdx++;
-  document.getElementById('secreto-msg-item').addEventListener('click', rotateMsg);
-}
-
 function rotateMsg(){
   const el = document.getElementById('secreto-msg-item').querySelector('.si-art');
   el.style.opacity = '0';
@@ -3480,6 +3741,8 @@ function rotateMsg(){
 function cerrarSecreto(){
   secretoBackdrop.classList.remove('open');
   secretoAbierto = false;
+  if(konamiHintTimer) clearTimeout(konamiHintTimer);
+  document.getElementById('konamiHint').classList.remove('visible');
 }
 window.cerrarSecreto = cerrarSecreto;
 
@@ -3911,6 +4174,417 @@ ticketBackdrop.addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => {
   if(e.key === 'Escape' && ticketBackdrop.classList.contains('open')) cerrarTicket();
+});
+
+/* ============================================================
+   KONAMI CODE — detector dentro del cuarto secreto
+   Secuencia: ↑ ↑ ↓ ↓ ← → ← → B A
+============================================================ */
+const KONAMI_SEQ = [
+  'ArrowUp','ArrowUp','ArrowDown','ArrowDown',
+  'ArrowLeft','ArrowRight','ArrowLeft','ArrowRight',
+  'b','a'
+];
+// Mobile pips map (tap orden en d-pad)
+const KONAMI_MOBILE_MAP = ['up','up','down','down','left','right','left','right','b','a'];
+let konamiIdx = 0;
+let konamiHintTimer = null;
+
+function buildKonamiBar(){
+  const bar = document.getElementById('konamiBar');
+  bar.innerHTML = '';
+  KONAMI_SEQ.forEach((_,i) => {
+    const pip = document.createElement('div');
+    pip.className = 'konami-pip';
+    pip.id = `kpip-${i}`;
+    bar.appendChild(pip);
+  });
+}
+
+function konamiAdvance(key){
+  if(!document.getElementById('secretoBackdrop').classList.contains('open')) return;
+  const expected = KONAMI_SEQ[konamiIdx];
+  if(key.toLowerCase() === expected.toLowerCase()){
+    document.getElementById(`kpip-${konamiIdx}`)?.classList.add('done');
+    konamiIdx++;
+    if(konamiIdx >= KONAMI_SEQ.length){
+      konamiIdx = 0;
+      buildKonamiBar(); // reset pips
+      setTimeout(abrirZombies, 300);
+    }
+  } else {
+    // reset pero mantener progreso si solo fue una tecla equivocada al principio
+    if(konamiIdx > 0){
+      konamiIdx = 0;
+      buildKonamiBar();
+    }
+  }
+}
+
+// Keyboard konami (solo dentro del cuarto secreto)
+document.addEventListener('keydown', e => {
+  if(!document.getElementById('secretoBackdrop').classList.contains('open')) return;
+  konamiAdvance(e.key);
+});
+
+// Mobile konami — botones virtuales en el cuarto secreto
+// Los botones del hint móvil llaman konamiMobileTap(dir)
+function konamiMobileTap(dir){
+  konamiAdvance(
+    dir === 'up'    ? 'ArrowUp'    :
+    dir === 'down'  ? 'ArrowDown'  :
+    dir === 'left'  ? 'ArrowLeft'  :
+    dir === 'right' ? 'ArrowRight' : dir
+  );
+}
+window.konamiMobileTap = konamiMobileTap;
+
+function mostrarInstruccionesKonami(){
+  document.getElementById('konamiMobileModal').style.display = 'flex';
+}
+window.mostrarInstruccionesKonami = mostrarInstruccionesKonami;
+
+// Mostrar hint 8s después de abrir el cuarto secreto
+const _origAbrirSecreto = window.abrirSecreto || function(){};
+function abrirSecreto(){
+  secretoAbierto = true;
+  secretoBackdrop.classList.add('open');
+  document.getElementById('secreto-msg-item').querySelector('.si-art').textContent =
+    MENSAJES_CIFRADOS[msgIdx % MENSAJES_CIFRADOS.length];
+  msgIdx++;
+  document.getElementById('secreto-msg-item').addEventListener('click', rotateMsg);
+  buildKonamiBar();
+  konamiIdx = 0;
+  // Hint aparece a los 8s
+  if(konamiHintTimer) clearTimeout(konamiHintTimer);
+  konamiHintTimer = setTimeout(() => {
+    document.getElementById('konamiHint').classList.add('visible');
+  }, 8000);
+}
+
+/* ============================================================
+   JUEGO DE ZOMBIES — nivel 3
+   Canvas ASCII, oleadas, disparo, top-down shooter
+============================================================ */
+const zCanvas = document.getElementById('zombieCanvas');
+const zCtx = zCanvas.getContext('2d');
+const zombieBackdrop = document.getElementById('zombieBackdrop');
+
+const ZC = { W: 600, H: 400 };
+const TILE = 16;
+const GREEN = '#4dff6e';
+const RED   = '#ff2d6f';
+const AMBER = '#f0b81b';
+const ZDARK = '#020802';
+
+let zState = 'waiting'; // waiting | playing | dead | waveclear
+let zScore = 0, zWave = 1, zLives = 3;
+let zAnimId = null, zLastTime = 0;
+const Z_STEP = 1000 / 60;
+
+// Player
+const zPlayer = { x: ZC.W/2, y: ZC.H/2, w: 14, h: 14, speed: 2.2, dir: 0 };
+// Bullets
+let zBullets = [];
+let zBulletCooldown = 0;
+// Zombies
+let zZombies = [];
+// Keys
+const zKeys = {};
+// Touch state
+const zTouch = { up:false, down:false, left:false, right:false, fire:false };
+// Particles
+let zParticles = [];
+
+function spawnWave(wave){
+  zZombies = [];
+  const count = 4 + wave * 2;
+  for(let i = 0; i < count; i++){
+    // Spawnear en los bordes
+    const side = Math.floor(Math.random()*4);
+    let x, y;
+    if(side===0){ x=Math.random()*ZC.W; y=-16; }
+    else if(side===1){ x=ZC.W+16; y=Math.random()*ZC.H; }
+    else if(side===2){ x=Math.random()*ZC.W; y=ZC.H+16; }
+    else{ x=-16; y=Math.random()*ZC.H; }
+    const speed = 0.5 + Math.random()*0.4 + wave*0.1;
+    const hp = 1 + Math.floor(wave/3);
+    zZombies.push({ x, y, w:12, h:12, speed, hp, maxHp:hp, flash:0 });
+  }
+}
+
+function zUpdate(){
+  if(zState !== 'playing') return;
+
+  // Player movement
+  let dx=0, dy=0;
+  if(zKeys['w']||zKeys['W']||zKeys['ArrowUp']   ||zTouch.up)    dy=-zPlayer.speed;
+  if(zKeys['s']||zKeys['S']||zKeys['ArrowDown'] ||zTouch.down)  dy= zPlayer.speed;
+  if(zKeys['a']||zKeys['A']||zKeys['ArrowLeft'] ||zTouch.left)  dx=-zPlayer.speed;
+  if(zKeys['d']||zKeys['D']||zKeys['ArrowRight']||zTouch.right) dx= zPlayer.speed;
+  if(dx && dy){ dx*=0.707; dy*=0.707; }
+  zPlayer.x = Math.max(0, Math.min(ZC.W - zPlayer.w, zPlayer.x + dx));
+  zPlayer.y = Math.max(0, Math.min(ZC.H - zPlayer.h, zPlayer.y + dy));
+
+  // Auto-aim: face nearest zombie
+  if(zZombies.length){
+    const nearest = zZombies.reduce((a,b) =>
+      Math.hypot(b.x-zPlayer.x,b.y-zPlayer.y) < Math.hypot(a.x-zPlayer.x,a.y-zPlayer.y) ? b : a);
+    zPlayer.dir = Math.atan2(nearest.y - zPlayer.y, nearest.x - zPlayer.x);
+  }
+
+  // Shoot
+  const firing = zKeys[' '] || zKeys['Enter'] || zTouch.fire;
+  if(firing && zBulletCooldown <= 0){
+    const bspeed = 5;
+    zBullets.push({
+      x: zPlayer.x + zPlayer.w/2,
+      y: zPlayer.y + zPlayer.h/2,
+      vx: Math.cos(zPlayer.dir)*bspeed,
+      vy: Math.sin(zPlayer.dir)*bspeed,
+      life: 60
+    });
+    zBulletCooldown = 12;
+  }
+  if(zBulletCooldown > 0) zBulletCooldown--;
+
+  // Update bullets
+  zBullets.forEach(b => { b.x += b.vx; b.y += b.vy; b.life--; });
+  zBullets = zBullets.filter(b => b.life > 0 && b.x > -5 && b.x < ZC.W+5 && b.y > -5 && b.y < ZC.H+5);
+
+  // Update zombies
+  zZombies.forEach(z => {
+    const ang = Math.atan2(zPlayer.y - z.y, zPlayer.x - z.x);
+    z.x += Math.cos(ang) * z.speed;
+    z.y += Math.sin(ang) * z.speed;
+    if(z.flash > 0) z.flash--;
+  });
+
+  // Bullet–zombie collisions
+  zBullets = zBullets.filter(b => {
+    let hit = false;
+    zZombies.forEach(z => {
+      if(!hit && b.x > z.x && b.x < z.x+z.w && b.y > z.y && b.y < z.y+z.h){
+        z.hp--;
+        z.flash = 4;
+        hit = true;
+        if(z.hp <= 0){
+          zScore += 10 * zWave;
+          // partículas de muerte
+          for(let i=0;i<6;i++) zParticles.push({
+            x:z.x+z.w/2, y:z.y+z.h/2,
+            vx:(Math.random()-0.5)*3, vy:(Math.random()-0.5)*3,
+            life:20, c:RED
+          });
+        }
+      }
+    });
+    return !hit;
+  });
+  zZombies = zZombies.filter(z => z.hp > 0);
+
+  // Player–zombie collisions
+  zZombies.forEach(z => {
+    if(zPlayer.x < z.x+z.w && zPlayer.x+zPlayer.w > z.x &&
+       zPlayer.y < z.y+z.h && zPlayer.y+zPlayer.h > z.y){
+      zLives--;
+      // knock player back
+      const ang = Math.atan2(zPlayer.y-z.y, zPlayer.x-z.x);
+      zPlayer.x += Math.cos(ang)*30;
+      zPlayer.y += Math.sin(ang)*30;
+      // flash
+      for(let i=0;i<8;i++) zParticles.push({
+        x:zPlayer.x+7, y:zPlayer.y+7,
+        vx:(Math.random()-0.5)*4, vy:(Math.random()-0.5)*4,
+        life:25, c:AMBER
+      });
+      document.getElementById('zLives').textContent = zLives;
+      if(zLives <= 0){
+        zState = 'dead';
+        showZombieOverlay('dead');
+        return;
+      }
+    }
+  });
+
+  // Particles
+  zParticles.forEach(p => { p.x+=p.vx; p.y+=p.vy; p.life--; });
+  zParticles = zParticles.filter(p => p.life > 0);
+
+  // Wave clear
+  if(zZombies.length === 0){
+    zState = 'waveclear';
+    zWave++;
+    document.getElementById('zWave').textContent = zWave;
+    showZombieOverlay('waveclear');
+  }
+
+  document.getElementById('zScore').textContent = zScore;
+}
+
+function zDraw(){
+  zCtx.fillStyle = ZDARK;
+  zCtx.fillRect(0, 0, ZC.W, ZC.H);
+
+  // Grid de puntos sutil
+  zCtx.fillStyle = '#0a1a0a';
+  for(let x=0; x<ZC.W; x+=TILE) for(let y=0; y<ZC.H; y+=TILE){
+    zCtx.fillRect(x, y, 1, 1);
+  }
+
+  // Partículas
+  zParticles.forEach(p => {
+    zCtx.globalAlpha = p.life / 25;
+    zCtx.fillStyle = p.c;
+    zCtx.fillRect(p.x-2, p.y-2, 4, 4);
+  });
+  zCtx.globalAlpha = 1;
+
+  // Zombies
+  zZombies.forEach(z => {
+    zCtx.fillStyle = z.flash > 0 ? '#fff' : RED;
+    zCtx.font = `${z.w}px JetBrains Mono, monospace`;
+    zCtx.textAlign = 'center';
+    zCtx.fillText('Z', z.x + z.w/2, z.y + z.h);
+    // barra de vida si tiene más de 1 hp
+    if(z.maxHp > 1){
+      zCtx.fillStyle = '#1a0a0a';
+      zCtx.fillRect(z.x, z.y-5, z.w, 3);
+      zCtx.fillStyle = RED;
+      zCtx.fillRect(z.x, z.y-5, z.w * (z.hp/z.maxHp), 3);
+    }
+  });
+
+  // Balas
+  zCtx.fillStyle = AMBER;
+  zBullets.forEach(b => {
+    zCtx.beginPath();
+    zCtx.arc(b.x, b.y, 3, 0, Math.PI*2);
+    zCtx.fill();
+  });
+
+  // Player — ASCII (lol) apuntando
+  zCtx.fillStyle = GREEN;
+  zCtx.font = '11px JetBrains Mono, monospace';
+  zCtx.textAlign = 'center';
+  const px = zPlayer.x + zPlayer.w/2;
+  const py = zPlayer.y + zPlayer.h/2;
+  zCtx.fillText('(lol)', px, py - 4);
+  // dirección de disparo
+  const tipX = px + Math.cos(zPlayer.dir) * 12;
+  const tipY = py + Math.sin(zPlayer.dir) * 12;
+  zCtx.strokeStyle = '#4dff6e66';
+  zCtx.lineWidth = 1;
+  zCtx.beginPath(); zCtx.moveTo(px, py); zCtx.lineTo(tipX, tipY); zCtx.stroke();
+
+  // Waiting overlay
+  if(zState === 'waiting'){
+    zCtx.fillStyle = 'rgba(2,8,2,0.7)';
+    zCtx.fillRect(0,0,ZC.W,ZC.H);
+    zCtx.fillStyle = GREEN;
+    zCtx.font = 'bold 18px VT323, monospace';
+    zCtx.textAlign = 'center';
+    zCtx.fillText('ESPACIO / FUEGO para comenzar', ZC.W/2, ZC.H/2);
+  }
+}
+
+function zombieLoop(ts){
+  zAnimId = requestAnimationFrame(zombieLoop);
+  const delta = ts - zLastTime;
+  if(delta < Z_STEP) return;
+  const steps = Math.min(Math.floor(delta/Z_STEP), 3);
+  zLastTime = ts - (delta % Z_STEP);
+  for(let i=0; i<steps; i++) zUpdate();
+  zDraw();
+}
+
+function showZombieOverlay(type){
+  const ov = document.getElementById('zombieOverlay');
+  const t = document.getElementById('zoTitle');
+  const s = document.getElementById('zoSub');
+  const b = document.getElementById('zoBtn');
+  ov.classList.add('show');
+  if(type==='dead'){
+    t.textContent = 'GAME OVER'; t.className='zo-title dead';
+    s.textContent = `Puntos: ${zScore} · Oleada: ${zWave}`;
+    b.textContent = '[ REINTENTAR ]';
+    b.onclick = reiniciarZombies;
+  } else {
+    t.textContent = `OLEADA ${zWave-1} SUPERADA`; t.className='zo-title win';
+    s.textContent = `Puntos: ${zScore}`;
+    b.textContent = '[ SIGUIENTE OLEADA ]';
+    b.onclick = () => { ov.classList.remove('show'); zState='playing'; spawnWave(zWave); };
+  }
+}
+
+function reiniciarZombies(){
+  zScore=0; zWave=1; zLives=3; zBullets=[]; zParticles=[]; zZombies=[];
+  zPlayer.x=ZC.W/2; zPlayer.y=ZC.H/2;
+  document.getElementById('zLives').textContent=3;
+  document.getElementById('zWave').textContent=1;
+  document.getElementById('zScore').textContent=0;
+  document.getElementById('zombieOverlay').classList.remove('show');
+  spawnWave(1);
+  zState='playing';
+}
+window.reiniciarZombies = reiniciarZombies;
+
+function abrirZombies(){
+  // Cerrar cuarto secreto primero (fade)
+  cerrarSecreto();
+  setTimeout(() => {
+    zombieBackdrop.classList.add('open');
+    zState='waiting';
+    zScore=0; zWave=1; zLives=3; zBullets=[]; zParticles=[]; zZombies=[];
+    zPlayer.x=ZC.W/2; zPlayer.y=ZC.H/2;
+    document.getElementById('zLives').textContent=3;
+    document.getElementById('zWave').textContent=1;
+    document.getElementById('zScore').textContent=0;
+    document.getElementById('zombieOverlay').classList.remove('show');
+    spawnWave(1);
+    if(!zAnimId){
+      zLastTime = performance.now();
+      zAnimId = requestAnimationFrame(zombieLoop);
+    }
+  }, 500);
+}
+window.abrirZombies = abrirZombies;
+
+function cerrarZombies(){
+  zombieBackdrop.classList.remove('open');
+  if(zAnimId){ cancelAnimationFrame(zAnimId); zAnimId=null; }
+  zState='waiting';
+}
+window.cerrarZombies = cerrarZombies;
+
+// Keyboard for zombies
+document.addEventListener('keydown', e => {
+  zKeys[e.key]=true;
+  if(zombieBackdrop.classList.contains('open')){
+    if(e.key==='Escape') cerrarZombies();
+    if((e.key===' '||e.key==='Enter') && zState==='waiting'){
+      zState='playing'; document.getElementById('zombieMsg').textContent='';
+    }
+    e.key===' ' && e.preventDefault();
+  }
+});
+document.addEventListener('keyup', e => { zKeys[e.key]=false; });
+
+// Touch D-pad for zombies
+['zBtnUp','zBtnDown','zBtnLeft','zBtnRight','zBtnFire'].forEach(id => {
+  const el = document.getElementById(id);
+  if(!el) return;
+  const dir = id.replace('zBtn','').toLowerCase();
+  el.addEventListener('touchstart', e => {
+    e.preventDefault();
+    zTouch[dir]=true;
+    if(dir==='fire' && zState==='waiting'){
+      zState='playing'; document.getElementById('zombieMsg').textContent='';
+    }
+  }, {passive:false});
+  el.addEventListener('touchend', () => { zTouch[dir]=false; });
+  el.addEventListener('mousedown', () => { zTouch[dir]=true; });
+  el.addEventListener('mouseup', () => { zTouch[dir]=false; });
 });
 
 /* ============================================================
