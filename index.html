@@ -3709,6 +3709,20 @@ function cerrarSecreto(){
 }
 window.cerrarSecreto = cerrarSecreto;
 
+function abrirSecreto(){
+  secretoAbierto = true;
+  secretoBackdrop.classList.add('open');
+  // Poner mensaje cifrado inicial
+  const msgEl = document.getElementById('secreto-msg-item');
+  if(msgEl){
+    msgEl.querySelector('.si-art').textContent =
+      MENSAJES_CIFRADOS[msgIdx % MENSAJES_CIFRADOS.length];
+    msgIdx++;
+    msgEl.addEventListener('click', rotateMsg);
+  }
+}
+window.abrirSecreto = abrirSecreto;
+
 
 /* ============================================================
    RANDOM TRANSMISSIONS — con posibilidad de cuarto secreto
@@ -3725,7 +3739,7 @@ const MENSAJES_NORMALES = [
 const MSG_SECRETO = '◉ señal no identificada detectada';
 
 function showTrans(forceSecreto = false){
-  const esSecreto = forceSecreto || Math.random() < 0.50;
+  const esSecreto = forceSecreto || Math.random() < 0.04;
 
   if(esSecreto){
     transMsg.textContent = MSG_SECRETO;
@@ -4778,3 +4792,5 @@ loadTiendaFromSheet();
 </script>
 </body>
 </html>
+
+
