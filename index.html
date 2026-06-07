@@ -4199,11 +4199,11 @@ const Z_STEP = 1000 / 60;
 
 // ── ARMAS por oleada ──────────────────────────────────────────
 const WEAPONS = [
-  { name:'PISTOLA',    dmg:10, cd:14, spd:5,  spread:0,    bullets:1, color:AMBER   }, // oleada 1-2
-  { name:'ESCOPETA',   dmg:10, cd:22, spd:4.5,spread:0.3,  bullets:3, color:'#ff9940' }, // oleada 3-4
-  { name:'UZI',        dmg:10, cd:5,  spd:6,  spread:0.08, bullets:1, color:'#ffe066' }, // oleada 5-6
-  { name:'SNIPER',     dmg:30, cd:28, spd:10, spread:0,    bullets:1, color:'#00eaff' }, // oleada 7-8
-  { name:'LANZACOHETES',dmg:50,cd:40, spd:4,  spread:0,    bullets:1, color:'#ff4400',rocket:true }, // 9+
+  { name:'PISTOLA',    dmg:100, cd:14, spd:5,  spread:0,    bullets:1, color:AMBER   }, // oleada 1-2
+  { name:'ESCOPETA',   dmg:100, cd:22, spd:4.5,spread:0.3,  bullets:3, color:'#ff9940' }, // oleada 3-4
+  { name:'UZI',        dmg:100, cd:5,  spd:6,  spread:0.08, bullets:10, color:'#ffe066' }, // oleada 5-6
+  { name:'SNIPER',     dmg:300, cd:28, spd:10, spread:0,    bullets:1, color:'#00eaff' }, // oleada 7-8
+  { name:'LANZACOHETES',dmg:500,cd:40, spd:4,  spread:0,    bullets:1, color:'#ff4400',rocket:true }, // 9+
 ];
 function getWeapon(wave){ return WEAPONS[Math.min(Math.floor((wave-1)/2), WEAPONS.length-1)]; }
 
