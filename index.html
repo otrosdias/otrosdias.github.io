@@ -2390,63 +2390,31 @@ body.inverted .panel-backdrop{ background: rgba(232,227,211,0.85); }
   <img src="fotos/infinidadex.png" alt="obra principal"
        style="width:100%; height:100%; object-fit:cover; display:block;">
   <div class="porta-hero-fade"></div>
-  <div class="porta-scroll-hint">...</div>
+  <div class="porta-scroll-hint">
+    <span>↓</span>
+    <small>recorre hacia abajo</small>
+  </div>
 </div>
-        <!-- La difuminación inferior que invita a hacer scroll -->
-        <div class="porta-hero-fade"></div>
-        <div class="porta-scroll-hint">
-          <span>↓</span>
-          <small>recorre hacia abajo</small>
-        </div>
-      </div>
 
-      <!-- GALERÍA DE OBRAS DEL CREADOR -->
-      <!-- INSTRUCCIONES: reemplaza los src de abajo por tus propias obras.
-           Para imágenes: <img src="URL_DE_TU_OBRA" alt="título">
-           Para videos de YouTube/Vimeo: usa el bloque de iframe.
-           Para videos propios (mp4): <video src="URL.mp4" controls></video>
-           Puedes añadir tantos .porta-item como quieras. -->
       <div class="portafolio-grid">
 
-<div class="porta-item porta-grande">
-  <img src="fotos/ANILINA.jpg" alt="obra 01"
-       style="width:100%; height:100%; object-fit:cover; display:block;">
-  <div class="porta-caption">Anilina · 2024</div>
-</div>
-          <!-- Ejemplo imagen:
-          <img src="https://TU-IMAGEN-GRANDE.jpg" alt="obra"> -->
-          <div class="porta-caption">Título de la obra · año</div>
+        <div class="porta-item porta-grande">
+          <img src="fotos/ANILINA.jpg" alt="obra 01"
+               style="width:100%; height:100%; object-fit:cover; display:block;">
+          <div class="porta-caption">Anilina · 2024</div>
         </div>
 
-<div class="porta-item porta-grande">
-  <img src="fotos/arista3.jpeg" alt="obra 02"
-       style="width:100%; height:100%; object-fit:cover; display:block;">
-  <div class="porta-caption">Arista · 2024</div>
-</div>
-          <div class="porta-caption">Obra 02</div>
-        </div>
-
-
-          <!-- Ejemplo video YouTube:
-          <iframe width="100%" height="100%" src="https://www.youtube.com/embed/TU_ID"
-            frameborder="0" allowfullscreen></iframe> -->
-          <div class="porta-caption">Video 01</div>
+        <div class="porta-item porta-grande">
+          <img src="fotos/arista3.jpeg" alt="obra 02"
+               style="width:100%; height:100%; object-fit:cover; display:block;">
+          <div class="porta-caption">Arista · 2024</div>
         </div>
 
         <div class="porta-item porta-ancho">
-          <div class="porta-placeholder">
-            <span>[ OBRA PANORÁMICA ]</span>
-            <small>Imagen ancha o serie</small>
-          </div>
-          <div class="porta-caption">Serie · año</div>
-        </div>
-
-        <div class="porta-item">
-          <div class="porta-placeholder">
-            <span>[ IMAGEN ]</span>
-            <small>Tu obra aquí</small>
-          </div>
-          <div class="porta-caption">Obra 03</div>
+          <video src="fotos/disney presenta (1).mp4"
+                 style="width:100%; height:100%; object-fit:cover; display:block;"
+                 controls muted loop playsinline></video>
+          <div class="porta-caption">Disney Presenta · 2024</div>
         </div>
 
       </div>
@@ -3665,9 +3633,41 @@ let currentArtistId = null;
 // OPCIÓN B: subir la foto desde el panel de cada miembro (se guarda
 //   en este navegador con localStorage).
 const MEMBER_PHOTOS = {
-  // 'essppora': 'URL_O_RUTA_DE_LA_FOTO.jpg',
-  // 'derwent':  'fotos/frank.jpg',
-  // ... agrega aquí las 35 si quieres servirlas por URL
+  'essppora':              'fotos/menú imagen essppora.png',
+  'mmicelio':              'fotos/menú imagen mmicelio.png',
+  'secret_eyes':           'fotos/menú imagen secret_eyes.png',
+  'derwent':               'fotos/menú imagen derwent.png',
+  'Aldo_Lopez_Malo':       'fotos/menú imagen aldo lopez malo.png',
+  'papiwabisabi':          'fotos/menú imagen papiwabisabi.png',
+  'piedro':                'fotos/menú imagen piedro.png',
+  'Espontáneo':            'fotos/menú imagen espontaneo.png',
+  'Jcess':                 'fotos/menú imagen jcess.png',
+  'Ayra':                  'fotos/menú imagen ayra.png',
+  'Mata':                  'fotos/menú imagen mata.png',
+  'Pink1man':              'fotos/menú imagen pink!man.png',
+  'Vertedero_Don_Emilio':  'fotos/menú imagen vertedero.png',
+  'Flwrs':                 'fotos/menú imagen flwrs.png',
+  'José_Alberto_Morales':  'fotos/menú imagen jose alberto morales.png',
+  'Jafeth':                'fotos/menú imagen jafeth.png',
+  'Fobos':                 'fotos/menú imagen fobos.png',
+  'GROW':                  'fotos/menú imagen grow.png',
+  'Vecco_Gallo':           'fotos/menú imagen vecco gallo.png',
+  'naonomis':              'fotos/menú imagen naonomis.png',
+  'Jurassic_Snack':        'fotos/menú imagen jurassic snack.png',
+  'otrosdias':             'fotos/menú imagen otrosdias.png',
+  'michelleerreve':        'fotos/menú imagen michelleerreve.png',
+  'Marlon_Steve':          'fotos/menú imagen marlon steve.png',
+  'Chaco_Mete_La_Pata':    'fotos/menú imagen chaco mete la pata.png',
+  'Moisés_Yael':           'fotos/menú imagen moises yael.png',
+  'Elliot_Kendryek':       'fotos/menú imagen elliot kendryek.png',
+  'Lennin_Flores':         'fotos/menú imagen lennin flores.png',
+  'Oscar_Palacios':        'fotos/menú imagen oscar palacios.png',
+  'El_SNOP':               'fotos/menú imagen el snop.png',
+  'Mike_Rivera':           'fotos/menú imagen mike rivera.png',
+  'ohnozelt':              'fotos/menú imagen ohnozelt.png',
+  'ARISTAS':               'fotos/menú imagen aristas.png',
+  'Sury_Castillo':         'fotos/menú imagen sury.png',
+  'Pameli_Maqueda':        'fotos/menú imagen pameli maqueda.png',
 };
 
 // Fotos subidas por el usuario (persisten en este navegador)
@@ -3926,32 +3926,32 @@ const SHEET_CSV_URL = 'TU_URL_CSV_AQUI';
 
 // Datos del catálogo — Junio 2026 (fuente: PDF)
 const DEMO_PRODUCTS = [
-  { id:'fragildevocipn',    nombre:'FRÁGIL DEVOCIÓN',        autor:'POR SECRET.EYES888',       descripcion:'Tank Top de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'fragildevocipn_c',  nombre:'FRÁGIL DEVOCIÓN (camis)', autor:'POR SECRET.EYES888',       descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'cuentos_mente',     nombre:'CUENTOS DE UNA MENTE FRÁGIL', autor:'POR ELLIOT KENDRYEK', descripcion:'Tank Top de algodón de manga corta, estampada con serigrafía. Libro de Elliot Kendryek, miembro del colectivo.', precio:'$280 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'infinidad_gorra',   nombre:'INFINIDAD (gorra)',       autor:'POR OTROSDIAS',            descripcion:'Gorra de gamuza bordada con alambre de púas.', precio:'$500 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'infinidad_play',    nombre:'INFINIDAD (playera)',     autor:'POR OTROSDIAS',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'tarbosaurus',       nombre:'TARBOSAURUS',             autor:'POR JURASSIC SNACK',       descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía, 3 tintas. Puntos de entrega en @otrosdias y @snackjurassic.', precio:'$220 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'promesa',           nombre:'PROMESA',                 autor:'POR OTROSDIAS',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía. Con texto de Carlos Fuentes Macías.', precio:'$180 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'sin_miedo',         nombre:'SIN MIEDO A LA TIERRA',  autor:'POR ESSPPORA',             descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía. Fotografía de agosto 2024, c. constitución de 1917.', precio:'$180 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'perro',             nombre:'PERRO',                   autor:'POR PAPIWABISABI',         descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$200 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'eterna_vida',       nombre:'ETERNA VIDA SIMÉTRICA',  autor:'POR DERWENT',              descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'luz_resurge',       nombre:'LA LUZ RESURGE RÍO ARRIBA', autor:'POR MMICELIO',          descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$200 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'garanon',           nombre:'GARAÑÓN',                 autor:'POR VERTEDERO D.E.',       descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$299 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'abre_cajon',        nombre:'ABRE EL CAJÓN',           autor:'POR ALDO LOPEZ MALO',      descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$220 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'indertidumbre',     nombre:'INDERTIDUMBRE',           autor:'POR OTROSDIAS',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'jardin_play',       nombre:'JARDÍN (playera)',         autor:'POR OTROSDIAS',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'conejo',            nombre:'CONEJO',                  autor:'POR PAPIWABISABI',         descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'futuro',            nombre:'FUTURO',                  autor:'POR OTROSDIAS',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$100 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'saludo',            nombre:'SALUDO',                  autor:'POR OTROSDIAS',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$120 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'spot_artes',        nombre:'SPOT DE ARTES DE LA LIBERTAD', autor:'POR PEDRO MEDINA',   descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$200 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'saliendo_sup',      nombre:'SALIENDO DE LA SUPERFICIE', autor:'POR OTROSDIAS',         descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$150 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'food_can_wait',     nombre:'FOOD CAN WAIT',           autor:'POR GARRAGATO',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía. Puntos de entrega en @otrosdias y @garragato.', precio:'$299 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'walkman',           nombre:'WALKMAN',                 autor:'POR GARRAGATO',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía. Puntos de entrega en @otrosdias y @garragato.', precio:'$275 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'food_vinilbag',     nombre:'FOOD CAN WAIT (vinil bag)', autor:'POR GARRAGATO',          descripcion:'Vinil bag 40 × 50 cm. Puntos de entrega en @otrosdias y @garragato.', precio:'$199 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'walkman_vinilbag',  nombre:'WALKMAN (vinil bag)',      autor:'POR GARRAGATO',            descripcion:'Vinil bag 40 × 50 cm. Puntos de entrega en @otrosdias y @garragato.', precio:'$199 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'transmision',       nombre:'TRANSMISIÓN',             autor:'POR OTROSDIAS',            descripcion:'Hoodie negro con bordado al pecho. Edición conjunta con bat_grafik. 20 piezas firmadas, numeradas y trazables.', precio:'$320 MXN', estado:'disponible', imagen_frente:'', imagen_reverso:'' },
-  { id:'proximo',           nombre:'PRÓXIMA PIEZA',           autor:'—',                        descripcion:'En producción. Información liberada cuando el archivo se abra.', precio:'???', estado:'proximo', imagen_frente:'', imagen_reverso:'' },
+  { id:'fragildevocipn',    nombre:'FRÁGIL DEVOCIÓN',              autor:'POR SECRET.EYES888',       descripcion:'Tank Top de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'fotos/fragildevocipn_frente.jpg',    imagen_reverso:'fotos/fragildevocipn_reverso.jpg' },
+  { id:'fragildevocipn_c',  nombre:'FRÁGIL DEVOCIÓN (camis)',      autor:'POR SECRET.EYES888',       descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'fotos/fragildevocipn_c_frente.jpg',  imagen_reverso:'fotos/fragildevocipn_c_reverso.jpg' },
+  { id:'cuentos_mente',     nombre:'CUENTOS DE UNA MENTE FRÁGIL',  autor:'POR ELLIOT KENDRYEK',      descripcion:'Tank Top de algodón de manga corta, estampada con serigrafía. Libro de Elliot Kendryek, miembro del colectivo.', precio:'$280 MXN', estado:'disponible', imagen_frente:'fotos/cuentos_mente_frente.jpg',     imagen_reverso:'fotos/cuentos_mente_reverso.jpg' },
+  { id:'infinidad_gorra',   nombre:'INFINIDAD (gorra)',             autor:'POR OTROSDIAS',            descripcion:'Gorra de gamuza bordada con alambre de púas.', precio:'$500 MXN', estado:'disponible', imagen_frente:'fotos/infinidad_gorra_frente.jpg',   imagen_reverso:'fotos/infinidad_gorra_reverso.jpg' },
+  { id:'infinidad_play',    nombre:'INFINIDAD (playera)',           autor:'POR OTROSDIAS',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'fotos/infinidad_play_frente.jpg',    imagen_reverso:'fotos/infinidad_play_reverso.jpg' },
+  { id:'tarbosaurus',       nombre:'TARBOSAURUS',                   autor:'POR JURASSIC SNACK',       descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía, 3 tintas. Puntos de entrega en @otrosdias y @snackjurassic.', precio:'$220 MXN', estado:'disponible', imagen_frente:'fotos/tarbosaurus_frente.jpg',       imagen_reverso:'fotos/tarbosaurus_reverso.jpg' },
+  { id:'promesa',           nombre:'PROMESA',                       autor:'POR OTROSDIAS',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía. Con texto de Carlos Fuentes Macías.', precio:'$180 MXN', estado:'disponible', imagen_frente:'fotos/promesa_frente.jpg',           imagen_reverso:'fotos/promesa_reverso.jpg' },
+  { id:'sin_miedo',         nombre:'SIN MIEDO A LA TIERRA',        autor:'POR ESSPPORA',             descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía. Fotografía de agosto 2024, c. constitución de 1917.', precio:'$180 MXN', estado:'disponible', imagen_frente:'fotos/sin_miedo_frente.jpg',         imagen_reverso:'fotos/sin_miedo_reverso.jpg' },
+  { id:'perro',             nombre:'PERRO',                         autor:'POR PAPIWABISABI',         descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$200 MXN', estado:'disponible', imagen_frente:'fotos/perro_frente.jpg',             imagen_reverso:'fotos/perro_reverso.jpg' },
+  { id:'eterna_vida',       nombre:'ETERNA VIDA SIMÉTRICA',        autor:'POR DERWENT',              descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'fotos/eterna_vida_frente.jpg',       imagen_reverso:'fotos/eterna_vida_reverso.jpg' },
+  { id:'luz_resurge',       nombre:'LA LUZ RESURGE RÍO ARRIBA',   autor:'POR MMICELIO',             descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$200 MXN', estado:'disponible', imagen_frente:'fotos/luz_resurge_frente.jpg',       imagen_reverso:'fotos/luz_resurge_reverso.jpg' },
+  { id:'garanon',           nombre:'GARAÑÓN',                       autor:'POR VERTEDERO D.E.',       descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$299 MXN', estado:'disponible', imagen_frente:'fotos/garanon_frente.jpg',           imagen_reverso:'fotos/garanon_reverso.jpg' },
+  { id:'abre_cajon',        nombre:'ABRE EL CAJÓN',                autor:'POR ALDO LOPEZ MALO',      descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$220 MXN', estado:'disponible', imagen_frente:'fotos/abre_cajon_frente.jpg',        imagen_reverso:'fotos/abre_cajon_reverso.jpg' },
+  { id:'indertidumbre',     nombre:'INDERTIDUMBRE',                 autor:'POR OTROSDIAS',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'fotos/indertidumbre_frente.jpg',     imagen_reverso:'fotos/indertidumbre_reverso.jpg' },
+  { id:'jardin_play',       nombre:'JARDÍN (playera)',              autor:'POR OTROSDIAS',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'fotos/jardin_play_frente.jpg',       imagen_reverso:'fotos/jardin_play_reverso.jpg' },
+  { id:'conejo',            nombre:'CONEJO',                        autor:'POR PAPIWABISABI',         descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$180 MXN', estado:'disponible', imagen_frente:'fotos/conejo_frente.jpg',            imagen_reverso:'fotos/conejo_reverso.jpg' },
+  { id:'futuro',            nombre:'FUTURO',                        autor:'POR OTROSDIAS',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$100 MXN', estado:'disponible', imagen_frente:'fotos/futuro_frente.jpg',            imagen_reverso:'fotos/futuro_reverso.jpg' },
+  { id:'saludo',            nombre:'SALUDO',                        autor:'POR OTROSDIAS',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$120 MXN', estado:'disponible', imagen_frente:'fotos/saludo_frente.jpg',            imagen_reverso:'fotos/saludo_reverso.jpg' },
+  { id:'spot_artes',        nombre:'SPOT DE ARTES DE LA LIBERTAD', autor:'POR PEDRO MEDINA',         descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$200 MXN', estado:'disponible', imagen_frente:'fotos/spot_artes_frente.jpg',        imagen_reverso:'fotos/spot_artes_reverso.jpg' },
+  { id:'saliendo_sup',      nombre:'SALIENDO DE LA SUPERFICIE',    autor:'POR OTROSDIAS',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía.', precio:'$150 MXN', estado:'disponible', imagen_frente:'fotos/saliendo_sup_frente.jpg',      imagen_reverso:'fotos/saliendo_sup_reverso.jpg' },
+  { id:'food_can_wait',     nombre:'FOOD CAN WAIT',                autor:'POR GARRAGATO',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía. Puntos de entrega en @otrosdias y @garragato.', precio:'$299 MXN', estado:'disponible', imagen_frente:'fotos/food_can_wait_frente.jpg',     imagen_reverso:'fotos/food_can_wait_reverso.jpg' },
+  { id:'walkman',           nombre:'WALKMAN',                       autor:'POR GARRAGATO',            descripcion:'Camiseta de algodón de manga corta, estampada con serigrafía. Puntos de entrega en @otrosdias y @garragato.', precio:'$275 MXN', estado:'disponible', imagen_frente:'fotos/walkman_frente.jpg',           imagen_reverso:'fotos/walkman_reverso.jpg' },
+  { id:'food_vinilbag',     nombre:'FOOD CAN WAIT (vinil bag)',    autor:'POR GARRAGATO',            descripcion:'Vinil bag 40 × 50 cm. Puntos de entrega en @otrosdias y @garragato.', precio:'$199 MXN', estado:'disponible', imagen_frente:'fotos/food_vinilbag_frente.jpg',     imagen_reverso:'' },
+  { id:'walkman_vinilbag',  nombre:'WALKMAN (vinil bag)',           autor:'POR GARRAGATO',            descripcion:'Vinil bag 40 × 50 cm. Puntos de entrega en @otrosdias y @garragato.', precio:'$199 MXN', estado:'disponible', imagen_frente:'fotos/walkman_vinilbag_frente.jpg',  imagen_reverso:'' },
+  { id:'transmision',       nombre:'TRANSMISIÓN',                   autor:'POR OTROSDIAS',            descripcion:'Hoodie negro con bordado al pecho. Edición conjunta con bat_grafik. 20 piezas firmadas, numeradas y trazables.', precio:'$320 MXN', estado:'disponible', imagen_frente:'fotos/transmision_frente.jpg',       imagen_reverso:'fotos/transmision_reverso.jpg' },
+  { id:'proximo',           nombre:'PRÓXIMA PIEZA',                 autor:'—',                        descripcion:'En producción. Información liberada cuando el archivo se abra.', precio:'???', estado:'proximo', imagen_frente:'', imagen_reverso:'' },
 ];
 
 function parseCSV(text){
