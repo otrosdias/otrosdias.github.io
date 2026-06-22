@@ -4695,7 +4695,7 @@ const WEAPONS = [
   { name:'ESCOPETA',   dmg:1, cd:22, spd:4.5,spread:0.3,  bullets:3, color:'#ff9940' }, // oleada 3-4
   { name:'UZI',        dmg:1, cd:5,  spd:6,  spread:0.08, bullets:1, color:'#ffe066' }, // oleada 5-6
   { name:'SNIPER',     dmg:4, cd:30, spd:10, spread:0.09,  bullets:6, color:'#00eaff' }, // oleada 7-8
-  { name:'LANZACOHETES',dmg:50,cd:400, spd:40,  spread:0,001,    bullets:10, color:'#ff4400',rocket:true }, // 9+
+  { name:'LANZACOHETES',dmg:50,cd:40, spd:40,  spread:0,09,    bullets:10, color:'#ff4400',rocket:true }, // 9+
 ];
 function getWeapon(wave){ return WEAPONS[Math.min(Math.floor((wave-1)/2), WEAPONS.length-1)]; }
 
